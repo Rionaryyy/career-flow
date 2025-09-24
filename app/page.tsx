@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 type Answer = string;
 
 
-  <h1 className="text-3xl font-bold text-center mb-4">📱 キャリア診断テスト</h1>  // ←この1行を追加
 
 
 const questions = [
@@ -80,6 +79,8 @@ export default function Home() {
     return (
       <main className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
         <div className="w-full max-w-2xl">
+          <h1 className="text-3xl font-bold text-center mb-4">📱 キャリア診断テスト</h1>
+
           {/* プログレスバー */}
           <div className="w-full bg-gray-300 h-3 rounded-full mb-6">
             <div
