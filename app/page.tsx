@@ -1,9 +1,19 @@
 "use client";
 import { useState } from "react";
 
+// ✅ 回答オブジェクトの型を定義
+type Answers = {
+  points?: "yes" | "no";
+  quality?: "high" | "middle" | "low";
+  carrierType?: "major" | "sub" | "cheap";
+  data?: "0-3" | "3-10" | "10-20" | "20-50" | "50+";
+  call?: "none" | "short" | "long" | "daily";
+};
+
 export default function Home() {
   const [step, setStep] = useState(0);
-  const [answers, setAnswers] = useState<any>({});
+  const [answers, setAnswers] = useState<Answers>({}); // ← ✅ 型を指定！
+
   const next = () => setStep((s) => s + 1);
 
   return (
@@ -22,7 +32,7 @@ export default function Home() {
               <button
                 key={o.key}
                 onClick={() => {
-                  setAnswers({ ...answers, points: o.key });
+                  setAnswers({ ...answers, points: o.key as Answers["points"] });
                   next();
                 }}
                 className={`p-3 rounded transition ${
@@ -51,7 +61,7 @@ export default function Home() {
               <button
                 key={o.key}
                 onClick={() => {
-                  setAnswers({ ...answers, quality: o.key });
+                  setAnswers({ ...answers, quality: o.key as Answers["quality"] });
                   next();
                 }}
                 className={`p-3 rounded transition ${
@@ -80,7 +90,7 @@ export default function Home() {
               <button
                 key={o.key}
                 onClick={() => {
-                  setAnswers({ ...answers, carrierType: o.key });
+                  setAnswers({ ...answers, carrierType: o.key as Answers["carrierType"] });
                   next();
                 }}
                 className={`p-3 rounded transition ${
@@ -105,7 +115,7 @@ export default function Home() {
               <button
                 key={k}
                 onClick={() => {
-                  setAnswers({ ...answers, data: k });
+                  setAnswers({ ...answers, data: k as Answers["data"] });
                   next();
                 }}
                 className={`p-3 rounded transition ${
@@ -143,7 +153,7 @@ export default function Home() {
               <button
                 key={o.key}
                 onClick={() => {
-                  setAnswers({ ...answers, call: o.key });
+                  setAnswers({ ...answers, call: o.key as Answers["call"] });
                   next();
                 }}
                 className={`p-3 rounded transition ${
