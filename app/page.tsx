@@ -4,6 +4,10 @@ import { motion } from "framer-motion";
 
 type Answer = string;
 
+
+  <h1 className="text-3xl font-bold text-center mb-4">📱 キャリア診断テスト</h1>  // ←この1行を追加
+
+
 const questions = [
   { key: "family", text: "家族割や光回線割を利用しますか？", options: ["はい", "いいえ"] },
   { key: "data", text: "月のデータ使用量は？", options: ["1GB未満", "1〜5GB", "10〜20GB", "30GB以上/無制限"] },
