@@ -9,21 +9,13 @@ export default function Home() {
   const [phase, setPhase] = useState<1 | 2 | 3>(1);
   const [answers, setAnswers] = useState<DiagnosisAnswers>({
     includePoints: "",
-    qualityPreference: "",
+    qualityPriority: "",
     carrierType: "",
-    familyDiscount: "",
-    setDiscount: "",
-    specialUse: "",
-    economyZone: [],
-    monthlySpend: "",
-    devicePurchase: "",
-    paymentMethod: "",
+    ecosystemUse: "",
     dataUsage: "",
-    afterLimitUsage: "",
     callFrequency: "",
-    callOption: "",
-    overseasUse: "",
-    dualSim: "",
+    familyDiscount: "",
+    bundleDiscount: "",
   });
 
   const nextPhase = () => setPhase((p) => (p < 3 ? (p + 1) as 1 | 2 | 3 : p));
