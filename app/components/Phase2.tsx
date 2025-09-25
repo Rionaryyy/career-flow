@@ -1,56 +1,88 @@
 "use client";
 import { DiagnosisAnswers } from "../types/types";
 
-interface Props {
+interface Phase2Props {
   answers: DiagnosisAnswers;
   setAnswers: React.Dispatch<React.SetStateAction<DiagnosisAnswers>>;
-  next: () => void;
-  back: () => void;
+  nextPhase: () => void;
+  prevPhase: () => void;
 }
 
-export default function Phase2({ answers, setAnswers, next, back }: Props) {
+export default function Phase2({ answers, setAnswers, nextPhase, prevPhase }: Phase2Props) {
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-4">詳細条件</h2>
+    <div className="space-y-8">
+      {/* 経済圏の利用 */}
+      <div>
+        <label className="block text-lg font-semibold mb-2">
+          経済圏のサービスを利用していますか？
+        </label>
+        <select
+          value={answers.ecosystemUse || ""}
+          onChange={(e) =>
+            setAnswers({ ...answers, ecosystemUse: e.target.value })
+          }
+          className="w-full bg-gray-800 border border-gray-600 rounded p-2"
+        >
+          <option value="">選択してください</option>
+          <option value="yes">はい</option>
+          <option value="no">いいえ</option>
+        </select>
+      </div>
 
-      <label>経済圏の利用</label>
-      <select
-        value={answers.ecosystemUse}
-        onChange={(e) => setAnswers({ ...answers, ecosystemUse: e.target.value as DiagnosisAnswers["ecosystemUse"] })}
-      >
-        <option value="">選択してください</option>
-        <option value="はい">はい</option>
-        <option value="いいえ">いいえ</option>
-        <option value="検討中">検討中</option>
-      </select>
+      {/* データ使用量 */}
+      <div>
+        <label className="block text-lg font-semibold mb-2">
+          1ヶ月のデータ使用量はどのくらいですか？
+        </label>
+        <select
+          value={answers.dataUsage || ""}
+          onChange={(e) =>
+            setAnswers({ ...answers, dataUsage: e.target.value })
+          }
+          className="w-full bg-gray-800 border border-gray-600 rounded p-2"
+        >
+          <option value="">選択してください</option>
+          <option value="small">〜5GB</option>
+          <option value="medium">5〜20GB</option>
+          <option value="large">20GB以上</option>
+        </select>
+      </div>
 
-      <label>家族割の利用</label>
-      <select
-        value={answers.familyDiscount}
-        onChange={(e) => setAnswers({ ...answers, familyDiscount: e.target.value as DiagnosisAnswers["familyDiscount"] })}
-      >
-        <option value="">選択してください</option>
-        <option value="はい">はい</option>
-        <option value="いいえ">いいえ</option>
-        <option value="未定">未定</option>
-      </select>
+      {/* 通話頻度 */}
+      <div>
+        <label className="block text-lg font-semibold mb-2">
+          通話の頻度を教えてください
+        </label>
+        <select
+          value={answers.callFrequency || ""}
+          onChange={(e) =>
+            setAnswers({ ...answers, callFrequency: e.target.value })
+          }
+          className="w-full bg-gray-800 border border-gray-600 rounded p-2"
+        >
+          <option value="">選択してください</option>
+          <option value="high">多い</option>
+          <option value="medium">普通</option>
+          <option value="low">ほとんどしない</option>
+        </select>
+      </div>
 
-      <label>セット割（光回線など）の利用</label>
-      <select
-        value={answers.bundleDiscount}
-        onChange={(e) => setAnswers({ ...answers, bundleDiscount: e.target.value as DiagnosisAnswers["bundleDiscount"] })}
-      >
-        <option value="">選択してください</option>
-        <option value="はい">はい</option>
-        <option value="いいえ">いいえ</option>
-        <option value="未定">未定</option>
-      </select>
-
-      <div className="mt-4 flex gap-4">
-        <button onClick={back} className="bg-gray-400 text-white px-4 py-2 rounded">戻る</button>
-        <button onClick={next} className="bg-blue-500 text-white px-4 py-2 rounded">次へ</button>
+      <div className="flex justify-between">
+        <button
+          onClick={prevPhase}
+          className="bg-gray-600 text-white px-6 py-2 rounded hover:bg-gray-700"
+        >
+          戻る
+        </button>
+        <button
+          onClick={nextPhase}
+          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+        >
+          次へ
+        </button>
       </div>
     </div>
   );
 }
+
 
