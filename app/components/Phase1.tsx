@@ -56,7 +56,7 @@ const questions = [
 
 export default function Phase1({ answers, setAnswers, onNext }: Phase1Props) {
   return (
-    <div className="w-[90%] mx-auto p-4 space-y-8">
+    <div className="w-[98%] mx-auto p-2 space-y-8">
       <h2 className="text-2xl font-bold text-center text-white">
         📍 フェーズ①：前提条件
       </h2>
@@ -64,7 +64,7 @@ export default function Phase1({ answers, setAnswers, onNext }: Phase1Props) {
       {questions.map((q) => (
         <div
           key={q.id}
-          className="rounded-xl p-6 bg-slate-800/60 shadow-md"
+          className="rounded-xl p-4 bg-slate-800/60 shadow-md"
         >
           <p className="text-lg font-semibold mb-4 text-white text-center">
             {q.question}
