@@ -25,13 +25,14 @@ export default function Home() {
       <div className="max-w-2xl mx-auto bg-gray-900 p-8 rounded-xl shadow-lg space-y-8">
         <h1 className="text-3xl font-bold text-center">📶 キャリア診断</h1>
 
-        {phase === 1 && (
-          <Phase1
-            answers={answers}
-            setAnswers={setAnswers}
-            nextPhase={() => setPhase(2)}
-          />
-        )}
+     {phase === 1 && (
+  <Phase1
+    answers={answers}
+    setAnswers={setAnswers}
+    onNext={() => setPhase(2)}  // ← ✅ ここを nextPhase ではなく onNext にする
+  />
+)}
+
 
         {phase === 2 && (
           <Phase2

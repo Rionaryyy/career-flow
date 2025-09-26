@@ -1,14 +1,21 @@
 "use client";
+import { DiagnosisAnswers } from "../types/types";
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 
-export default function Phase1({ onNext }: { onNext: () => void }) {
-  const [answers, setAnswers] = useState<{ [key: number]: string }>({});
+interface Phase1Props {
+  answers: DiagnosisAnswers;
+  setAnswers: React.Dispatch<React.SetStateAction<DiagnosisAnswers>>;
+  onNext: () => void;
+}
+
+export default function Phase1({ answers, setAnswers, onNext }: Phase1Props) {
+  const handleSelect = (key: keyof DiagnosisAnswers, option: string) => {
+    setAnswers((prev) => ({ ...prev, [key]: option }));
+  };
 
   const questions = [
     {
-      id: 1,
+      key: "includePoints",
       title: "① ポイント還元・経済圏特典の考慮",
       question: "ポイント還元や経済圏特典も“実質料金”に含めて考えますか？",
       options: [
@@ -17,7 +24,7 @@ export default function Phase1({ onNext }: { onNext: () => void }) {
       ],
     },
     {
-      id: 2,
+      key: "qualityPriority",
       title: "② 通信品質の重視度",
       question: "通信品質（速度・安定性）はどの程度重視しますか？",
       options: [
@@ -27,7 +34,7 @@ export default function Phase1({ onNext }: { onNext: () => void }) {
       ],
     },
     {
-      id: 3,
+      key: "carrierType",
       title: "③ 希望するキャリア種別",
       question: "キャリアの種類に希望はありますか？",
       options: [
@@ -37,7 +44,7 @@ export default function Phase1({ onNext }: { onNext: () => void }) {
       ],
     },
     {
-      id: 4,
+      key: "supportPreference",
       title: "④ サポート体制の希望",
       question: "契約・サポートはオンライン完結で問題ありませんか？",
       options: [
@@ -46,7 +53,7 @@ export default function Phase1({ onNext }: { onNext: () => void }) {
       ],
     },
     {
-      id: 5,
+      key: "contractLockPreference",
       title: "⑤ 契約期間・縛りへの許容度",
       question: "契約期間の縛りや解約金について、どの程度気にしますか？",
       options: [
@@ -55,55 +62,49 @@ export default function Phase1({ onNext }: { onNext: () => void }) {
         "気にしない（条件次第でOK）",
       ],
     },
-  ];
-
-  const handleSelect = (qId: number, option: string) => {
-    setAnswers((prev) => ({ ...prev, [qId]: option }));
-  };
-
-  const allAnswered = questions.every((q) => answers[q.id]);
+  ] as const;
 
   return (
-    <div className="w-full max-w-lg mx-auto px-2 py-6"> {/* ← 横幅を広くして余白を少し削減 */}
-      <h2 className="text-2xl font-bold mb-6 text-gray-100 text-center">
+    <div className="space-y-8">
+      <h2 className="text-2xl font-bold mb-6 text-center text-blue-400">
         📍 フェーズ①：前提条件
       </h2>
 
       {questions.map((q) => (
-        <Card key={q.id} className="mb-6 bg-slate-800 p-4 rounded-2xl shadow-md">
-          <h3 className="text-lg font-semibold mb-2 text-blue-400">{q.title}</h3>
-          <p className="text-sm text-gray-300 mb-4">{q.question}</p>
+        <div
+          key={q.key}
+          className="bg-slate-800 p-4 rounded-2xl shadow-md w-[92%] mx-auto"
+        >
+          <h3 className="text-lg font-semibold mb-2 text-blue-400 text-center">
+            {q.title}
+          </h3>
+          <p className="text-sm text-gray-300 mb-4 text-center">{q.question}</p>
+
           <div className="flex flex-col gap-2">
             {q.options.map((opt) => (
-              <Button
+              <button
                 key={opt}
-                variant={answers[q.id] === opt ? "default" : "outline"}
-                onClick={() => handleSelect(q.id, opt)}
-                className={`w-full text-sm md:text-base whitespace-nowrap overflow-hidden text-ellipsis transition-colors ${
-                  answers[q.id] === opt
-                    ? "bg-blue-500 text-white hover:bg-blue-600"
+                onClick={() => handleSelect(q.key, opt)}
+                className={`w-full text-sm md:text-base whitespace-nowrap text-ellipsis overflow-hidden rounded-lg px-3 py-2 transition-colors ${
+                  answers[q.key] === opt
+                    ? "bg-blue-500 text-white"
                     : "bg-slate-700 text-gray-200 hover:bg-slate-600"
                 }`}
               >
                 {opt}
-              </Button>
+              </button>
             ))}
           </div>
-        </Card>
+        </div>
       ))}
 
-      <div className="text-center mt-8">
-        <Button
+      <div className="text-center mt-6">
+        <button
           onClick={onNext}
-          disabled={!allAnswered}
-          className={`px-8 py-3 text-lg font-semibold rounded-full transition ${
-            allAnswered
-              ? "bg-blue-500 text-white hover:bg-blue-600"
-              : "bg-gray-500 text-gray-300 cursor-not-allowed"
-          }`}
+          className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-3 rounded-xl transition-colors"
         >
           次へ進む →
-        </Button>
+        </button>
       </div>
     </div>
   );
