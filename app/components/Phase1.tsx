@@ -57,7 +57,8 @@ const questions = [
 export default function Phase1({ answers, setAnswers, onNext }: Phase1Props) {
   return (
     <div className="w-full max-w-2xl bg-slate-800 p-6 rounded-2xl shadow-lg space-y-8">
-      <h2 className="text-2xl font-bold text-center mb-6">
+      {/* ✅ タイトル：白文字 */}
+      <h2 className="text-2xl font-bold text-white text-center mb-6">
         📍 フェーズ①：前提条件
       </h2>
 
@@ -66,7 +67,11 @@ export default function Phase1({ answers, setAnswers, onNext }: Phase1Props) {
           key={q.id}
           className="border border-slate-600 rounded-xl p-5 bg-slate-700/40"
         >
-          <p className="text-lg font-semibold mb-4 text-center">{q.question}</p>
+          {/* ✅ 質問文：白文字 */}
+          <p className="text-lg font-semibold text-white mb-4 text-center">
+            {q.question}
+          </p>
+
           <div className="grid gap-3">
             {q.options.map((option) => (
               <button
