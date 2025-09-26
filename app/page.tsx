@@ -3,7 +3,7 @@ import { useState } from "react";
 import Phase1 from "./components/Phase1";
 import Phase2 from "./components/Phase2";
 import Result from "./components/Result";
-import { DiagnosisAnswers } from "./types/types";
+import { DiagnosisAnswers } from "./types/types"; // ← 型はここから読み込む
 
 export default function Home() {
   const [phase, setPhase] = useState(1);
@@ -11,8 +11,8 @@ export default function Home() {
     includePoints: "",
     qualityPriority: "",
     carrierType: "",
-    supportPreference: "",          // ✅ 追加
-    contractLockPreference: "",     // ✅ 追加
+    supportPreference: "",          // ✅ 追加済み
+    contractLockPreference: "",     // ✅ 追加済み
     ecosystemUse: "",
     dataUsage: "",
     callFrequency: "",
@@ -50,8 +50,8 @@ export default function Home() {
                 includePoints: "",
                 qualityPriority: "",
                 carrierType: "",
-                supportPreference: "",          // ✅ ここも追加
-                contractLockPreference: "",     // ✅ ここも追加
+                supportPreference: "",
+                contractLockPreference: "",
                 ecosystemUse: "",
                 dataUsage: "",
                 callFrequency: "",
