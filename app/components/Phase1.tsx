@@ -56,57 +56,49 @@ const questions = [
 
 export default function Phase1({ answers, setAnswers, onNext }: Phase1Props) {
   return (
-    <div className="w-full max-w-2xl bg-slate-900 p-8 rounded-2xl shadow-lg space-y-8 border border-slate-700">
-      {/* ✅ タイトル：青→シアンのグラデーション文字 */}
-      <h2 className="text-3xl font-bold text-center mb-6 bg-gradient-to-r from-blue-400 to-cyan-300 text-transparent bg-clip-text">
+    <div className="w-full max-w-4xl mx-auto p-4 space-y-8">
+      <h2 className="text-2xl font-bold text-center text-white">
         📍 フェーズ①：前提条件
       </h2>
 
       {questions.map((q) => (
         <div
           key={q.id}
-          className="border border-slate-700 rounded-2xl p-5 bg-slate-800/60 hover:bg-slate-800 transition-colors"
+          className="rounded-xl p-6 bg-slate-800/60 shadow-md"
         >
-          {/* ✅ 質問文：白文字で読みやすく */}
-          <p className="text-lg font-semibold text-white mb-4 text-center">
+          <p className="text-lg font-semibold mb-4 text-white text-center">
             {q.question}
           </p>
-
           <div className="grid gap-3">
-            {q.options.map((option) => {
-              const isSelected =
-                answers[q.id as keyof DiagnosisAnswers] === option;
-              return (
-                <button
-                  key={option}
-                  onClick={() =>
-                    setAnswers((prev) => ({
-                      ...prev,
-                      [q.id]: option,
-                    }))
-                  }
-                  className={`w-full text-base px-4 py-3 rounded-lg border transition-all duration-200 
-                    ${
-                      isSelected
-                        ? "bg-gradient-to-r from-blue-600 to-cyan-500 text-white border-transparent shadow-md scale-[1.02]"
-                        : "bg-slate-700 text-gray-200 border-slate-600 hover:from-slate-700 hover:to-slate-600 hover:bg-gradient-to-r hover:scale-[1.01]"
-                    }`}
-                >
-                  {option}
-                </button>
-              );
-            })}
+            {q.options.map((option) => (
+              <button
+                key={option}
+                onClick={() =>
+                  setAnswers((prev) => ({
+                    ...prev,
+                    [q.id]: option,
+                  }))
+                }
+                className={`w-full text-base px-4 py-3 rounded-lg border transition 
+                  ${
+                    answers[q.id as keyof DiagnosisAnswers] === option
+                      ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-blue-500"
+                      : "bg-slate-700 text-gray-200 border-slate-600 hover:bg-slate-600"
+                  }`}
+              >
+                {option}
+              </button>
+            ))}
           </div>
         </div>
       ))}
 
-      {/* ✅ CTAボタン：グラデーション＆Hoverで軽く動きあり */}
       <div className="flex justify-center pt-4">
         <button
           onClick={onNext}
-          className="px-10 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-cyan-500/30 hover:scale-[1.03]"
+          className="px-10 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-semibold rounded-lg transition"
         >
-          次へ進む →
+          次へ進む
         </button>
       </div>
     </div>
