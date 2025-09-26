@@ -1,6 +1,6 @@
 "use client";
-import React from "react";
-import { DiagnosisAnswers } from "@/types/types";
+
+import { DiagnosisAnswers } from "../../types/types";
 
 type Phase1Props = {
   answers: DiagnosisAnswers;
@@ -55,15 +55,8 @@ const questions = [
 ];
 
 export default function Phase1({ answers, setAnswers, onNext }: Phase1Props) {
-  const handleSelect = (id: string, option: string) => {
-    setAnswers((prev) => ({
-      ...prev,
-      [id]: option,
-    }));
-  };
-
   return (
-    <div className="w-full max-w-3xl mx-auto bg-transparent space-y-8">
+    <div className="w-full max-w-4xl mx-auto space-y-8">
       <h2 className="text-3xl font-bold text-center text-white mb-8">
         📍 フェーズ①：前提条件
       </h2>
@@ -71,20 +64,25 @@ export default function Phase1({ answers, setAnswers, onNext }: Phase1Props) {
       {questions.map((q) => (
         <div
           key={q.id}
-          className="rounded-xl p-5 bg-gradient-to-br from-slate-700/80 to-slate-600/70 shadow-md w-[98%] mx-auto transition-all duration-300"
+          className="rounded-xl p-5 bg-gradient-to-br from-slate-800/90 to-slate-700/80 shadow-lg shadow-slate-900/40 w-[98%] mx-auto transition-all duration-300"
         >
-          <p className="text-lg font-semibold mb-4 text-white text-center">
+          <p className="text-xl font-semibold mb-4 text-white text-center">
             {q.question}
           </p>
           <div className="space-y-3">
             {q.options.map((option) => (
               <button
                 key={option}
-                onClick={() => handleSelect(q.id, option)}
-                className={`w-full text-base py-3 px-4 rounded-lg transition-all duration-300 ${
+                onClick={() =>
+                  setAnswers((prev) => ({
+                    ...prev,
+                    [q.id]: option,
+                  }))
+                }
+                className={`w-full py-3 rounded-lg border transition ${
                   answers[q.id as keyof DiagnosisAnswers] === option
-                    ? "bg-blue-600 text-white shadow-lg scale-[1.02]"
-                    : "bg-slate-700/80 text-white hover:bg-slate-600"
+                    ? "bg-blue-600 border-blue-400 text-white"
+                    : "bg-slate-700 border-slate-600 hover:bg-slate-600 text-gray-200"
                 }`}
               >
                 {option}
@@ -94,10 +92,10 @@ export default function Phase1({ answers, setAnswers, onNext }: Phase1Props) {
         </div>
       ))}
 
-      <div className="flex justify-center pt-6">
+      <div className="text-center pt-6">
         <button
           onClick={onNext}
-          className="px-10 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-semibold rounded-lg transition-all duration-300"
+          className="px-8 py-3 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-lg font-semibold transition-all duration-300 shadow-lg shadow-blue-900/40"
         >
           次へ進む
         </button>
