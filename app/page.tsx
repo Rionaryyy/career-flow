@@ -7,10 +7,13 @@ import { DiagnosisAnswers } from "./types/types";
 
 export default function Home() {
   const [phase, setPhase] = useState(1);
+
   const [answers, setAnswers] = useState<DiagnosisAnswers>({
     includePoints: "",
     qualityPriority: "",
     carrierType: "",
+    supportPreference: "",       // ✅ 追加
+    contractLockPreference: "",  // ✅ 追加
     ecosystemUse: "",
     dataUsage: "",
     callFrequency: "",
@@ -30,6 +33,7 @@ export default function Home() {
             nextPhase={() => setPhase(2)}
           />
         )}
+
         {phase === 2 && (
           <Phase2
             answers={answers}
@@ -38,6 +42,7 @@ export default function Home() {
             prevPhase={() => setPhase(1)}
           />
         )}
+
         {phase === 3 && (
           <Result
             answers={answers}
@@ -46,6 +51,8 @@ export default function Home() {
                 includePoints: "",
                 qualityPriority: "",
                 carrierType: "",
+                supportPreference: "",       // ✅ ここにも追加
+                contractLockPreference: "",  // ✅ ここにも追加
                 ecosystemUse: "",
                 dataUsage: "",
                 callFrequency: "",
