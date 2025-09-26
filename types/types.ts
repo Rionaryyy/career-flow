@@ -1,13 +1,4 @@
-// Updated types - 2025-09-26
-export type DiagnosisAnswers = {
-  includePoints: string;
-  qualityPriority: string;
-  carrierType: string;
-  supportPreference: string;
-  contractLockPreference: string;
-  ecosystemUse: string;
-  dataUsage: string;
-  callFrequency: string;
-  familyDiscount: string;
-  bundleDiscount: string;
-};
+// app/types/types.ts
+
+// 質問の回答を「文字列マップ」として扱う
+export type DiagnosisAnswers = Record<string, string>;
