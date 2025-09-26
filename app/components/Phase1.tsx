@@ -56,7 +56,7 @@ const questions = [
 
 export default function Phase1({ answers, setAnswers, onNext }: Phase1Props) {
   return (
-    <div className="w-full max-w-4xl mx-auto p-4 space-y-8">
+    <div className="w-[90%] mx-auto p-4 space-y-8">
       <h2 className="text-2xl font-bold text-center text-white">
         📍 フェーズ①：前提条件
       </h2>
