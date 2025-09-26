@@ -1,176 +1,117 @@
 "use client";
+import React from "react";
 import { DiagnosisAnswers } from "../types/types";
 
-interface Phase1Props {
+type Phase1Props = {
   answers: DiagnosisAnswers;
-  setAnswers: (answers: DiagnosisAnswers) => void;
+  setAnswers: React.Dispatch<React.SetStateAction<DiagnosisAnswers>>;
   nextPhase: () => void;
-}
+};
 
 export default function Phase1({ answers, setAnswers, nextPhase }: Phase1Props) {
-  const allAnswered =
-    answers.includePoints &&
-    answers.qualityPriority &&
-    answers.carrierType &&
-    answers.supportPreference &&
-    answers.contractLockPreference;
+  const questions = [
+    {
+      key: "includePoints",
+      title: "① ポイント還元・経済圏特典の考慮",
+      question: "ポイント還元や経済圏特典も“実質料金”に含めて考えますか？",
+      options: [
+        "はい（ポイントも含めて最安を知りたい）",
+        "いいえ（現金支出だけで比べたい）",
+      ],
+    },
+    {
+      key: "qualityPriority",
+      title: "② 通信品質の重視度",
+      question: "通信品質（速度・安定性）はどの程度重視しますか？",
+      options: [
+        "とても重視する（大手キャリア水準が望ましい）",
+        "ある程度重視する（格安でも安定していればOK）",
+        "こだわらない（コスト最優先）",
+      ],
+    },
+    {
+      key: "carrierType",
+      title: "③ 希望するキャリア種別",
+      question: "キャリアの種類に希望はありますか？",
+      options: [
+        "大手キャリア（ドコモ / au / ソフトバンク / 楽天）",
+        "サブブランド（ahamo / povo / LINEMO / UQなど）もOK",
+        "格安SIM（IIJ / mineo / NUROなど）も含めて検討したい",
+      ],
+    },
+    {
+      key: "supportPreference",
+      title: "④ サポート体制の希望",
+      question: "契約・サポートはオンライン完結で問題ありませんか？",
+      options: [
+        "はい（店舗サポートは不要）",
+        "いいえ（店頭での手続きや相談が必要）",
+      ],
+    },
+    {
+      key: "contractLockPreference",
+      title: "⑤ 契約期間・縛りへの許容度",
+      question: "契約期間の縛りや解約金について、どの程度気にしますか？",
+      options: [
+        "絶対に嫌（縛りなしが前提）",
+        "できれば避けたいが内容次第",
+        "気にしない（条件次第でOK）",
+      ],
+    },
+  ];
+
+  const handleSelect = (key: string, value: string) => {
+    setAnswers((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const allAnswered = questions.every((q) => answers[q.key as keyof DiagnosisAnswers] !== "");
 
   return (
-    <div className="space-y-8">
-      <h2 className="text-2xl font-bold text-center text-white">
+    <div className="space-y-8 px-4 py-6 sm:px-6">
+      <h2 className="text-2xl sm:text-3xl font-bold text-center text-white mb-6">
         📍 フェーズ①：前提条件
       </h2>
 
-      {/* ① ポイント還元・経済圏 */}
-      <div className="bg-gray-800 p-5 rounded-2xl shadow-lg space-y-4">
-        <h3 className="text-lg font-semibold text-center text-white">
-          ポイント還元や経済圏特典も“実質料金”に含めて考えますか？
-        </h3>
-        <div className="flex flex-col space-y-3">
-          <button
-            className={`p-3 rounded-xl font-medium transition ${
-              answers.includePoints === "yes"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-700 hover:bg-blue-500 text-white"
-            }`}
-            onClick={() => setAnswers({ ...answers, includePoints: "yes" })}
-          >
-            はい（ポイントも含めて最安を知りたい）
-          </button>
-          <button
-            className={`p-3 rounded-xl font-medium transition ${
-              answers.includePoints === "no"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-700 hover:bg-blue-500 text-white"
-            }`}
-            onClick={() => setAnswers({ ...answers, includePoints: "no" })}
-          >
-            いいえ（現金支出だけで比べたい）
-          </button>
+      {questions.map((q) => (
+        <div key={q.key} className="bg-gray-800 p-5 sm:p-6 rounded-xl shadow">
+          <h3 className="text-lg sm:text-xl font-semibold mb-3 text-blue-400">
+            {q.title}
+          </h3>
+          <p className="text-sm sm:text-base mb-4 leading-snug">{q.question}</p>
+          <div className="space-y-2">
+            {q.options.map((opt) => {
+              const selected = answers[q.key as keyof DiagnosisAnswers] === opt;
+              return (
+                <button
+                  key={opt}
+                  onClick={() => handleSelect(q.key, opt)}
+                  className={`w-full px-4 py-3 rounded-lg border text-sm sm:text-base transition 
+                    ${
+                      selected
+                        ? "bg-blue-500 text-white border-blue-500"
+                        : "bg-gray-700 text-white border-gray-600 hover:bg-gray-600"
+                    } 
+                    whitespace-normal leading-snug text-left`}
+                >
+                  {opt}
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      ))}
 
-      {/* ② 通信品質 */}
-      <div className="bg-gray-800 p-5 rounded-2xl shadow-lg space-y-4">
-        <h3 className="text-lg font-semibold text-center text-white">
-          通信品質（速度・安定性）はどの程度重視しますか？
-        </h3>
-        <div className="flex flex-col space-y-3">
-          {[
-            { key: "high", label: "とても重視する（大手キャリア水準が望ましい）" },
-            { key: "mid", label: "ある程度重視する（格安でも安定していればOK）" },
-            { key: "low", label: "こだわらない（コスト最優先）" },
-          ].map((opt) => (
-            <button
-              key={opt.key}
-              className={`p-3 rounded-xl font-medium transition ${
-                answers.qualityPriority === opt.key
-                  ? "bg-green-600 text-white"
-                  : "bg-gray-700 hover:bg-green-500 text-white"
-              }`}
-              onClick={() => setAnswers({ ...answers, qualityPriority: opt.key })}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* ③ キャリア種別 */}
-      <div className="bg-gray-800 p-5 rounded-2xl shadow-lg space-y-4">
-        <h3 className="text-lg font-semibold text-center text-white">
-          キャリアの種類に希望はありますか？
-        </h3>
-        <div className="flex flex-col space-y-3">
-          {[
-            { key: "major", label: "大手キャリア（ドコモ / au / ソフトバンク / 楽天）" },
-            { key: "sub", label: "サブブランド（ahamo / povo / LINEMO / UQなど）もOK" },
-            { key: "mvno", label: "格安SIM（IIJ / mineo / NUROなど）も含めて検討したい" },
-          ].map((opt) => (
-            <button
-              key={opt.key}
-              className={`p-3 rounded-xl font-medium transition ${
-                answers.carrierType === opt.key
-                  ? "bg-purple-600 text-white"
-                  : "bg-gray-700 hover:bg-purple-500 text-white"
-              }`}
-              onClick={() => setAnswers({ ...answers, carrierType: opt.key })}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* ④ サポート体制 */}
-      <div className="bg-gray-800 p-5 rounded-2xl shadow-lg space-y-4">
-        <h3 className="text-lg font-semibold text-center text-white">
-          契約・サポートはオンライン完結で問題ありませんか？
-        </h3>
-        <div className="flex flex-col space-y-3">
-          <button
-            className={`p-3 rounded-xl font-medium transition ${
-              answers.supportPreference === "online"
-                ? "bg-indigo-600 text-white"
-                : "bg-gray-700 hover:bg-indigo-500 text-white"
-            }`}
-            onClick={() => setAnswers({ ...answers, supportPreference: "online" })}
-          >
-            はい（店舗サポートは不要）
-          </button>
-          <button
-            className={`p-3 rounded-xl font-medium transition ${
-              answers.supportPreference === "instore"
-                ? "bg-indigo-600 text-white"
-                : "bg-gray-700 hover:bg-indigo-500 text-white"
-            }`}
-            onClick={() => setAnswers({ ...answers, supportPreference: "instore" })}
-          >
-            いいえ（店頭での手続きや相談が必要）
-          </button>
-        </div>
-      </div>
-
-      {/* ⑤ 契約期間・縛り */}
-      <div className="bg-gray-800 p-5 rounded-2xl shadow-lg space-y-4">
-        <h3 className="text-lg font-semibold text-center text-white">
-          契約期間の縛りや解約金について、どの程度気にしますか？
-        </h3>
-        <div className="flex flex-col space-y-3">
-          {[
-            { key: "no_lock", label: "絶対に嫌（縛りなしが前提）" },
-            { key: "avoid_if_possible", label: "できれば避けたいが内容次第" },
-            { key: "ok", label: "気にしない（条件次第でOK）" },
-          ].map((opt) => (
-            <button
-              key={opt.key}
-              className={`p-3 rounded-xl font-medium transition ${
-                answers.contractLockPreference === opt.key
-                  ? "bg-pink-600 text-white"
-                  : "bg-gray-700 hover:bg-pink-500 text-white"
-              }`}
-              onClick={() =>
-                setAnswers({ ...answers, contractLockPreference: opt.key })
-              }
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* 次へボタン */}
-      <div className="text-center pt-4">
+      <div className="text-center">
         <button
           onClick={nextPhase}
           disabled={!allAnswered}
-          className={`px-8 py-3 rounded-full text-lg font-semibold transition ${
+          className={`w-full sm:w-auto px-8 py-3 rounded-lg text-lg font-semibold transition ${
             allAnswered
-              ? "bg-blue-600 hover:bg-blue-700 text-white"
-              : "bg-gray-600 text-gray-400 cursor-not-allowed"
+              ? "bg-blue-500 text-white hover:bg-blue-600"
+              : "bg-gray-600 text-gray-300 cursor-not-allowed"
           }`}
         >
-          次へ →
+          次へ進む
         </button>
       </div>
     </div>
