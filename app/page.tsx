@@ -7,13 +7,12 @@ import { DiagnosisAnswers } from "./types/types";
 
 export default function Home() {
   const [phase, setPhase] = useState(1);
-
   const [answers, setAnswers] = useState<DiagnosisAnswers>({
     includePoints: "",
     qualityPriority: "",
     carrierType: "",
-    supportPreference: "",       // ✅ 追加
-    contractLockPreference: "",  // ✅ 追加
+    supportPreference: "",          // ✅ 追加
+    contractLockPreference: "",     // ✅ 追加
     ecosystemUse: "",
     dataUsage: "",
     callFrequency: "",
@@ -51,8 +50,8 @@ export default function Home() {
                 includePoints: "",
                 qualityPriority: "",
                 carrierType: "",
-                supportPreference: "",       // ✅ ここにも追加
-                contractLockPreference: "",  // ✅ ここにも追加
+                supportPreference: "",          // ✅ ここも追加
+                contractLockPreference: "",     // ✅ ここも追加
                 ecosystemUse: "",
                 dataUsage: "",
                 callFrequency: "",
