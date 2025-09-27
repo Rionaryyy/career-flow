@@ -1,115 +1,110 @@
+// app/components/Phase1.tsx
 "use client";
 
-import { useState } from "react";
-import { Phase1Answers } from "@/types/types";
+import React from "react";
+import { DiagnosisAnswers, Phase1Answers } from "@/types/types";
 
-interface Phase1Props {
-  onSubmit: (answers: Phase1Answers) => void;
-}
+type Phase1Props = {
+  answers: DiagnosisAnswers["phase1"];
+  setAnswers: React.Dispatch<React.SetStateAction<DiagnosisAnswers["phase1"]>>;
+  onNext: () => void;
+  onBack?: () => void;
+};
 
-export default function Phase1({ onSubmit }: Phase1Props) {
-  const [answers, setAnswers] = useState<Phase1Answers>({
-    includeEconomy: "no",
-    networkPriority: "medium",
-    carrierType: "major",
-    supportPriority: "medium",
-    contractBinding: "no",
-  });
+const questions = [
+  {
+    id: "includePoints",
+    question: "ポイント還元や経済圏特典も“実質料金”に含めて考えますか？",
+    options: [
+      "はい（ポイントも含めて最安を知りたい）",
+      "いいえ（現金支出だけで比べたい）",
+    ],
+  },
+  {
+    id: "networkQuality",
+    question: "通信品質（速度・安定性）はどの程度重視しますか？",
+    options: [
+      "とても重視する（大手キャリア水準が望ましい）",
+      "ある程度重視する（格安でも安定していればOK）",
+      "こだわらない（コスト最優先）",
+    ],
+  },
+  {
+    id: "carrierType",
+    question: "キャリアの種類に希望はありますか？",
+    options: [
+      "大手キャリア（ドコモ / au / ソフトバンク / 楽天）",
+      "サブブランド（ahamo / povo / LINEMO / UQなど）もOK",
+      "格安SIM（IIJ / mineo / NUROなど）も含めて検討したい",
+    ],
+  },
+  {
+    id: "supportPreference",
+    question: "契約・サポートはオンライン完結で問題ありませんか？",
+    options: ["はい（店舗サポートは不要）", "いいえ（店頭での手続きや相談が必要）"],
+  },
+  {
+    id: "contractLockPreference",
+    question: "契約期間の縛りや解約金について、どの程度気にしますか？",
+    options: ["絶対に嫌（縛りなしが前提）", "できれば避けたいが内容次第", "気にしない（条件次第でOK）"],
+  },
+];
 
-  const handleChange = <K extends keyof Phase1Answers>(key: K, value: Phase1Answers[K]) => {
-    setAnswers((prev) => ({ ...prev, [key]: value }));
-  };
-
-  const handleSubmit = () => {
-    onSubmit(answers);
-  };
-
+export default function Phase1({ answers, setAnswers, onNext, onBack }: Phase1Props) {
   return (
-    <div className="space-y-6">
-      <h2 className="text-xl font-semibold">フェーズ①（前提条件）</h2>
+    <div className="w-full max-w-4xl mx-auto space-y-8 p-6">
+      <h2 className="text-3xl font-bold text-center text-white mb-4">📍 フェーズ①：前提条件</h2>
 
-      {/* Q1 */}
-      <div>
-        <label className="block font-medium mb-2">
-          料金にポイント還元や経済圏特典を含めて考えますか？
-        </label>
-        <select
-          value={answers.includeEconomy}
-          onChange={(e) => handleChange("includeEconomy", e.target.value as "yes" | "no")}
-          className="w-full p-2 border rounded"
+      {questions.map((q) => (
+        <div
+          key={q.id}
+          className="rounded-xl p-5 bg-gradient-to-br from-slate-800/90 to-slate-700/80 shadow-lg shadow-slate-900/40 w-[98%] mx-auto transition-all duration-300"
         >
-          <option value="yes">はい</option>
-          <option value="no">いいえ</option>
-        </select>
-      </div>
+          <p className="text-xl font-semibold mb-4 text-white text-center">{q.question}</p>
+          <div className="space-y-3">
+            {q.options.map((option) => (
+              <button
+                key={option}
+                onClick={() =>
+                  setAnswers((prev) => ({
+                    ...prev,
+                    // keyof Phase1Answers として扱えるようキャスト
+                    [q.id]: option,
+                  } as unknown as Phase1Answers))
+                }
+                className={`w-full py-3 rounded-lg border transition ${
+                  answers[q.id as keyof typeof answers] === option
+                    ? "bg-blue-600 border-blue-400 text-white"
+                    : "bg-slate-700 border-slate-600 hover:bg-slate-600 text-gray-200"
+                }`}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
 
-      {/* Q2 */}
-      <div>
-        <label className="block font-medium mb-2">通信品質の重視度を教えてください</label>
-        <select
-          value={answers.networkPriority}
-          onChange={(e) =>
-            handleChange("networkPriority", e.target.value as "high" | "medium" | "low")
-          }
-          className="w-full p-2 border rounded"
-        >
-          <option value="high">高い</option>
-          <option value="medium">普通</option>
-          <option value="low">低くてもOK</option>
-        </select>
+      <div className="flex justify-between items-center pt-6">
+        <div>
+          {onBack && (
+            <button
+              onClick={onBack}
+              className="px-4 py-2 rounded-full bg-slate-600 hover:bg-slate-500 text-sm"
+            >
+              戻る
+            </button>
+          )}
+        </div>
+        <div>
+          <button
+            onClick={onNext}
+            className="px-8 py-3 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-lg font-semibold transition-all duration-300 shadow-lg shadow-blue-900/40"
+          >
+            次へ進む
+          </button>
+        </div>
       </div>
-
-      {/* Q3 */}
-      <div>
-        <label className="block font-medium mb-2">希望するキャリアの種類を選んでください</label>
-        <select
-          value={answers.carrierType}
-          onChange={(e) =>
-            handleChange("carrierType", e.target.value as "major" | "subbrand" | "mvno")
-          }
-          className="w-full p-2 border rounded"
-        >
-          <option value="major">大手キャリア</option>
-          <option value="subbrand">サブブランド</option>
-          <option value="mvno">格安SIM</option>
-        </select>
-      </div>
-
-      {/* Q4 */}
-      <div>
-        <label className="block font-medium mb-2">サポート体制の重視度を教えてください</label>
-        <select
-          value={answers.supportPriority}
-          onChange={(e) =>
-            handleChange("supportPriority", e.target.value as "high" | "medium" | "low")
-          }
-          className="w-full p-2 border rounded"
-        >
-          <option value="high">高い</option>
-          <option value="medium">普通</option>
-          <option value="low">低くてもOK</option>
-        </select>
-      </div>
-
-      {/* Q5 */}
-      <div>
-        <label className="block font-medium mb-2">契約縛りがあっても問題ありませんか？</label>
-        <select
-          value={answers.contractBinding}
-          onChange={(e) => handleChange("contractBinding", e.target.value as "yes" | "no")}
-          className="w-full p-2 border rounded"
-        >
-          <option value="yes">はい</option>
-          <option value="no">いいえ</option>
-        </select>
-      </div>
-
-      <button
-        onClick={handleSubmit}
-        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-      >
-        次へ進む
-      </button>
     </div>
   );
 }

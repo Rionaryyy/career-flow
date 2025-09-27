@@ -1,5 +1,11 @@
-import DiagnosisFlow from "@/app/components/DiagnosisFlow";
+// app/page.tsx
+import React from "react";
+import DiagnosisFlow from "./components/DiagnosisFlow";
 
 export default function Page() {
-  return <DiagnosisFlow />;
+  return (
+    <main className="min-h-screen bg-slate-900 text-white">
+      <DiagnosisFlow />
+    </main>
+  );
 }
