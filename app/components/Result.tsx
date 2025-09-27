@@ -4,31 +4,32 @@ import { DiagnosisAnswers } from "@/types/types";
 
 interface ResultProps {
   answers: DiagnosisAnswers;
-  onRestart?: () => void;
+  onRestart: () => void;
 }
 
 export default function Result({ answers, onRestart }: ResultProps) {
   const { phase1, phase2 } = answers;
 
   return (
-    <div className="space-y-6 bg-white p-6 rounded-xl shadow">
-      <h2 className="text-2xl font-bold">診断結果</h2>
+    <div className="max-w-xl mx-auto p-6 text-center">
+      <h2 className="text-2xl font-bold mb-6">診断結果</h2>
 
-      <div className="space-y-2 text-lg">
-        <p>💰 ポイント還元を含める: {phase1.includePoints ? "はい" : "いいえ"}</p>
-        <p>📶 通信品質の重視度: {phase1.networkQuality}</p>
-        <p>📡 希望キャリア種別: {phase1.carrierType}</p>
-        <p>💁‍♂️ サポート重視度: {phase1.supportLevel}</p>
-        <p>🔁 契約縛りの有無: {phase1.contractFlexibility}</p>
-
-        <p>🏦 経済圏の利用状況: {phase2.ecosystemUsage}</p>
-        <p>📊 毎月のデータ量: {phase2.monthlyData} GB</p>
+      <div className="bg-gray-100 p-4 rounded-xl mb-8 text-left space-y-2">
+        <p>📊 通信品質重視度: {phase1.networkQuality ?? "未選択"}</p>
+        <p>📡 キャリアタイプ: {phase1.carrierType ?? "未選択"}</p>
+        <p>💰 ポイント還元考慮: {phase1.includePoints ? "する" : "しない"}</p>
+        <p>🤝 サポート重視度: {phase1.supportLevel ?? "未選択"}</p>
+        <p>🔁 契約縛り: {phase1.contractFlexibility ?? "未選択"}</p>
+        <p>🏦 経済圏利用: {phase2.ecosystemUsage ?? "未選択"}</p>
+        <p>📶 データ量: {phase2.monthlyData ?? "未入力"} GB/月</p>
       </div>
 
-      {onRestart && (
-        <button
-          onClick={onRestart}
-          className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700"
-        >
-          もう一度診断する
-        </button>
+      <button
+        onClick={onRestart}
+        className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
+      >
+        もう一度診断する
+      </button>
+    </div>
+  );
+}
