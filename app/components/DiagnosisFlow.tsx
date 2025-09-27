@@ -9,9 +9,10 @@ import { DiagnosisAnswers } from "@/types/types";
 
 export default function DiagnosisFlow() {
   const [step, setStep] = useState<"start" | "phase1" | "phase2" | "result">("start");
+
   const [answers, setAnswers] = useState<DiagnosisAnswers>({
     phase1: {
-      includePoints: null,          // ✅ 型と一致
+      includePoints: null,
       networkQuality: null,
       carrierType: null,
       supportLevel: null,
