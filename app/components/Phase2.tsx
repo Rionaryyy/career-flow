@@ -1,88 +1,55 @@
 "use client";
-import { DiagnosisAnswers } from "../types/types";
 
-interface Phase2Props {
-  answers: DiagnosisAnswers;
-  setAnswers: React.Dispatch<React.SetStateAction<DiagnosisAnswers>>;
-  nextPhase: () => void;
-  prevPhase: () => void;
+import { useState } from "react";
+import { Phase2Answers } from "@/types/types";
+
+interface Props {
+  onComplete: (answers: Phase2Answers) => void;
 }
 
-export default function Phase2({ answers, setAnswers, nextPhase, prevPhase }: Phase2Props) {
+export default function Phase2({ onComplete }: Props) {
+  const [answers, setAnswers] = useState<Phase2Answers>({
+    ecosystemUsage: null,
+    monthlyData: null,
+    callFrequency: null,
+    familyDiscount: null,
+  });
+
+  const handleChange = <K extends keyof Phase2Answers>(
+    key: K,
+    value: Phase2Answers[K]
+  ) => {
+    setAnswers((prev: Phase2Answers) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
   return (
-    <div className="space-y-8">
-      {/* 経済圏の利用 */}
-      <div>
-        <label className="block text-lg font-semibold mb-2">
-          経済圏のサービスを利用していますか？
-        </label>
-        <select
-          value={answers.ecosystemUse || ""}
-          onChange={(e) =>
-            setAnswers({ ...answers, ecosystemUse: e.target.value })
-          }
-          className="w-full bg-gray-800 border border-gray-600 rounded p-2"
-        >
-          <option value="">選択してください</option>
-          <option value="yes">はい</option>
-          <option value="no">いいえ</option>
-        </select>
-      </div>
+    <div className="space-y-6">
+      <h2 className="text-xl font-bold">フェーズ②：詳細条件の確認</h2>
 
-      {/* データ使用量 */}
       <div>
-        <label className="block text-lg font-semibold mb-2">
-          1ヶ月のデータ使用量はどのくらいですか？
-        </label>
-        <select
-          value={answers.dataUsage || ""}
-          onChange={(e) =>
-            setAnswers({ ...answers, dataUsage: e.target.value })
-          }
-          className="w-full bg-gray-800 border border-gray-600 rounded p-2"
-        >
-          <option value="">選択してください</option>
-          <option value="small">〜5GB</option>
-          <option value="medium">5〜20GB</option>
-          <option value="large">20GB以上</option>
-        </select>
-      </div>
-
-      {/* 通話頻度 */}
-      <div>
-        <label className="block text-lg font-semibold mb-2">
-          通話の頻度を教えてください
-        </label>
-        <select
-          value={answers.callFrequency || ""}
-          onChange={(e) =>
-            setAnswers({ ...answers, callFrequency: e.target.value })
-          }
-          className="w-full bg-gray-800 border border-gray-600 rounded p-2"
-        >
-          <option value="">選択してください</option>
-          <option value="high">多い</option>
-          <option value="medium">普通</option>
-          <option value="low">ほとんどしない</option>
-        </select>
-      </div>
-
-      <div className="flex justify-between">
-        <button
-          onClick={prevPhase}
-          className="bg-gray-600 text-white px-6 py-2 rounded hover:bg-gray-700"
-        >
-          戻る
+        <p>経済圏の利用度は？</p>
+        <button onClick={() => handleChange("ecosystemUsage", "none")}>
+          ほとんど使わない
         </button>
-        <button
-          onClick={nextPhase}
-          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
-        >
-          次へ
+        <button onClick={() => handleChange("ecosystemUsage", "light")}>
+          そこそこ使う
+        </button>
+        <button onClick={() => handleChange("ecosystemUsage", "heavy")}>
+          がっつり使う
         </button>
       </div>
+
+      {/* 他の質問も同様に handleChange を使って追加 */}
+
+      <button
+        onClick={() => onComplete(answers)}
+        className="px-4 py-2 bg-blue-600 text-white rounded"
+      >
+        診断結果を見る
+      </button>
     </div>
   );
 }
-
-

@@ -18,8 +18,11 @@
         "name": "next"
       }
     ],
+
+    // 👇ここを修正
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./app/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

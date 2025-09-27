@@ -1,14 +1,20 @@
 // app/types/types.ts
+export type Phase1Answers = {
+  considerPoints: boolean | null;
+  networkQuality: "high" | "medium" | "low" | null;
+  carrierType: "major" | "sub" | "cheap" | null;
+  supportPriority: "high" | "medium" | "low" | null;
+  contractFreedom: boolean | null;
+};
+
+export type Phase2Answers = {
+  ecosystemUsage: "none" | "light" | "heavy" | null;
+  monthlyData: number | null;
+  callFrequency: "rare" | "sometimes" | "often" | null;
+  familyDiscount: boolean | null;
+};
 
 export type DiagnosisAnswers = {
-  includePoints: string;            // ポイント還元を考慮するか
-  qualityPriority: string;          // 通信品質の重視度
-  carrierType: string;              // 希望キャリア種別
-  supportPreference: string;        // サポート体制（←追加）
-  contractLockPreference: string;   // 契約期間・解約金の重視度（←追加）
-  ecosystemUse: string;             // 経済圏利用
-  dataUsage: string;                // データ容量
-  callFrequency: string;            // 通話頻度
-  familyDiscount: string;           // 家族割
-  bundleDiscount: string;           // セット割
+  phase1: Phase1Answers;
+  phase2: Phase2Answers;
 };
