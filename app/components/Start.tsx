@@ -1,23 +1,24 @@
 "use client";
-import { DiagnosisAnswers } from "../types/types";
 
-interface Props {
-  answers: DiagnosisAnswers;
-  setAnswers: React.Dispatch<React.SetStateAction<DiagnosisAnswers>>;
-  back: () => void;
+interface StartProps {
+  onStart: () => void;
 }
 
-export default function Phase3({ answers, back }: Props) {
+export default function Start({ onStart }: StartProps) {
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-4">診断結果</h2>
-      <pre className="bg-gray-100 p-4 rounded">
-        {JSON.stringify(answers, null, 2)}
-      </pre>
-
-      <button onClick={back} className="mt-4 bg-gray-400 text-white px-4 py-2 rounded">
-        戻る
-      </button>
+    <div className="min-h-screen flex items-center justify-center p-6 bg-slate-50">
+      <div className="bg-white p-10 rounded-2xl shadow-lg text-center max-w-xl">
+        <h1 className="text-3xl font-bold mb-4">キャリア診断へようこそ</h1>
+        <p className="text-gray-600 mb-6">
+          いくつかの質問に答えるだけで、あなたに最適な携帯キャリアの候補を提案します。
+        </p>
+        <button
+          onClick={onStart}
+          className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
+        >
+          診断をはじめる
+        </button>
+      </div>
     </div>
   );
 }
