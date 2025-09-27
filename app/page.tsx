@@ -1,9 +1,5 @@
-import DiagnosisFlow from "./components/DiagnosisFlow";
+import DiagnosisFlow from "@/app/components/DiagnosisFlow";
 
 export default function Page() {
-  return (
-    <main>
-      <DiagnosisFlow />
-    </main>
-  );
+  return <DiagnosisFlow />;
 }
