@@ -2,41 +2,25 @@
 
 import { DiagnosisAnswers } from "@/types/types";
 
-type Props = {
+interface ResultProps {
   answers: DiagnosisAnswers;
-  onRestart: () => void;
-};
+}
 
-export default function Result({ answers, onRestart }: Props) {
+export default function Result({ answers }: ResultProps) {
+  const { phase1, phase2 } = answers;
+
   return (
-    <div className="max-w-2xl mx-auto text-center space-y-8">
-      <h2 className="text-3xl font-bold">診断結果</h2>
-
-      <div className="bg-white shadow-md rounded-xl p-6 text-left space-y-4">
-        <h3 className="text-xl font-semibold">基本条件</h3>
-        <ul className="list-disc ml-6">
-          <li>ポイント重視: {answers.phase1.considerPoints ? "はい" : "いいえ"}</li>
-          <li>通信品質: {answers.phase1.networkQuality}</li>
-          <li>希望キャリア: {answers.phase1.carrierType}</li>
-          <li>サポート重視: {answers.phase1.supportPriority}</li>
-          <li>契約縛りなし: {answers.phase1.contractFreedom ? "はい" : "いいえ"}</li>
-        </ul>
-
-        <h3 className="text-xl font-semibold mt-6">利用状況</h3>
-        <ul className="list-disc ml-6">
-          <li>経済圏利用: {answers.phase2.ecosystemUsage}</li>
-          <li>月間データ量: {answers.phase2.monthlyData} GB</li>
-          <li>通話頻度: {answers.phase2.callFrequency}</li>
-          <li>家族割利用: {answers.phase2.familyDiscount ? "はい" : "いいえ"}</li>
-        </ul>
+    <div className="p-6 bg-white shadow rounded-xl">
+      <h2 className="text-2xl font-bold mb-4">診断結果</h2>
+      <div className="space-y-2">
+        <p>💰 ポイント還元を含める: {phase1.includePoints ? "はい" : "いいえ"}</p>
+        <p>📶 通信品質: {phase1.networkQuality}</p>
+        <p>📡 キャリア種別: {phase1.carrierType}</p>
+        <p>💁‍♂️ サポート重視度: {phase1.supportLevel}</p>
+        <p>🔁 契約縛り: {phase1.contractFlexibility}</p>
+        <p>🏦 経済圏の利用状況: {phase2.ecosystemUsage}</p>
+        <p>📊 毎月のデータ量: {phase2.monthlyData} GB</p>
       </div>
-
-      <button
-        onClick={onRestart}
-        className="bg-blue-600 text-white px-8 py-3 rounded-xl hover:bg-blue-700 transition"
-      >
-        もう一度診断する
-      </button>
     </div>
   );
 }
