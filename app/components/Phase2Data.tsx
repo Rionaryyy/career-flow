@@ -2,105 +2,97 @@
 
 import { useState } from "react";
 import { Phase2Answers } from "@/types/types";
-import { Button } from "@/components/ui/button";
 
 interface Props {
-  defaultValues: Phase2Answers;
-  onNext: (data: Partial<Phase2Answers>) => void;
-  onBack: () => void;
-  isLast?: boolean;
+  answers: Phase2Answers;
+  onChange: (updated: Partial<Phase2Answers>) => void;
 }
 
-export default function Phase2Data({ defaultValues, onNext, onBack }: Props) {
-  const [dataUsage, setDataUsage] = useState(defaultValues.dataUsage);
-  const [speedLimitImportance, setSpeedLimitImportance] = useState(defaultValues.speedLimitImportance);
-  const [tetheringNeeded, setTetheringNeeded] = useState(defaultValues.tetheringNeeded);
-  const [tetheringUsage, setTetheringUsage] = useState(defaultValues.tetheringUsage);
 
-  const handleSubmit = () => {
-    onNext({ dataUsage, speedLimitImportance, tetheringNeeded, tetheringUsage });
+export default function Phase2Data({ answers, onChange }: Props) {
+  const [dataUsage, setDataUsage] = useState<string | null>(null);
+  const [speedLimitImportance, setSpeedLimitImportance] = useState<string | null>(null);
+  const [tetheringNeeded, setTetheringNeeded] = useState<string | null>(null);
+  const [tetheringUsage, setTetheringUsage] = useState<string | null>(null);
+
+  const handleNext = () => {
+    onChange({
+      dataUsage,
+      speedLimitImportance,
+      tetheringNeeded,
+      tetheringUsage,
+    });
   };
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-6">① データ通信ニーズ</h2>
+    <div className="p-6 space-y-6">
+      <h2 className="text-2xl font-bold mb-4">① データ通信に関する質問</h2>
 
-      <div className="space-y-6">
-        <div>
-          <p className="font-semibold mb-2">1. 毎月のデータ使用量はどのくらいですか？</p>
-          {["1GB未満", "1〜5GB", "5〜20GB", "20GB以上", "無制限プランを希望"].map((opt) => (
-            <label key={opt} className="block">
-              <input
-                type="radio"
-                name="dataUsage"
-                value={opt}
-                checked={dataUsage === opt}
-                onChange={(e) => setDataUsage(e.target.value)}
-                className="mr-2"
-              />
-              {opt}
-            </label>
-          ))}
-        </div>
-
-        <div>
-          <p className="font-semibold mb-2">2. 通信速度制限がかかる条件や速度を重視しますか？</p>
-          {["重視する（制限後も快適に使いたい）", "ある程度気にする", "あまり気にしない"].map((opt) => (
-            <label key={opt} className="block">
-              <input
-                type="radio"
-                name="speedLimitImportance"
-                value={opt}
-                checked={speedLimitImportance === opt}
-                onChange={(e) => setSpeedLimitImportance(e.target.value)}
-                className="mr-2"
-              />
-              {opt}
-            </label>
-          ))}
-        </div>
-
-        <div>
-          <p className="font-semibold mb-2">3. テザリング（PCやタブレットの接続）を使いますか？</p>
-          {["よく使う", "たまに使う", "使わない"].map((opt) => (
-            <label key={opt} className="block">
-              <input
-                type="radio"
-                name="tetheringNeeded"
-                value={opt}
-                checked={tetheringNeeded === opt}
-                onChange={(e) => setTetheringNeeded(e.target.value)}
-                className="mr-2"
-              />
-              {opt}
-            </label>
-          ))}
-        </div>
-
-        {tetheringNeeded !== "使わない" && (
-          <div>
-            <p className="font-semibold mb-2">4. テザリングの利用シーンは？</p>
-            {["仕事", "旅行・外出先", "自宅で固定回線代わり", "その他"].map((opt) => (
-              <label key={opt} className="block">
-                <input
-                  type="radio"
-                  name="tetheringUsage"
-                  value={opt}
-                  checked={tetheringUsage === opt}
-                  onChange={(e) => setTetheringUsage(e.target.value)}
-                  className="mr-2"
-                />
-                {opt}
-              </label>
-            ))}
-          </div>
-        )}
+      <div>
+        <p className="font-semibold mb-2">1. 毎月のデータ利用量は？</p>
+        <select
+          value={dataUsage || ""}
+          onChange={(e) => setDataUsage(e.target.value)}
+          className="border rounded p-2 w-full"
+        >
+          <option value="">選択してください</option>
+          <option value="low">～5GB</option>
+          <option value="medium">5GB～20GB</option>
+          <option value="high">20GB以上</option>
+          <option value="unlimited">無制限が理想</option>
+        </select>
       </div>
 
-      <div className="flex justify-between mt-10">
-        <Button variant="outline" onClick={onBack}>戻る</Button>
-        <Button onClick={handleSubmit}>次へ進む</Button>
+      <div>
+        <p className="font-semibold mb-2">2. 速度制限後の速度の重要性は？</p>
+        <select
+          value={speedLimitImportance || ""}
+          onChange={(e) => setSpeedLimitImportance(e.target.value)}
+          className="border rounded p-2 w-full"
+        >
+          <option value="">選択してください</option>
+          <option value="not_important">あまり気にしない</option>
+          <option value="important">ある程度重要</option>
+          <option value="very_important">非常に重要</option>
+        </select>
       </div>
+
+      <div>
+        <p className="font-semibold mb-2">3. テザリング機能は必要？</p>
+        <select
+          value={tetheringNeeded || ""}
+          onChange={(e) => setTetheringNeeded(e.target.value)}
+          className="border rounded p-2 w-full"
+        >
+          <option value="">選択してください</option>
+          <option value="no">不要</option>
+          <option value="yes">必要</option>
+        </select>
+      </div>
+
+      {tetheringNeeded === "yes" && (
+        <div>
+          <p className="font-semibold mb-2">4. テザリングの主な用途は？</p>
+          <select
+            value={tetheringUsage || ""}
+            onChange={(e) => setTetheringUsage(e.target.value)}
+            className="border rounded p-2 w-full"
+          >
+            <option value="">選択してください</option>
+            <option value="pc_work">PC作業</option>
+            <option value="tablet">タブレット</option>
+            <option value="other">その他</option>
+          </select>
+        </div>
+      )}
+
+      <button
+        onClick={handleNext}
+        disabled={!dataUsage}
+        className="mt-6 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+      >
+        次へ
+      </button>
     </div>
   );
 }

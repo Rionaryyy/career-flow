@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Phase1 from "./Phase1";
+import Phase1, { Phase1Props } from "./Phase1";
 import Phase2 from "./Phase2";
 import Result from "./Result";
 import { Phase1Answers, Phase2Answers, DiagnosisAnswers } from "@/types/types";

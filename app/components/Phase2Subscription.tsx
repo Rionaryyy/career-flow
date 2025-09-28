@@ -1,76 +1,120 @@
 "use client";
 
-import React from "react";
+import { useState } from "react";
 import { Phase2Answers } from "@/types/types";
 
-export interface Phase2SubscriptionProps {
-  answers: Phase2Answers; // ✅ 追加
-  onAnswer: (partial: Partial<Phase2Answers>) => void;
-  onNext: () => void;
-  onBack: () => void;
+interface Props {
+  answers: Phase2Answers;
+  onChange: (updated: Partial<Phase2Answers>) => void;
 }
 
-export default function Phase2Subscription({
-  answers,
-  onAnswer,
-  onNext,
-  onBack,
-}: Phase2SubscriptionProps) {
+
+export default function Phase2Subscription({ answers, onChange }: Props) {
+  const [subs, setSubs] = useState<string[]>([]);
+  const [subsDiscountPreference, setSubsDiscountPreference] = useState<string | null>(null);
+
+  const services = [
+    "Netflix",
+    "Amazon Prime",
+    "YouTube Premium",
+    "Apple Music",
+    "Disney+",
+    "LINE MUSIC",
+    "DAZN",
+    "DMM TV / DMMプレミアム",
+    "Spotify",
+    "ABEMA プレミアム",
+    "U-NEXT",
+    "TELASA（テラサ）",
+    "特になし",
+  ];
+
+  const toggleSub = (service: string) => {
+    if (subs.includes(service)) {
+      setSubs(subs.filter((s) => s !== service));
+    } else {
+      if (service === "特になし") {
+        setSubs(["特になし"]);
+      } else {
+        setSubs(subs.filter((s) => s !== "特になし").concat(service));
+      }
+    }
+  };
+
+  const handleNext = () => {
+    onChange({
+      subs,
+      subsDiscountPreference,
+    });
+  };
+
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-8 p-6">
-      <h2 className="text-3xl font-bold text-center text-white mb-4">
-        📦 フェーズ②：サブスク・サービス利用状況
-      </h2>
+    <div className="p-6 space-y-6">
+      <h2 className="text-2xl font-bold mb-4">⑤ サブスク利用状況</h2>
 
-      <div className="rounded-xl p-5 bg-gradient-to-br from-slate-800/90 to-slate-700/80 shadow-lg shadow-slate-900/40 w-[98%] mx-auto transition-all duration-300">
-        <p className="text-xl font-semibold mb-4 text-white text-center">
-          現在利用中のサブスクサービスを選んでください（複数選択可）
+      {/* Q9 サブスク選択 */}
+      <div>
+        <p className="font-semibold mb-3">
+          1. 現在契約している、または今後契約予定のサブスクリプションサービスを選んでください（複数選択可）
         </p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {[
-            "Netflix",
-            "Amazon Prime",
-            "YouTube Premium",
-            "Apple Music",
-            "Spotify",
-            "Disney+",
-          ].map((service) => (
-            <button
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          {services.map((service) => (
+            <label
               key={service}
-              onClick={() => {
-                const current = answers.subscriptions || [];
-                const updated = current.includes(service)
-                  ? current.filter((s) => s !== service)
-                  : [...current, service];
-                onAnswer({ subscriptions: updated });
-              }}
-              className={`w-full py-3 rounded-lg border transition ${
-                answers.subscriptions?.includes(service)
-                  ? "bg-blue-600 border-blue-400 text-white"
-                  : "bg-slate-700 border-slate-600 hover:bg-slate-600 text-gray-200"
+              className={`flex items-center space-x-2 border rounded-lg px-3 py-2 cursor-pointer ${
+                subs.includes(service) ? "bg-blue-600 text-white" : "bg-slate-700 text-slate-200"
               }`}
             >
-              {service}
-            </button>
+              <input
+                type="checkbox"
+                checked={subs.includes(service)}
+                onChange={() => toggleSub(service)}
+                className="form-checkbox accent-blue-500"
+              />
+              <span>{service}</span>
+            </label>
           ))}
         </div>
       </div>
 
-      <div className="flex justify-between items-center pt-6">
-        <button
-          onClick={onBack}
-          className="px-4 py-2 rounded-full bg-slate-600 hover:bg-slate-500 text-sm"
-        >
-          戻る
-        </button>
-        <button
-          onClick={onNext}
-          className="px-8 py-3 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-lg font-semibold transition-all duration-300 shadow-lg shadow-blue-900/40"
-        >
-          次へ進む
-        </button>
-      </div>
+      {/* Q9-2 割引希望 */}
+      {subs.length > 0 && !subs.includes("特になし") && (
+        <div>
+          <p className="font-semibold mb-2">
+            2. 契約している（予定の）サブスクはキャリアセットでの割引を希望しますか？
+          </p>
+          <div className="space-y-2">
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="radio"
+                name="subsDiscountPreference"
+                value="はい"
+                checked={subsDiscountPreference === "はい"}
+                onChange={(e) => setSubsDiscountPreference(e.target.value)}
+              />
+              <span>はい（割引対象のキャリア・プランがあれば優先したい）</span>
+            </label>
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="radio"
+                name="subsDiscountPreference"
+                value="いいえ"
+                checked={subsDiscountPreference === "いいえ"}
+                onChange={(e) => setSubsDiscountPreference(e.target.value)}
+              />
+              <span>いいえ（サブスクは別で契約する予定）</span>
+            </label>
+          </div>
+        </div>
+      )}
+
+      <button
+        onClick={handleNext}
+        disabled={subs.length === 0 || (!subs.includes("特になし") && !subsDiscountPreference)}
+        className="mt-6 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+      >
+        次へ
+      </button>
     </div>
   );
 }

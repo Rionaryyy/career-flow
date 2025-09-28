@@ -1,84 +1,75 @@
 "use client";
 
+import { useState } from "react";
 import { Phase2Answers } from "@/types/types";
 
-type Phase2EcosystemProps = {
+interface Props {
   answers: Phase2Answers;
-  onAnswer: (partial: Partial<Phase2Answers>) => void;
-  onNext: () => void;
-  onBack: () => void;
-};
+  onChange: (updated: Partial<Phase2Answers>) => void;
+}
 
-export default function Phase2Ecosystem({
-  answers,
-  onAnswer,
-  onNext,
-  onBack,
-}: Phase2EcosystemProps) {
+
+export default function Phase2Ecosystem({ answers, onChange }: Props) {
+  const [ecosystem, setEcosystem] = useState<string | null>(null);
+  const [ecosystemMonthly, setEcosystemMonthly] = useState<string | null>(null);
+
+  const handleNext = () => {
+    onChange({
+      ecosystem,
+      ecosystemMonthly,
+    });
+  };
+
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-8 p-6">
-      <h2 className="text-3xl font-bold text-center text-white mb-4">
-        🌐 経済圏・ポイント利用状況
-      </h2>
+    <div className="p-6 space-y-6">
+      <h2 className="text-2xl font-bold mb-4">④ 経済圏・ポイント利用状況</h2>
 
-      {/* 経済圏を使っているか */}
-      <div className="rounded-xl p-5 bg-gradient-to-br from-slate-800/90 to-slate-700/80 shadow-lg w-[98%] mx-auto">
-        <p className="text-xl font-semibold mb-4 text-white text-center">
-          経済圏（楽天・au・ドコモなど）を活用していますか？
+      {/* Q8 経済圏選択 */}
+      <div>
+        <p className="font-semibold mb-2">
+          1. 現在よく利用している、または今後メインで使う可能性が高いポイント経済圏はどれですか？
         </p>
-        <div className="space-y-3">
-          {["はい", "いいえ"].map((option) => (
-            <button
-              key={option}
-              onClick={() => onAnswer({ usingEcosystem: option })}
-              className={`w-full py-3 rounded-lg border transition ${
-                answers.usingEcosystem === option
-                  ? "bg-blue-600 border-blue-400 text-white"
-                  : "bg-slate-700 border-slate-600 hover:bg-slate-600 text-gray-200"
-              }`}
-            >
-              {option}
-            </button>
-          ))}
-        </div>
+        <select
+          value={ecosystem || ""}
+          onChange={(e) => setEcosystem(e.target.value)}
+          className="border rounded p-2 w-full"
+        >
+          <option value="">選択してください</option>
+          <option value="rakuten">楽天経済圏（楽天カード・楽天市場など）</option>
+          <option value="docomo">dポイント（ドコモ・dカードなど）</option>
+          <option value="softbank">PayPay / ソフトバンク経済圏</option>
+          <option value="au">au PAY / Ponta経済圏</option>
+          <option value="none">特になし</option>
+        </select>
       </div>
 
-      {/* 毎月の経済圏利用額 */}
-      <div className="rounded-xl p-5 bg-gradient-to-br from-slate-800/90 to-slate-700/80 shadow-lg w-[98%] mx-auto">
-        <p className="text-xl font-semibold mb-4 text-white text-center">
-          毎月の経済圏での利用額（概算）を教えてください
-        </p>
-        <div className="space-y-3">
-          {["〜1万円", "1〜3万円", "3〜5万円", "5万円以上"].map((option) => (
-            <button
-              key={option}
-              onClick={() => onAnswer({ monthlyUsage: option })}
-              className={`w-full py-3 rounded-lg border transition ${
-                answers.monthlyUsage === option
-                  ? "bg-blue-600 border-blue-400 text-white"
-                  : "bg-slate-700 border-slate-600 hover:bg-slate-600 text-gray-200"
-              }`}
-            >
-              {option}
-            </button>
-          ))}
+      {/* Q8-2 利用額（「特になし」以外を選んだときだけ表示） */}
+      {ecosystem && ecosystem !== "none" && (
+        <div>
+          <p className="font-semibold mb-2">
+            2. その経済圏での月間利用額はどのくらいですか？（おおよそでOK）
+          </p>
+          <select
+            value={ecosystemMonthly || ""}
+            onChange={(e) => setEcosystemMonthly(e.target.value)}
+            className="border rounded p-2 w-full"
+          >
+            <option value="">選択してください</option>
+            <option value="~5000">〜5,000円</option>
+            <option value="5000-10000">5,000〜10,000円</option>
+            <option value="10000-30000">10,000〜30,000円</option>
+            <option value="30000+">30,000円以上</option>
+          </select>
         </div>
-      </div>
+      )}
 
-      <div className="flex justify-between items-center pt-6">
-        <button
-          onClick={onBack}
-          className="px-4 py-2 rounded-full bg-slate-600 hover:bg-slate-500 text-sm"
-        >
-          戻る
-        </button>
-        <button
-          onClick={onNext}
-          className="px-8 py-3 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-lg font-semibold transition-all duration-300 shadow-lg shadow-blue-900/40"
-        >
-          次へ進む
-        </button>
-      </div>
+      <button
+        onClick={handleNext}
+        disabled={!ecosystem || (ecosystem !== "none" && !ecosystemMonthly)}
+        className="mt-6 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+      >
+        次へ
+      </button>
     </div>
   );
 }

@@ -2,84 +2,81 @@
 
 import { useState } from "react";
 import { Phase2Answers } from "@/types/types";
-import { Button } from "@/components/ui/button";
 
 interface Props {
-  defaultValues: Phase2Answers;
-  onNext: (data: Partial<Phase2Answers>) => void;
-  onBack: () => void;
+  answers: Phase2Answers;
+  onChange: (updated: Partial<Phase2Answers>) => void;
 }
 
-export default function Phase2Contract({ defaultValues, onNext, onBack }: Props) {
-  const [familyLines, setFamilyLines] = useState(defaultValues.familyLines);
-  const [setDiscount, setSetDiscount] = useState(defaultValues.setDiscount);
-  const [infraSet, setInfraSet] = useState(defaultValues.infraSet);
 
-  const handleSubmit = () => {
-    onNext({ familyLines, setDiscount, infraSet });
+export default function Phase2Contract({ answers, onChange}: Props) {
+  const [familyLines, setFamilyLines] = useState<string | null>(null);
+  const [setDiscount, setSetDiscount] = useState<string | null>(null);
+  const [infraSet, setInfraSet] = useState<string | null>(null);
+
+  const handleNext = () => {
+    onChange({
+      familyLines,
+      setDiscount,
+      infraSet,
+    });
   };
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-6">③ 契約条件・割引系</h2>
+    <div className="p-6 space-y-6">
+      <h2 className="text-2xl font-bold mb-4">③ 契約条件・割引について</h2>
 
-      <div className="space-y-6">
-        <div>
-          <p className="font-semibold mb-2">1. 家族割引を適用できる回線数はどのくらいですか？</p>
-          {["1回線", "2回線", "3回線以上", "利用できない / わからない"].map(opt => (
-            <label key={opt} className="block">
-              <input
-                type="radio"
-                name="familyLines"
-                value={opt}
-                checked={familyLines === opt}
-                onChange={(e) => setFamilyLines(e.target.value)}
-                className="mr-2"
-              />
-              {opt}
-            </label>
-          ))}
-        </div>
-
-        <div>
-          <p className="font-semibold mb-2">2. 光回線とのセット割を適用できますか？</p>
-          {["はい（対象の光回線を契約予定・契約中）", "いいえ / わからない"].map(opt => (
-            <label key={opt} className="block">
-              <input
-                type="radio"
-                name="setDiscount"
-                value={opt}
-                checked={setDiscount === opt}
-                onChange={(e) => setSetDiscount(e.target.value)}
-                className="mr-2"
-              />
-              {opt}
-            </label>
-          ))}
-        </div>
-
-        <div>
-          <p className="font-semibold mb-2">3. 電気やガスなどのインフラサービスとのセット割を適用できますか？</p>
-          {["はい（対象サービスを契約予定・契約中）", "いいえ / わからない"].map(opt => (
-            <label key={opt} className="block">
-              <input
-                type="radio"
-                name="infraSet"
-                value={opt}
-                checked={infraSet === opt}
-                onChange={(e) => setInfraSet(e.target.value)}
-                className="mr-2"
-              />
-              {opt}
-            </label>
-          ))}
-        </div>
+      {/* Q5 家族割引 */}
+      <div>
+        <p className="font-semibold mb-2">1. 家族割引を適用できる回線数はどのくらいですか？</p>
+        <select
+          value={familyLines || ""}
+          onChange={(e) => setFamilyLines(e.target.value)}
+          className="border rounded p-2 w-full"
+        >
+          <option value="">選択してください</option>
+          <option value="1">1回線</option>
+          <option value="2">2回線</option>
+          <option value="3+">3回線以上</option>
+          <option value="none">利用できない / わからない</option>
+        </select>
       </div>
 
-      <div className="flex justify-between mt-10">
-        <Button variant="outline" onClick={onBack}>戻る</Button>
-        <Button onClick={handleSubmit}>次へ進む</Button>
+      {/* Q6 光回線セット割 */}
+      <div>
+        <p className="font-semibold mb-2">2. 光回線とのセット割を適用できますか？</p>
+        <select
+          value={setDiscount || ""}
+          onChange={(e) => setSetDiscount(e.target.value)}
+          className="border rounded p-2 w-full"
+        >
+          <option value="">選択してください</option>
+          <option value="yes">はい（契約中または契約予定）</option>
+          <option value="no">いいえ / わからない</option>
+        </select>
       </div>
+
+      {/* Q7 電気・ガスなどのセット割 */}
+      <div>
+        <p className="font-semibold mb-2">3. 電気やガスなどのインフラサービスとのセット割は適用できますか？</p>
+        <select
+          value={infraSet || ""}
+          onChange={(e) => setInfraSet(e.target.value)}
+          className="border rounded p-2 w-full"
+        >
+          <option value="">選択してください</option>
+          <option value="yes">はい（契約中または契約予定）</option>
+          <option value="no">いいえ / わからない</option>
+        </select>
+      </div>
+
+      <button
+        onClick={handleNext}
+        disabled={!familyLines}
+        className="mt-6 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+      >
+        次へ
+      </button>
     </div>
   );
 }

@@ -2,61 +2,76 @@
 
 import { useState } from "react";
 import { Phase2Answers } from "@/types/types";
-import { Button } from "@/components/ui/button";
 
 interface Props {
-  defaultValues: Phase2Answers;
-  onNext: (data: Partial<Phase2Answers>) => void;
-  onBack: () => void;
+  answers: Phase2Answers;
+  onChange: (updated: Partial<Phase2Answers>) => void;
 }
 
-const paymentOptions = [
-  "クレジットカード（楽天カード / dカード / au PAY カード / PayPayカード など）",
-  "デビットカード",
-  "銀行口座引き落とし",
-  "プリペイドカード / チャージ式決済",
-  "その他 / 特になし",
-];
 
-export default function Phase2Payment({ defaultValues, onNext, onBack }: Props) {
-  const [paymentMethods, setPaymentMethods] = useState<string[]>(defaultValues.paymentMethods || []);
+export default function Phase2Payment({ answers, onChange }: Props) {
+  const [paymentMethods, setPaymentMethods] = useState<string[]>([]);
 
-  const togglePayment = (option: string) => {
-    if (paymentMethods.includes(option)) {
-      setPaymentMethods(paymentMethods.filter(o => o !== option));
+  const toggleMethod = (method: string) => {
+    if (paymentMethods.includes(method)) {
+      setPaymentMethods(paymentMethods.filter((m) => m !== method));
     } else {
-      setPaymentMethods([...paymentMethods, option]);
+      setPaymentMethods([...paymentMethods, method]);
     }
   };
 
-  const handleSubmit = () => {
-    onNext({ paymentMethods });
+  const handleNext = () => {
+    onChange({
+      paymentMethods,
+    });
   };
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-6">⑧ 通信料金の支払い方法</h2>
+    <div className="p-6 space-y-6">
+      <h2 className="text-2xl font-bold mb-4">⑧ 支払い方法</h2>
 
+      {/* Q15 支払い方法の希望（複数選択可） */}
       <div>
-        <p className="font-semibold mb-2">1. 通信料金の支払いに利用予定の方法を選んでください（複数選択可）</p>
-        {paymentOptions.map(opt => (
-          <label key={opt} className="block">
-            <input
-              type="checkbox"
-              value={opt}
-              checked={paymentMethods.includes(opt)}
-              onChange={() => togglePayment(opt)}
-              className="mr-2"
-            />
-            {opt}
-          </label>
-        ))}
+        <p className="font-semibold mb-3">
+          1. 契約時・毎月の支払い方法として希望するものを選んでください（複数選択可）
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          {[
+            "クレジットカード",
+            "デビットカード",
+            "口座振替",
+            "キャリア決済",
+            "プリペイド・バンドルカード",
+            "ポイント残高支払い",
+            "その他（店舗支払いなど）",
+          ].map((method) => (
+            <label
+              key={method}
+              className={`flex items-center space-x-2 cursor-pointer px-3 py-2 rounded-lg ${
+                paymentMethods.includes(method)
+                  ? "bg-blue-600 text-white"
+                  : "bg-slate-700 text-slate-200"
+              }`}
+            >
+              <input
+                type="checkbox"
+                checked={paymentMethods.includes(method)}
+                onChange={() => toggleMethod(method)}
+                className="accent-blue-500"
+              />
+              <span>{method}</span>
+            </label>
+          ))}
+        </div>
       </div>
 
-      <div className="flex justify-between mt-10">
-        <Button variant="outline" onClick={onBack}>戻る</Button>
-        <Button onClick={handleSubmit}>診断結果を見る</Button>
-      </div>
+      <button
+        onClick={handleNext}
+        disabled={paymentMethods.length === 0}
+        className="mt-6 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+      >
+        診断結果へ
+      </button>
     </div>
   );
 }

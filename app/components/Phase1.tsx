@@ -1,15 +1,13 @@
-// app/components/Phase1.tsx
 "use client";
 
 import React from "react";
-import { DiagnosisAnswers, Phase1Answers } from "@/types/types";
+import { Phase1Answers } from "@/types/types";
 
-type Phase1Props = {
-  answers: DiagnosisAnswers["phase1"];
-  setAnswers: (newAnswers: Phase1Answers) => void;
-  onNext: () => void;
+export interface Phase1Props {   // ←ここ export を追加！
+  defaultValues: Phase1Answers;
+  onSubmit: (answers: Phase1Answers) => void;
   onBack?: () => void;
-};
+}
 
 const questions = [
   {
@@ -50,12 +48,14 @@ const questions = [
   },
 ];
 
-export default function Phase1({ answers, setAnswers, onNext, onBack }: Phase1Props) {
+export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props) {
+  const [answers, setAnswers] = React.useState<Phase1Answers>(defaultValues);
+
   const handleSelect = (id: string, option: string) => {
-    setAnswers({
-      ...answers,
+    setAnswers((prev) => ({
+      ...prev,
       [id]: option,
-    } as Phase1Answers);
+    }));
   };
 
   return (
@@ -63,10 +63,7 @@ export default function Phase1({ answers, setAnswers, onNext, onBack }: Phase1Pr
       <h2 className="text-3xl font-bold text-center text-white mb-4">📍 フェーズ①：前提条件</h2>
 
       {questions.map((q) => (
-        <div
-          key={q.id}
-          className="rounded-xl p-5 bg-gradient-to-br from-slate-800/90 to-slate-700/80 shadow-lg shadow-slate-900/40 w-[98%] mx-auto transition-all duration-300"
-        >
+        <div key={q.id} className="rounded-xl p-5 bg-gradient-to-br from-slate-800/90 to-slate-700/80 shadow-lg shadow-slate-900/40 w-[98%] mx-auto transition-all duration-300">
           <p className="text-xl font-semibold mb-4 text-white text-center">{q.question}</p>
           <div className="space-y-3">
             {q.options.map((option) => (
@@ -87,24 +84,20 @@ export default function Phase1({ answers, setAnswers, onNext, onBack }: Phase1Pr
       ))}
 
       <div className="flex justify-between items-center pt-6">
-        <div>
-          {onBack && (
-            <button
-              onClick={onBack}
-              className="px-4 py-2 rounded-full bg-slate-600 hover:bg-slate-500 text-sm"
-            >
-              戻る
-            </button>
-          )}
-        </div>
-        <div>
+        {onBack && (
           <button
-            onClick={onNext}
-            className="px-8 py-3 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-lg font-semibold transition-all duration-300 shadow-lg shadow-blue-900/40"
+            onClick={onBack}
+            className="px-4 py-2 rounded-full bg-slate-600 hover:bg-slate-500 text-sm"
           >
-            次へ進む
+            戻る
           </button>
-        </div>
+        )}
+        <button
+          onClick={() => onSubmit(answers)}
+          className="px-8 py-3 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-lg font-semibold transition-all duration-300 shadow-lg shadow-blue-900/40"
+        >
+          次へ進む
+        </button>
       </div>
     </div>
   );

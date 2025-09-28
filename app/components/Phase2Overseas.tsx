@@ -2,127 +2,168 @@
 
 import { useState } from "react";
 import { Phase2Answers } from "@/types/types";
-import { Button } from "@/components/ui/button";
 
 interface Props {
-  defaultValues: Phase2Answers;
-  onNext: (data: Partial<Phase2Answers>) => void;
-  onBack: () => void;
+  answers: Phase2Answers;
+  onChange: (updated: Partial<Phase2Answers>) => void;
 }
 
-const specialUseOptions = [
-  "副回線として安価なプランを探している（メインとは別）",
-  "法人契約または業務用利用を検討している",
-  "子ども・高齢者向けなど家族のサブ回線用途",
-  "IoT機器・見守り用など特殊用途",
-  "特になし",
-];
 
-export default function Phase2Overseas({ defaultValues, onNext, onBack }: Props) {
-  const [overseasUse, setOverseasUse] = useState(defaultValues.overseasUse);
-  const [overseasPreference, setOverseasPreference] = useState(defaultValues.overseasPreference);
-  const [dualSim, setDualSim] = useState(defaultValues.dualSim);
-  const [specialUses, setSpecialUses] = useState<string[]>(defaultValues.specialUses || []);
+export default function Phase2Call({ answers, onChange }: Props) {
 
-  const toggleSpecialUse = (option: string) => {
-    if (specialUses.includes(option)) {
-      setSpecialUses(specialUses.filter(o => o !== option));
+  const [overseasUse, setOverseasUse] = useState<string | null>(null);
+  const [overseasPreference, setOverseasPreference] = useState<string | null>(null);
+  const [dualSim, setDualSim] = useState<string | null>(null);
+  const [specialUses, setSpecialUses] = useState<string[]>([]);
+
+  const toggleSpecialUse = (use: string) => {
+    if (specialUses.includes(use)) {
+      setSpecialUses(specialUses.filter((u) => u !== use));
     } else {
-      if (option === "特になし") {
-        setSpecialUses(["特になし"]);
-      } else {
-        setSpecialUses(specialUses.filter(o => o !== "特になし").concat(option));
-      }
+      setSpecialUses([...specialUses, use]);
     }
   };
 
-  const handleSubmit = () => {
-    onNext({ overseasUse, overseasPreference, dualSim, specialUses });
+  const handleNext = () => {
+    onChange({
+      overseasUse,
+      overseasPreference,
+      dualSim,
+      specialUses,
+    });
   };
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-6">⑦ 海外利用・特殊ニーズ</h2>
+    <div className="p-6 space-y-6">
+      <h2 className="text-2xl font-bold mb-4">⑦ 海外利用・特殊ニーズ</h2>
 
-      <div className="space-y-6">
-        <div>
-          <p className="font-semibold mb-2">1. 海外でスマホを利用する予定はありますか？</p>
-          {["はい（短期旅行・年数回レベル）", "はい（長期滞在・留学・海外出張など）", "いいえ（国内利用のみ）"].map(opt => (
-            <label key={opt} className="block">
+      {/* Q12 海外利用予定 */}
+      <div>
+        <p className="font-semibold mb-3">1. 海外でスマホを利用する予定はありますか？</p>
+        <div className="space-y-2">
+          {[
+            "はい（短期旅行・年数回レベル）",
+            "はい（長期滞在・留学・海外出張など）",
+            "いいえ（国内利用のみ）",
+          ].map((option) => (
+            <label
+              key={option}
+              className={`flex items-center space-x-2 cursor-pointer px-3 py-2 rounded-lg ${
+                overseasUse === option ? "bg-blue-600 text-white" : "bg-slate-700 text-slate-200"
+              }`}
+            >
               <input
                 type="radio"
                 name="overseasUse"
-                value={opt}
-                checked={overseasUse === opt}
+                value={option}
+                checked={overseasUse === option}
                 onChange={(e) => setOverseasUse(e.target.value)}
-                className="mr-2"
+                className="accent-blue-500"
               />
-              {opt}
+              <span>{option}</span>
             </label>
           ))}
         </div>
+      </div>
 
-        {overseasUse && overseasUse !== "いいえ（国内利用のみ）" && (
-          <div>
-            <p className="font-semibold mb-2">2. 海外利用時の希望に近いものを選んでください</p>
+      {/* Q12-2 海外利用時の希望 */}
+      {overseasUse?.startsWith("はい") && (
+        <div>
+          <p className="font-semibold mb-3">2. 海外利用時の希望に近いものを選んでください</p>
+          <div className="space-y-2">
             {[
               "海外でも日本と同じように通信したい（ローミング含め使い放題が希望）",
               "現地でSNSや地図だけ使えればOK（低速・少量でも可）",
               "必要に応じて現地SIMを使うので、特に希望はない",
-            ].map(opt => (
-              <label key={opt} className="block">
+            ].map((option) => (
+              <label
+                key={option}
+                className={`flex items-center space-x-2 cursor-pointer px-3 py-2 rounded-lg ${
+                  overseasPreference === option
+                    ? "bg-blue-600 text-white"
+                    : "bg-slate-700 text-slate-200"
+                }`}
+              >
                 <input
                   type="radio"
                   name="overseasPreference"
-                  value={opt}
-                  checked={overseasPreference === opt}
+                  value={option}
+                  checked={overseasPreference === option}
                   onChange={(e) => setOverseasPreference(e.target.value)}
-                  className="mr-2"
+                  className="accent-blue-500"
                 />
-                {opt}
+                <span>{option}</span>
               </label>
             ))}
           </div>
-        )}
+        </div>
+      )}
 
-        <div>
-          <p className="font-semibold mb-2">3. デュアルSIM（2回線利用）を検討していますか？</p>
-          {["はい（メイン＋サブで使い分けたい）", "はい（海外用と国内用で使い分けたい）", "いいえ（1回線のみの予定）"].map(opt => (
-            <label key={opt} className="block">
+      {/* Q13 デュアルSIM */}
+      <div>
+        <p className="font-semibold mb-3">3. デュアルSIM（2回線利用）を検討していますか？</p>
+        <div className="space-y-2">
+          {[
+            "はい（メイン＋サブで使い分けたい）",
+            "はい（海外用と国内用で使い分けたい）",
+            "いいえ（1回線のみの予定）",
+          ].map((option) => (
+            <label
+              key={option}
+              className={`flex items-center space-x-2 cursor-pointer px-3 py-2 rounded-lg ${
+                dualSim === option ? "bg-blue-600 text-white" : "bg-slate-700 text-slate-200"
+              }`}
+            >
               <input
                 type="radio"
                 name="dualSim"
-                value={opt}
-                checked={dualSim === opt}
+                value={option}
+                checked={dualSim === option}
                 onChange={(e) => setDualSim(e.target.value)}
-                className="mr-2"
+                className="accent-blue-500"
               />
-              {opt}
+              <span>{option}</span>
             </label>
           ))}
         </div>
+      </div>
 
-        <div>
-          <p className="font-semibold mb-2">4. 特殊な利用目的がありますか？（複数選択可）</p>
-          {specialUseOptions.map(opt => (
-            <label key={opt} className="block">
+      {/* Q14 特殊な利用目的（複数選択） */}
+      <div>
+        <p className="font-semibold mb-3">4. 特殊な利用目的がありますか？（複数選択可）</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          {[
+            "副回線として安価なプランを探している（メインとは別）",
+            "法人契約または業務用利用を検討している",
+            "子ども・高齢者向けなど家族のサブ回線用途",
+            "IoT機器・見守り用など特殊用途",
+            "特になし",
+          ].map((use) => (
+            <label
+              key={use}
+              className={`flex items-center space-x-2 cursor-pointer px-3 py-2 rounded-lg ${
+                specialUses.includes(use) ? "bg-blue-600 text-white" : "bg-slate-700 text-slate-200"
+              }`}
+            >
               <input
                 type="checkbox"
-                value={opt}
-                checked={specialUses.includes(opt)}
-                onChange={() => toggleSpecialUse(opt)}
-                className="mr-2"
+                checked={specialUses.includes(use)}
+                onChange={() => toggleSpecialUse(use)}
+                className="accent-blue-500"
               />
-              {opt}
+              <span>{use}</span>
             </label>
           ))}
         </div>
       </div>
 
-      <div className="flex justify-between mt-10">
-        <Button variant="outline" onClick={onBack}>戻る</Button>
-        <Button onClick={handleSubmit}>次へ進む</Button>
-      </div>
+      <button
+        onClick={handleNext}
+        disabled={!overseasUse || !dualSim}
+        className="mt-6 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+      >
+        次へ
+      </button>
     </div>
   );
 }
