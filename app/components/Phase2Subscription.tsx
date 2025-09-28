@@ -1,80 +1,76 @@
 "use client";
 
-import { useState } from "react";
+import React from "react";
 import { Phase2Answers } from "@/types/types";
 
-interface Phase2SubscriptionProps {
-  onSubmit: (partial: Partial<Phase2Answers>) => void;
+export interface Phase2SubscriptionProps {
+  answers: Phase2Answers; // ✅ 追加
+  onAnswer: (partial: Partial<Phase2Answers>) => void;
+  onNext: () => void;
+  onBack: () => void;
 }
 
-export default function Phase2Subscription({ onSubmit }: Phase2SubscriptionProps) {
-  const [usingServices, setUsingServices] = useState<string[]>([]);
-  const [monthlySubscriptionCost, setMonthlySubscriptionCost] = useState<string | null>(null);
-
-  const toggleService = (service: string) => {
-    setUsingServices((prev) =>
-      prev.includes(service) ? prev.filter((s) => s !== service) : [...prev, service]
-    );
-  };
-
-  const handleSubmit = () => {
-    onSubmit({
-      usingServices,
-      monthlySubscriptionCost,
-    });
-  };
-
+export default function Phase2Subscription({
+  answers,
+  onAnswer,
+  onNext,
+  onBack,
+}: Phase2SubscriptionProps) {
   return (
-    <div className="space-y-6">
-      <h2 className="text-xl font-bold">④ サブスク利用状況</h2>
+    <div className="w-full max-w-4xl mx-auto space-y-8 p-6">
+      <h2 className="text-3xl font-bold text-center text-white mb-4">
+        📦 フェーズ②：サブスク・サービス利用状況
+      </h2>
 
-      {/* Q7 */}
-      <div>
-        <p className="font-semibold">Q7. 現在利用している定額サービスがあれば選択してください（複数選択可）</p>
-        <div className="space-y-2 mt-2">
+      <div className="rounded-xl p-5 bg-gradient-to-br from-slate-800/90 to-slate-700/80 shadow-lg shadow-slate-900/40 w-[98%] mx-auto transition-all duration-300">
+        <p className="text-xl font-semibold mb-4 text-white text-center">
+          現在利用中のサブスクサービスを選んでください（複数選択可）
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {[
             "Netflix",
-            "YouTube Premium",
             "Amazon Prime",
-            "Apple One",
+            "YouTube Premium",
+            "Apple Music",
             "Spotify",
-            "LINE MUSIC",
-            "なし",
+            "Disney+",
           ].map((service) => (
-            <label key={service} className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                checked={usingServices.includes(service)}
-                onChange={() => toggleService(service)}
-              />
-              <span>{service}</span>
-            </label>
+            <button
+              key={service}
+              onClick={() => {
+                const current = answers.subscriptions || [];
+                const updated = current.includes(service)
+                  ? current.filter((s) => s !== service)
+                  : [...current, service];
+                onAnswer({ subscriptions: updated });
+              }}
+              className={`w-full py-3 rounded-lg border transition ${
+                answers.subscriptions?.includes(service)
+                  ? "bg-blue-600 border-blue-400 text-white"
+                  : "bg-slate-700 border-slate-600 hover:bg-slate-600 text-gray-200"
+              }`}
+            >
+              {service}
+            </button>
           ))}
         </div>
       </div>
 
-      {/* Q8 */}
-      <div>
-        <p className="font-semibold">Q8. サブスク全体で月額いくらくらい支払っていますか？</p>
-        <select
-          value={monthlySubscriptionCost ?? ""}
-          onChange={(e) => setMonthlySubscriptionCost(e.target.value)}
-          className="w-full mt-2 border rounded p-2"
+      <div className="flex justify-between items-center pt-6">
+        <button
+          onClick={onBack}
+          className="px-4 py-2 rounded-full bg-slate-600 hover:bg-slate-500 text-sm"
         >
-          <option value="">選択してください</option>
-          <option value="0〜500円">0〜500円</option>
-          <option value="500〜1,000円">500〜1,000円</option>
-          <option value="1,000〜2,000円">1,000〜2,000円</option>
-          <option value="2,000円以上">2,000円以上</option>
-        </select>
+          戻る
+        </button>
+        <button
+          onClick={onNext}
+          className="px-8 py-3 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-lg font-semibold transition-all duration-300 shadow-lg shadow-blue-900/40"
+        >
+          次へ進む
+        </button>
       </div>
-
-      <button
-        onClick={handleSubmit}
-        className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-      >
-        次へ進む
-      </button>
     </div>
   );
 }

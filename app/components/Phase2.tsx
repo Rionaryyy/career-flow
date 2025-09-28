@@ -21,8 +21,19 @@ export default function Phase2({ answers, setAnswers, onNext, onBack }: Phase2Pr
       <h2 className="text-2xl font-bold text-center mb-6">詳細条件を入力</h2>
 
       {/* ✅ サブセクションごとに onAnswer を渡す */}
-      <Phase2Ecosystem answers={answers} onAnswer={handleAnswer} />
-      <Phase2Subscription answers={answers} onAnswer={handleAnswer} />
+      <Phase2Ecosystem 
+  answers={answers} 
+  onAnswer={handleAnswer} 
+  onNext={onNext}      // ✅ 追加
+  onBack={onBack}      // ✅ 追加
+/>
+
+<Phase2Subscription 
+  answers={answers} 
+  onAnswer={handleAnswer} 
+  onNext={onNext}      // ✅ 追加
+  onBack={onBack}      // ✅ 追加
+/>
 
       <div className="flex justify-between mt-8">
         <button
