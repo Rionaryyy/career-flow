@@ -42,6 +42,9 @@ export interface Phase2Answers {
   usingServices: string[] | null;
   monthlySubscriptionCost: string | null;
 
+  // ✅ 追加（Phase2Subscription.tsxで使うsubscriptions対応）
+  subscriptions: string[] | null;
+
   // ⑥ 端末・購入形態
   buyingDevice: string | null;
   devicePurchaseMethods: string[] | null;
