@@ -1,11 +1,10 @@
 "use client";
-
-import React, { useState } from "react";
-import Start from "./Start";
+import { useState } from "react";
 import Phase1 from "./Phase1";
 import Phase2 from "./Phase2";
 import Result from "./Result";
-import { DiagnosisAnswers, Phase1Answers, Phase2Answers } from "@/types/types";
+import Start from "./Start";
+import { DiagnosisAnswers } from "@/types/types";
 
 export default function DiagnosisFlow() {
   const [step, setStep] = useState<"start" | "phase1" | "phase2" | "result">("start");
@@ -45,7 +44,7 @@ export default function DiagnosisFlow() {
   });
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="max-w-3xl mx-auto p-4">
       {step === "start" && <Start onNext={() => setStep("phase1")} />}
 
       {step === "phase1" && (
@@ -56,7 +55,7 @@ export default function DiagnosisFlow() {
               ...prev,
               phase1:
                 typeof updater === "function"
-                  ? (updater as (prev: Phase1Answers) => Phase1Answers)(prev.phase1)
+                  ? (updater as any)(prev.phase1)
                   : updater,
             }))
           }
@@ -73,7 +72,7 @@ export default function DiagnosisFlow() {
               ...prev,
               phase2:
                 typeof updater === "function"
-                  ? (updater as (prev: Phase2Answers) => Phase2Answers)(prev.phase2)
+                  ? (updater as any)(prev.phase2)
                   : updater,
             }))
           }
