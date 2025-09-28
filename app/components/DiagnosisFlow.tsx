@@ -18,42 +18,46 @@ export default function DiagnosisFlow() {
       contractLockPreference: null,
     },
     phase2: {
-      dataUsage: null,
-      speedLimitImportance: null,
-      tetheringNeeded: null,
-      tetheringUsage: null,
+  dataUsage: null,
+  speedLimitImportance: null,
+  tetheringNeeded: null,
+  tetheringUsage: null,
 
-      callFrequency: null,
-      callPriority: null,
-      callOptionsNeeded: null,
-      callPurpose: null,
+  callFrequency: null,
+  callPriority: null,
+  callOptionsNeeded: null,
+  callPurpose: null,
 
-      familyLines: null,
-      setDiscount: null,
-      infraSet: null,
+  familyLines: null,
+  setDiscount: null,
+  infraSet: null,
 
-      ecosystem: null,
-      ecosystemMonthly: null,
+  ecosystem: null,
+  ecosystemMonthly: null,
 
-      subs: null,
-      subsDiscountPreference: null,
+  subs: null,
+  subsDiscountPreference: null,
 
-      buyingDevice: null,
-      devicePurchaseMethods: null,
+  buyingDevice: null,
+  devicePurchaseMethods: null,
 
-      overseasUse: null,
-      overseasPreference: null,
-      dualSim: null,
-      specialUses: null,
+  overseasUse: null,
+  overseasPreference: null,
+  dualSim: null,
+  specialUses: null,
 
-      paymentMethods: null,
+  paymentMethods: null,
 
-      // 🔥 Phase2Answers の必須プロパティをすべて初期化
-      usingEcosystem: null,
-      monthlyUsage: null,
-      usingServices: null,
-      monthlySubscriptionCost: null,
-    },
+  // ✅ 必須プロパティをすべて初期化
+  usingEcosystem: null,
+  monthlyUsage: null,
+  usingServices: null,
+  monthlySubscriptionCost: null,
+
+  // 🩹 これを追加！
+  subscriptions: null,
+},
+
   });
 
   return (
