@@ -1,115 +1,115 @@
-// test change
-// force update 2025-09-28
-
 "use client";
 
 import { useState } from "react";
 import Phase1 from "./Phase1";
 import Phase2 from "./Phase2";
 import Result from "./Result";
-import type { DiagnosisAnswers, Phase1Answers, Phase2Answers } from "@/types/types";
-
-type Step =
-  | "start"
-  | "phase1"
-  | "phase2-data"
-  | "phase2-call"
-  | "phase2-contract"
-  | "phase2-ecosystem"
-  | "phase2-subscription"
-  | "phase2-device"
-  | "phase2-overseas"
-  | "phase2-payment"
-  | "result";
+import { Phase1Answers, Phase2Answers, DiagnosisAnswers } from "@/types/types";
 
 export default function DiagnosisFlow() {
-  const [step, setStep] = useState<Step>("start");
-
-  const initialPhase1: Phase1Answers = {
-    includePoints: null,
-    networkQuality: null,
-    carrierType: null,
-    supportPreference: null,
-    contractLockPreference: null,
-  };
-
-  const initialPhase2: Phase2Answers = {
-    dataUsage: null,
-    speedLimitImportance: null,
-    tetheringNeeded: null,
-    tetheringUsage: null,
-    callFrequency: null,
-    callPriority: null,
-    callOptionsNeeded: null,
-    callPurpose: null,
-    familyLines: null,
-    setDiscount: null,
-    infraSet: null,
-    ecosystem: null,
-    ecosystemMonthly: null,
-    usingEcosystem: null,
-    monthlyUsage: null,
-    subs: null,
-    subsDiscountPreference: null,
-    usingServices: null,
-    monthlySubscriptionCost: null,
-    subscriptions: null,
-    buyingDevice: null,
-    devicePurchaseMethods: null,
-    overseasUse: null,
-    overseasPreference: null,
-    dualSim: null,
-    specialUses: null,
-    paymentMethods: null,
-  };
+  const [step, setStep] = useState<"start" | "phase1" | "phase2" | "result">("start");
 
   const [answers, setAnswers] = useState<DiagnosisAnswers>({
-    phase1: initialPhase1,
-    phase2: initialPhase2,
+    phase1: {
+      includePoints: null,
+      networkQuality: null,
+      carrierType: null,
+      supportPreference: null,
+      contractLockPreference: null,
+    },
+    phase2: {
+      // ① データ通信ニーズ
+      dataUsage: null,
+      speedLimitImportance: null,
+      tetheringNeeded: null,
+      tetheringUsage: null,
+
+      // ② 通話
+      callFrequency: null,
+      callPriority: null,
+      callOptionsNeeded: null,
+      callPurpose: null,
+
+      // ③ 契約条件・割引
+      familyLines: null,
+      setDiscount: null,
+      infraSet: null,
+
+      // ④ 経済圏・ポイント
+      ecosystem: null,
+      ecosystemMonthly: null,
+      usingEcosystem: null,
+      monthlyUsage: null,
+
+      // ⑤ サブスク
+      subs: null,
+      subsDiscountPreference: null,
+      usingServices: null,
+      monthlySubscriptionCost: null,
+      subscriptions: null,
+
+      // ⑥ 端末・購入形態
+      buyingDevice: null,
+      devicePurchaseMethods: null,
+
+      // ⑦ 海外利用・特殊ニーズ
+      overseasUse: null,
+      overseasPreference: null,
+      dualSim: null,
+      specialUses: null,
+
+      // ⑧ 支払い方法
+      paymentMethods: null,
+    },
   });
 
-  // ✅ Phase2用アップデート関数（Partial対応）
-  const updatePhase2Answers = (partial: Partial<Phase2Answers>) => {
-    setAnswers((prev) => ({
-      ...prev,
-      phase2: { ...prev.phase2, ...partial },
-    }));
+  const handlePhase1Submit = (phase1Answers: Phase1Answers) => {
+    setAnswers((prev) => ({ ...prev, phase1: phase1Answers }));
+    setStep("phase2");
+  };
+
+  const handlePhase2Submit = (phase2Answers: Phase2Answers) => {
+    setAnswers((prev) => ({ ...prev, phase2: phase2Answers }));
+    setStep("result");
   };
 
   return (
-    <div className="min-h-screen p-4">
+    <div className="max-w-3xl mx-auto px-4 py-10">
       {step === "start" && (
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-6">キャリア診断をはじめよう</h1>
+        <div className="text-center space-y-6">
+          <h1 className="text-4xl font-bold text-white">📱 キャリア診断スタート</h1>
+          <p className="text-slate-300">
+            いくつかの質問に答えるだけで、あなたに最適な通信キャリアとプランを診断します。
+          </p>
           <button
             onClick={() => setStep("phase1")}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow-lg hover:bg-blue-500 transition"
+            className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white text-lg rounded-2xl shadow-lg transition-all"
           >
-            診断を開始する!
+            診断を始める
           </button>
         </div>
       )}
 
       {step === "phase1" && (
         <Phase1
-          answers={answers.phase1}
-          setAnswers={(newAnswers) =>
-            setAnswers((prev) => ({ ...prev, phase1: newAnswers }))
-          }
-          onNext={() => setStep("phase2-data")}
+          onSubmit={handlePhase1Submit}
+          defaultValues={answers.phase1}
         />
       )}
 
-      {step.startsWith("phase2") && (
+      {step === "phase2" && (
         <Phase2
-          answers={answers.phase2}
-          setAnswers={updatePhase2Answers}
-          onNext={() => setStep("result")}
-          onBack={() => setStep("phase1")}
+          onSubmit={handlePhase2Submit}
+          defaultValues={answers.phase2}
         />
       )}
 
-      {step === "result" && <Result answers={answers} />}
+      {step === "result" && (
+        <Result
+          answers={answers}
+          onRestart={() => setStep("start")}
+        />
+      )}
     </div>
   );
 }
