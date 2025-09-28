@@ -91,11 +91,11 @@ export default function DiagnosisFlow() {
       )}
 
       {step === "phase1" && (
-        <Phase1
-          onSubmit={handlePhase1Submit}
-          defaultValues={answers.phase1}
-        />
-      )}
+  <Phase1
+    defaultValues={answers.phase1}
+    onSubmit={handlePhase1Submit}
+  />
+)}
 
       {step === "phase2" && (
         <Phase2
