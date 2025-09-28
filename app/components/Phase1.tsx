@@ -6,7 +6,7 @@ import { DiagnosisAnswers, Phase1Answers } from "@/types/types";
 
 type Phase1Props = {
   answers: DiagnosisAnswers["phase1"];
-  setAnswers: React.Dispatch<React.SetStateAction<DiagnosisAnswers["phase1"]>>;
+  setAnswers: (newAnswers: Phase1Answers) => void;
   onNext: () => void;
   onBack?: () => void;
 };
@@ -51,6 +51,13 @@ const questions = [
 ];
 
 export default function Phase1({ answers, setAnswers, onNext, onBack }: Phase1Props) {
+  const handleSelect = (id: string, option: string) => {
+    setAnswers({
+      ...answers,
+      [id]: option,
+    } as Phase1Answers);
+  };
+
   return (
     <div className="w-full max-w-4xl mx-auto space-y-8 p-6">
       <h2 className="text-3xl font-bold text-center text-white mb-4">📍 フェーズ①：前提条件</h2>
@@ -65,13 +72,7 @@ export default function Phase1({ answers, setAnswers, onNext, onBack }: Phase1Pr
             {q.options.map((option) => (
               <button
                 key={option}
-                onClick={() =>
-                  setAnswers((prev) => ({
-                    ...prev,
-                    // keyof Phase1Answers として扱えるようキャスト
-                    [q.id]: option,
-                  } as unknown as Phase1Answers))
-                }
+                onClick={() => handleSelect(q.id, option)}
                 className={`w-full py-3 rounded-lg border transition ${
                   answers[q.id as keyof typeof answers] === option
                     ? "bg-blue-600 border-blue-400 text-white"

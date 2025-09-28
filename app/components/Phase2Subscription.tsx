@@ -4,71 +4,74 @@ import { useState } from "react";
 import { Phase2Answers } from "@/types/types";
 
 interface Phase2SubscriptionProps {
-  onAnswer: (answers: Partial<Phase2Answers>) => void;
-  defaultValues?: Phase2Answers;
+  onSubmit: (partial: Partial<Phase2Answers>) => void;
 }
 
-export default function Phase2Subscription({
-  onAnswer,
-  defaultValues,
-}: Phase2SubscriptionProps) {
-  const [subs, setSubs] = useState<string[]>(defaultValues?.subs || []);
-  const [subsDiscountPreference, setSubsDiscountPreference] = useState<string | null>(
-    defaultValues?.subsDiscountPreference || null
-  );
+export default function Phase2Subscription({ onSubmit }: Phase2SubscriptionProps) {
+  const [usingServices, setUsingServices] = useState<string[]>([]);
+  const [monthlySubscriptionCost, setMonthlySubscriptionCost] = useState<string | null>(null);
 
-  const handleSubsChange = (sub: string) => {
-    setSubs((prev) =>
-      prev.includes(sub) ? prev.filter((s) => s !== sub) : [...prev, sub]
+  const toggleService = (service: string) => {
+    setUsingServices((prev) =>
+      prev.includes(service) ? prev.filter((s) => s !== service) : [...prev, service]
     );
   };
 
   const handleSubmit = () => {
-    onAnswer({
-      subs,
-      subsDiscountPreference,
+    onSubmit({
+      usingServices,
+      monthlySubscriptionCost,
     });
   };
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-bold">サブスクサービスの利用について</h2>
+    <div className="space-y-6">
+      <h2 className="text-xl font-bold">④ サブスク利用状況</h2>
 
-      <div className="space-y-2">
-        <p>利用している（または利用予定）のあるサブスクを選んでください：</p>
-        <div className="flex flex-col space-y-2">
-          {["Netflix", "YouTube Premium", "Amazon Prime", "Apple Music"].map(
-            (sub) => (
-              <label key={sub} className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  checked={subs.includes(sub)}
-                  onChange={() => handleSubsChange(sub)}
-                />
-                <span>{sub}</span>
-              </label>
-            )
-          )}
+      {/* Q7 */}
+      <div>
+        <p className="font-semibold">Q7. 現在利用している定額サービスがあれば選択してください（複数選択可）</p>
+        <div className="space-y-2 mt-2">
+          {[
+            "Netflix",
+            "YouTube Premium",
+            "Amazon Prime",
+            "Apple One",
+            "Spotify",
+            "LINE MUSIC",
+            "なし",
+          ].map((service) => (
+            <label key={service} className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={usingServices.includes(service)}
+                onChange={() => toggleService(service)}
+              />
+              <span>{service}</span>
+            </label>
+          ))}
         </div>
       </div>
 
-      <div className="space-y-2">
-        <p>サブスク割引（セット割）を重視しますか？</p>
+      {/* Q8 */}
+      <div>
+        <p className="font-semibold">Q8. サブスク全体で月額いくらくらい支払っていますか？</p>
         <select
-          value={subsDiscountPreference || ""}
-          onChange={(e) => setSubsDiscountPreference(e.target.value || null)}
-          className="border p-2 rounded"
+          value={monthlySubscriptionCost ?? ""}
+          onChange={(e) => setMonthlySubscriptionCost(e.target.value)}
+          className="w-full mt-2 border rounded p-2"
         >
           <option value="">選択してください</option>
-          <option value="重視する">重視する</option>
-          <option value="あまり重視しない">あまり重視しない</option>
+          <option value="0〜500円">0〜500円</option>
+          <option value="500〜1,000円">500〜1,000円</option>
+          <option value="1,000〜2,000円">1,000〜2,000円</option>
+          <option value="2,000円以上">2,000円以上</option>
         </select>
       </div>
 
       <button
-        type="button"
         onClick={handleSubmit}
-        className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+        className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
       >
         次へ進む
       </button>

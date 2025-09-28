@@ -2,74 +2,67 @@
 
 import { useState } from "react";
 import { Phase2Answers } from "@/types/types";
-import { Button } from "@/components/ui/button";
 
-interface Props {
-  defaultValues: Phase2Answers;
-  onNext: (data: Partial<Phase2Answers>) => void;
-  onBack: () => void;
+interface Phase2EcosystemProps {
+  onSubmit: (partial: Partial<Phase2Answers>) => void;
 }
 
-export default function Phase2Ecosystem({ defaultValues, onNext, onBack }: Props) {
-  const [ecosystem, setEcosystem] = useState(defaultValues.ecosystem);
-  const [ecosystemMonthly, setEcosystemMonthly] = useState(defaultValues.ecosystemMonthly);
+export default function Phase2Ecosystem({ onSubmit }: Phase2EcosystemProps) {
+  const [usingEcosystem, setUsingEcosystem] = useState<string | null>(null);
+  const [monthlyUsage, setMonthlyUsage] = useState<string | null>(null);
 
   const handleSubmit = () => {
-    onNext({ ecosystem, ecosystemMonthly });
+    onSubmit({
+      usingEcosystem,
+      monthlyUsage,
+    });
   };
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-6">④ 経済圏・ポイント利用状況</h2>
+    <div className="space-y-6">
+      <h2 className="text-xl font-bold">③ 経済圏・ポイント利用</h2>
 
-      <div className="space-y-6">
+      {/* Q5 */}
+      <div>
+        <p className="font-semibold">Q5. 現在利用しているポイント経済圏はありますか？</p>
+        <select
+          value={usingEcosystem ?? ""}
+          onChange={(e) => setUsingEcosystem(e.target.value)}
+          className="w-full mt-2 border rounded p-2"
+        >
+          <option value="">選択してください</option>
+          <option value="楽天">楽天経済圏</option>
+          <option value="PayPay">PayPay経済圏</option>
+          <option value="dポイント">dポイント経済圏</option>
+          <option value="au PAY">au PAY経済圏</option>
+          <option value="特に使っていない">特に利用していない</option>
+        </select>
+      </div>
+
+      {/* Q6 */}
+      {usingEcosystem && usingEcosystem !== "特に使っていない" && (
         <div>
-          <p className="font-semibold mb-2">1. 現在よく利用している、または今後メインで使う可能性が高いポイント経済圏はどれですか？</p>
-          {[
-            "楽天経済圏（楽天カード・楽天市場など）",
-            "dポイント（ドコモ・dカードなど）",
-            "PayPay / ソフトバンク経済圏",
-            "au PAY / Ponta経済圏",
-            "特になし",
-          ].map(opt => (
-            <label key={opt} className="block">
-              <input
-                type="radio"
-                name="ecosystem"
-                value={opt}
-                checked={ecosystem === opt}
-                onChange={(e) => setEcosystem(e.target.value)}
-                className="mr-2"
-              />
-              {opt}
-            </label>
-          ))}
+          <p className="font-semibold">Q6. その経済圏での月間利用額に近いものを選んでください</p>
+          <select
+            value={monthlyUsage ?? ""}
+            onChange={(e) => setMonthlyUsage(e.target.value)}
+            className="w-full mt-2 border rounded p-2"
+          >
+            <option value="">選択してください</option>
+            <option value="〜5,000円">〜5,000円</option>
+            <option value="5,000〜10,000円">5,000〜10,000円</option>
+            <option value="10,000〜30,000円">10,000〜30,000円</option>
+            <option value="30,000円以上">30,000円以上</option>
+          </select>
         </div>
+      )}
 
-        {ecosystem && ecosystem !== "特になし" && (
-          <div>
-            <p className="font-semibold mb-2">2. その経済圏での月間利用額はどのくらいですか？</p>
-            {["〜5,000円", "5,000〜10,000円", "10,000〜30,000円", "30,000円以上"].map(opt => (
-              <label key={opt} className="block">
-                <input
-                  type="radio"
-                  name="ecosystemMonthly"
-                  value={opt}
-                  checked={ecosystemMonthly === opt}
-                  onChange={(e) => setEcosystemMonthly(e.target.value)}
-                  className="mr-2"
-                />
-                {opt}
-              </label>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div className="flex justify-between mt-10">
-        <Button variant="outline" onClick={onBack}>戻る</Button>
-        <Button onClick={handleSubmit}>次へ進む</Button>
-      </div>
+      <button
+        onClick={handleSubmit}
+        className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+      >
+        次へ進む
+      </button>
     </div>
   );
 }

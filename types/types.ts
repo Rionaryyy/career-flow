@@ -30,9 +30,17 @@ export interface Phase2Answers {
   ecosystem: string | null;
   ecosystemMonthly: string | null;
 
+  // ✅ 追加（Phase2Ecosystem用）
+  usingEcosystem: string | null;
+  monthlyUsage: string | null;
+
   // ⑤ サブスク
   subs: string[] | null;
   subsDiscountPreference: string | null;
+
+  // ✅ 追加（Phase2Subscription用）
+  usingServices: string[] | null;
+  monthlySubscriptionCost: string | null;
 
   // ⑥ 端末・購入形態
   buyingDevice: string | null;

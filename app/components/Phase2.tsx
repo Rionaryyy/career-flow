@@ -1,73 +1,43 @@
 "use client";
 
-import { Phase2Answers } from "@/types/types";
-import Phase2Data from "./Phase2Data";
-import Phase2Call from "./Phase2Call";
-import Phase2Contract from "./Phase2Contract";
-// ✅ ファイル名修正：存在するファイル名に合わせて "Phase2Economy" → "Phase2Ecosystem" に変更（存在しないなら作るかコメントアウト）
 import Phase2Ecosystem from "./Phase2Ecosystem";
 import Phase2Subscription from "./Phase2Subscription";
-import Phase2Device from "./Phase2Device";
-import Phase2Overseas from "./Phase2Overseas";
-import Phase2Payment from "./Phase2Payment";
-import { useState } from "react";
+import { Phase2Answers } from "@/types/types";
 
 interface Phase2Props {
   answers: Phase2Answers;
-  setAnswers: (
-    updater:
-      | Partial<Phase2Answers>
-      | ((prev: Phase2Answers) => Phase2Answers)
-  ) => void;
+  setAnswers: (partial: Partial<Phase2Answers>) => void;
   onNext: () => void;
   onBack: () => void;
 }
 
-const steps = [
-  Phase2Data,
-  Phase2Call,
-  Phase2Contract,
-  Phase2Ecosystem, // ✅ 修正済み
-  Phase2Subscription,
-  Phase2Device,
-  Phase2Overseas,
-  Phase2Payment,
-];
-
-export default function Phase2({
-  answers,
-  setAnswers,
-  onNext,
-  onBack,
-}: Phase2Props) {
-  const [stepIndex, setStepIndex] = useState(0);
-  const StepComponent = steps[stepIndex];
-
-  const goNext = () => {
-    if (stepIndex < steps.length - 1) {
-      setStepIndex(stepIndex + 1);
-    } else {
-      onNext();
-    }
-  };
-
-  const goBack = () => {
-    if (stepIndex > 0) {
-      setStepIndex(stepIndex - 1);
-    } else {
-      onBack();
-    }
+export default function Phase2({ answers, setAnswers, onNext, onBack }: Phase2Props) {
+  const handleAnswer = (partial: Partial<Phase2Answers>) => {
+    setAnswers(partial);
   };
 
   return (
-    <StepComponent
-      defaultValues={answers}
-      // ✅ 型指定を追加して「暗黙的 any」エラーを解消
-      onAnswer={(partial: Partial<Phase2Answers>) =>
-        setAnswers((prev) => ({ ...prev, ...partial }))
-      }
-      onNext={goNext}
-      onBack={goBack}
-    />
+    <div className="space-y-8">
+      <h2 className="text-2xl font-bold text-center mb-6">詳細条件を入力</h2>
+
+      {/* ✅ サブセクションごとに onAnswer を渡す */}
+      <Phase2Ecosystem answers={answers} onAnswer={handleAnswer} />
+      <Phase2Subscription answers={answers} onAnswer={handleAnswer} />
+
+      <div className="flex justify-between mt-8">
+        <button
+          onClick={onBack}
+          className="px-6 py-3 bg-gray-300 rounded-lg hover:bg-gray-400 transition"
+        >
+          戻る
+        </button>
+        <button
+          onClick={onNext}
+          className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+        >
+          結果を見る
+        </button>
+      </div>
+    </div>
   );
 }
