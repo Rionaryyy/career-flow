@@ -85,7 +85,7 @@ export default function DiagnosisFlow() {
             onClick={() => setStep("phase1")}
             className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow-lg hover:bg-blue-500 transition"
           >
-            診断を開始する
+            診断を開始する!
           </button>
         </div>
       )}
