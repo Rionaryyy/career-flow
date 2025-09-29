@@ -10,7 +10,9 @@ interface Props {
 
 export default function Phase2Subscription({ answers, onChange }: Props) {
   const [subs, setSubs] = useState<string[]>(answers.subscriptionServices || []);
-  const [subsDiscountPreference, setSubsDiscountPreference] = useState<string | null>(answers.subscriptionMonthly || null);
+  const [subsDiscountPreference, setSubsDiscountPreference] = useState<string | null>(
+    answers.subscriptionMonthly || null
+  );
 
   const services = [
     "Netflix",
@@ -42,16 +44,18 @@ export default function Phase2Subscription({ answers, onChange }: Props) {
   }, [subs, subsDiscountPreference, onChange]);
 
   return (
-    <div className="w-full p-6 space-y-6">
-      <h2 className="text-2xl font-bold mb-4">⑤ サブスク利用状況</h2>
+    <div className="w-full px-2 sm:px-4 py-6 space-y-4">
+      <h2 className="text-3xl font-bold text-center text-white mb-4">⑤ サブスク利用状況</h2>
 
-      <div>
-        <p className="font-semibold mb-3">契約中または契約予定のサブスクサービスを選択（複数可）</p>
+      <div className="w-full bg-slate-800/90 p-4 rounded-xl border border-slate-600 space-y-2">
+        <p className="text-xl font-semibold text-white text-center mb-2">
+          契約中または契約予定のサブスクサービスを選択（複数可）
+        </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           {services.map((service) => (
             <label
               key={service}
-              className={`flex items-center space-x-2 border rounded-lg px-3 py-2 cursor-pointer ${
+              className={`flex items-center w-full cursor-pointer py-2 px-3 rounded-lg ${
                 subs.includes(service) ? "bg-blue-600 text-white" : "bg-slate-700 text-slate-200"
               }`}
             >
@@ -59,7 +63,7 @@ export default function Phase2Subscription({ answers, onChange }: Props) {
                 type="checkbox"
                 checked={subs.includes(service)}
                 onChange={() => toggleSub(service)}
-                className="form-checkbox accent-blue-500"
+                className="accent-blue-500 mr-2"
               />
               <span>{service}</span>
             </label>

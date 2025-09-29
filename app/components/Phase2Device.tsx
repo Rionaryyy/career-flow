@@ -28,15 +28,16 @@ export default function Phase2Device({ answers, onChange }: Props) {
   }, [buyingDevice, devicePurchaseMethods, onChange]);
 
   return (
-    <div className="w-full p-6 space-y-6">
-      <h2 className="text-2xl font-bold mb-4">⑥ 端末・購入形態</h2>
+    <div className="w-full px-2 sm:px-4 py-6 space-y-4">
+      <h2 className="text-3xl font-bold text-center text-white mb-4">⑥ 端末・購入形態</h2>
 
-      <div>
-        <p className="font-semibold mb-3">1. 新しい端末も一緒に購入する予定ですか？</p>
+      {/* 新端末購入 */}
+      <div className="w-full bg-slate-800/90 p-4 rounded-xl border border-slate-600 space-y-2">
+        <p className="text-xl font-semibold text-white text-center mb-2">1. 新しい端末も一緒に購入する予定ですか？</p>
         {["はい（端末も一緒に購入する）", "いいえ（SIMのみ契約する予定）"].map((option) => (
           <label
             key={option}
-            className={`flex items-center space-x-2 cursor-pointer px-3 py-2 rounded-lg ${
+            className={`flex items-center w-full cursor-pointer py-2 px-3 rounded-lg ${
               buyingDevice === option ? "bg-blue-600 text-white" : "bg-slate-700 text-slate-200"
             }`}
           >
@@ -46,16 +47,17 @@ export default function Phase2Device({ answers, onChange }: Props) {
               value={option}
               checked={buyingDevice === option}
               onChange={(e) => setBuyingDevice(e.target.value)}
-              className="accent-blue-500"
+              className="accent-blue-500 mr-2"
             />
             <span>{option}</span>
           </label>
         ))}
       </div>
 
+      {/* 端末購入方法 */}
       {buyingDevice === "はい（端末も一緒に購入する）" && (
-        <div>
-          <p className="font-semibold mb-3">2. 端末の購入方法（複数選択可）</p>
+        <div className="w-full bg-slate-800/90 p-4 rounded-xl border border-slate-600 space-y-2">
+          <p className="text-xl font-semibold text-white text-center mb-2">2. 端末の購入方法（複数選択可）</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             {[
               "Appleなど正規ストア・家電量販店で本体のみ購入したい",
@@ -65,7 +67,7 @@ export default function Phase2Device({ answers, onChange }: Props) {
             ].map((method) => (
               <label
                 key={method}
-                className={`flex items-center space-x-2 cursor-pointer px-3 py-2 rounded-lg ${
+                className={`flex items-center w-full cursor-pointer py-2 px-3 rounded-lg ${
                   devicePurchaseMethods.includes(method) ? "bg-blue-600 text-white" : "bg-slate-700 text-slate-200"
                 }`}
               >
@@ -73,7 +75,7 @@ export default function Phase2Device({ answers, onChange }: Props) {
                   type="checkbox"
                   checked={devicePurchaseMethods.includes(method)}
                   onChange={() => toggleMethod(method)}
-                  className="accent-blue-500"
+                  className="accent-blue-500 mr-2"
                 />
                 <span>{method}</span>
               </label>
