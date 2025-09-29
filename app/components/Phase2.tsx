@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Phase2Answers } from "@/types/types";
 
-// ✅ 各セクションのコンポーネント読み込み（直下にある想定）
+// 各セクションのコンポーネント
 import Phase2Data from "./Phase2Data";
 import Phase2Call from "./Phase2Call";
 import Phase2Contract from "./Phase2Contract";
@@ -16,9 +16,10 @@ import Phase2Payment from "./Phase2Payment";
 interface Phase2Props {
   onSubmit: (answers: Phase2Answers) => void;
   defaultValues: Phase2Answers;
+  onBack?: () => void;
 }
 
-export default function Phase2({ onSubmit, defaultValues }: Phase2Props) {
+export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props) {
   const [answers, setAnswers] = useState<Phase2Answers>(defaultValues);
   const [step, setStep] = useState<number>(0);
 
@@ -47,34 +48,46 @@ export default function Phase2({ onSubmit, defaultValues }: Phase2Props) {
 
   const handleBack = () => {
     if (step > 0) setStep(step - 1);
+    else onBack && onBack();
+  };
+
+  const renderStep = () => {
+    switch (steps[step].id) {
+      case "data":
+        return <Phase2Data answers={answers} onChange={updateAnswers} />;
+      case "call":
+        return <Phase2Call answers={answers} onChange={updateAnswers} />;
+      case "contract":
+        return <Phase2Contract answers={answers} onChange={updateAnswers} />;
+      case "ecosystem":
+        return <Phase2Ecosystem answers={answers} onChange={updateAnswers} />;
+      case "subscription":
+        return <Phase2Subscription answers={answers} onChange={updateAnswers} />;
+      case "device":
+        return <Phase2Device answers={answers} onChange={updateAnswers} />;
+      case "overseas":
+        return <Phase2Overseas answers={answers} onChange={updateAnswers} />;
+      case "payment":
+        return <Phase2Payment answers={answers} onChange={updateAnswers} />;
+      default:
+        return null;
+    }
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-8">
-        <h2 className="text-2xl font-bold text-white">{steps[step].label}</h2>
-        <div className="text-slate-400 text-sm">
-          {step + 1} / {steps.length}
-        </div>
+    <div className="w-full max-w-4xl mx-auto space-y-8 p-6">
+      <h2 className="text-3xl font-bold text-center text-white mb-4">📍 フェーズ②：詳細条件</h2>
+
+      <div className="rounded-xl p-5 bg-gradient-to-br from-slate-800/90 to-slate-700/80 shadow-lg shadow-slate-900/40 w-[98%] mx-auto transition-all duration-300">
+        <p className="text-xl font-semibold mb-4 text-white text-center">{steps[step].label}</p>
+        <div className="space-y-4">{renderStep()}</div>
       </div>
 
-      {/* ✅ セクション切り替え */}
-      {step === 0 && <Phase2Data answers={answers} onChange={updateAnswers} />}
-      {step === 1 && <Phase2Call answers={answers} onChange={updateAnswers} />}
-      {step === 2 && <Phase2Contract answers={answers} onChange={updateAnswers} />}
-      {step === 3 && <Phase2Ecosystem answers={answers} onChange={updateAnswers} />}
-      {step === 4 && <Phase2Subscription answers={answers} onChange={updateAnswers} />}
-      {step === 5 && <Phase2Device answers={answers} onChange={updateAnswers} />}
-      {step === 6 && <Phase2Overseas answers={answers} onChange={updateAnswers} />}
-      {step === 7 && <Phase2Payment answers={answers} onChange={updateAnswers} />}
-
-      {/* ✅ ナビゲーションボタン */}
-      <div className="flex justify-between mt-10">
+      <div className="flex justify-between items-center pt-6">
         <button
           onClick={handleBack}
-          disabled={step === 0}
-          className={`px-6 py-3 rounded-2xl shadow-lg transition-all ${
-            step === 0
+          className={`px-4 py-2 rounded-full ${
+            step === 0 && !onBack
               ? "bg-slate-600 text-slate-300 cursor-not-allowed"
               : "bg-slate-700 hover:bg-slate-600 text-white"
           }`}
@@ -84,7 +97,7 @@ export default function Phase2({ onSubmit, defaultValues }: Phase2Props) {
 
         <button
           onClick={handleNext}
-          className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl shadow-lg transition-all"
+          className="px-8 py-3 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-lg font-semibold transition-all duration-300 shadow-lg shadow-blue-900/40"
         >
           {step === steps.length - 1 ? "結果を見る →" : "次へ →"}
         </button>
