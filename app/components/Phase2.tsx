@@ -38,14 +38,6 @@ export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props)
     setAnswers((prev) => ({ ...prev, ...updated }));
   };
 
-  const handleNext = () => {
-    if (step < steps.length - 1) {
-      setStep(step + 1);
-    } else {
-      onSubmit(answers);
-    }
-  };
-
   const handleBack = () => {
     if (step > 0) setStep(step - 1);
     else onBack && onBack();
@@ -83,7 +75,7 @@ export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props)
         <div className="space-y-4">{renderStep()}</div>
       </div>
 
-      <div className="flex justify-between items-center pt-6">
+      <div className="flex justify-start pt-6">
         <button
           onClick={handleBack}
           className={`px-4 py-2 rounded-full ${
@@ -93,13 +85,6 @@ export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props)
           }`}
         >
           ← 戻る
-        </button>
-
-        <button
-          onClick={handleNext}
-          className="px-8 py-3 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-lg font-semibold transition-all duration-300 shadow-lg shadow-blue-900/40"
-        >
-          {step === steps.length - 1 ? "結果を見る →" : "次へ →"}
         </button>
       </div>
     </div>
