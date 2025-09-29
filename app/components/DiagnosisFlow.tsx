@@ -1,45 +1,121 @@
 "use client";
 
-import React, { useState } from "react";
-import Phase2Data from "./Phase2Data";
-import Phase2Call from "./Phase2Call";
-import Phase2Contract from "./Phase2Contract";
-import Phase2Ecosystem from "./Phase2Ecosystem";
-import Phase2Subscription from "./Phase2Subscription";
-import Phase2Device from "./Phase2Device";
-import Phase2Payment from "./Phase2Payment";
-import { Phase2Answers } from "@/types/types";
+import { useState } from "react";
+import Phase1, { Phase1Props } from "./Phase1";
+import Phase2 from "./Phase2";
+import Result from "./Result";
+import { Phase1Answers, Phase2Answers, DiagnosisAnswers } from "@/types/types";
 
-interface Phase2Props {
-  defaultValues: Phase2Answers;
-  onSubmit: (answers: Phase2Answers) => void;
-}
+export default function DiagnosisFlow() {
+  const [step, setStep] = useState<"start" | "phase1" | "phase2" | "result">("start");
 
-export default function Phase2({ defaultValues, onSubmit }: Phase2Props) {
-  const [answers, setAnswers] = useState<Phase2Answers>(defaultValues);
+  const [answers, setAnswers] = useState<DiagnosisAnswers>({
+    phase1: {
+      includePoints: null,
+      networkQuality: null,
+      carrierType: null,
+      supportPreference: null,
+      contractLockPreference: null,
+    },
+    phase2: {
+      // ① データ通信ニーズ
+      dataUsage: null,
+      speedLimitImportance: null,
+      tetheringNeeded: null,
+      tetheringUsage: null,
 
-  const handleChange = (updated: Partial<Phase2Answers>) => {
-    setAnswers((prev) => ({ ...prev, ...updated }));
+      // ② 通話
+      callFrequency: null,
+      callPriority: null,
+      callOptionsNeeded: null,
+      callPurpose: null,
+
+      // ③ 契約条件・割引
+      familyLines: null,
+      setDiscount: null,
+      infraSet: null,
+
+      // ④ 経済圏・ポイント
+      ecosystem: null,
+      ecosystemMonthly: null,
+      usingEcosystem: null,
+      monthlyUsage: null,
+
+      // ⑤ サブスク
+      subs: [],
+      subsDiscountPreference: null,
+      usingServices: [],
+      monthlySubscriptionCost: null,
+      subscriptions: [],
+      subscriptionServices: [],       // ← 追加
+      subscriptionMonthly: null,      // ← 追加
+
+      // ⑥ 端末・購入形態
+      buyingDevice: null,
+      devicePurchaseMethods: [],
+      devicePreference: null,
+      oldDevicePlan: null,
+
+      // ⑦ 海外利用・特殊ニーズ
+      overseasUse: null,
+      overseasPreference: null,
+      dualSim: null,
+      specialUses: [],
+
+      // ⑧ 支払い方法
+      paymentMethods: [],
+      mainCard: null,
+      paymentTiming: null,
+    },
+  });
+
+  const handlePhase1Submit = (phase1Answers: Phase1Answers) => {
+    setAnswers((prev) => ({ ...prev, phase1: phase1Answers }));
+    setStep("phase2");
+  };
+
+  const handlePhase2Submit = (phase2Answers: Phase2Answers) => {
+    setAnswers((prev) => ({ ...prev, phase2: phase2Answers }));
+    setStep("result");
   };
 
   return (
-    <div className="w-full max-w-none px-0 space-y-8"> {/* 画面端まで広げる */}
-      <Phase2Data answers={answers} onChange={handleChange} />
-      <Phase2Call answers={answers} onChange={handleChange} />
-      <Phase2Contract answers={answers} onChange={handleChange} />
-      <Phase2Ecosystem answers={answers} onChange={handleChange} />
-      <Phase2Subscription answers={answers} onChange={handleChange} />
-      <Phase2Device answers={answers} onChange={handleChange} />
-      <Phase2Payment answers={answers} onChange={handleChange} />
+    <div className="w-full space-y-8 px-2"> {/* 画面いっぱいに広げる */}
+      {step === "start" && (
+        <div className="text-center space-y-6">
+          <h1 className="text-4xl font-bold text-white">📱 キャリア診断スタート</h1>
+          <p className="text-slate-300">
+            いくつかの質問に答えるだけで、あなたに最適な通信キャリアとプランを診断します。
+          </p>
+          <button
+            onClick={() => setStep("phase1")}
+            className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white text-lg rounded-2xl shadow-lg transition-all"
+          >
+            診断を始める
+          </button>
+        </div>
+      )}
 
-      <div className="text-center mt-6">
-        <button
-          onClick={() => onSubmit(answers)}
-          className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white text-lg rounded-2xl shadow-lg transition-all"
-        >
-          フェーズ②を完了する
-        </button>
-      </div>
+      {step === "phase1" && (
+        <Phase1
+          defaultValues={answers.phase1}
+          onSubmit={handlePhase1Submit}
+        />
+      )}
+
+      {step === "phase2" && (
+        <Phase2
+          onSubmit={handlePhase2Submit}
+          defaultValues={answers.phase2}
+        />
+      )}
+
+      {step === "result" && (
+        <Result
+          answers={answers}
+          onRestart={() => setStep("start")}
+        />
+      )}
     </div>
   );
 }
