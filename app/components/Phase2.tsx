@@ -75,15 +75,15 @@ export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props)
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-8 p-6">
+    <div className="w-full max-w-none space-y-8">
       <h2 className="text-3xl font-bold text-center text-white mb-4">📍 フェーズ②：詳細条件</h2>
 
-      <div className="rounded-xl p-5 bg-gradient-to-br from-slate-800/90 to-slate-700/80 shadow-lg shadow-slate-900/40 w-[98%] mx-auto transition-all duration-300">
+      <div className="rounded-xl bg-gradient-to-br from-slate-800/90 to-slate-700/80 shadow-lg shadow-slate-900/40 w-full transition-all duration-300">
         <p className="text-xl font-semibold mb-4 text-white text-center">{steps[step].label}</p>
-        <div className="space-y-4">{renderStep()}</div>
+        <div className="space-y-4 px-6 py-6">{renderStep()}</div>
       </div>
 
-      <div className="flex justify-between items-center pt-6">
+      <div className="flex justify-between items-center pt-6 px-6">
         <button
           onClick={handleBack}
           className={`px-4 py-2 rounded-full ${
