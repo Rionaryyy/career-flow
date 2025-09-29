@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Phase2Answers } from "@/types/types";
 
 interface Props {
@@ -9,13 +9,8 @@ interface Props {
 }
 
 export default function Phase2Subscription({ answers, onChange }: Props) {
-  // 型修正に合わせて既存のプロパティを使用
-  const [subs, setSubs] = useState<string[]>(
-    answers.subscriptionServices || [] // 文字列ではなく配列に統一
-  );
-  const [subsDiscountPreference, setSubsDiscountPreference] = useState<string | null>(
-    answers.subscriptionMonthly || null
-  );
+  const [subs, setSubs] = useState<string[]>(answers.subscriptionServices || []);
+  const [subsDiscountPreference, setSubsDiscountPreference] = useState<string | null>(answers.subscriptionMonthly || null);
 
   const services = [
     "Netflix",
@@ -37,28 +32,24 @@ export default function Phase2Subscription({ answers, onChange }: Props) {
     if (subs.includes(service)) {
       setSubs(subs.filter((s) => s !== service));
     } else {
-      if (service === "特になし") {
-        setSubs(["特になし"]);
-      } else {
-        setSubs(subs.filter((s) => s !== "特になし").concat(service));
-      }
+      if (service === "特になし") setSubs(["特になし"]);
+      else setSubs(subs.filter((s) => s !== "特になし").concat(service));
     }
   };
 
-  const handleNext = () => {
+  // answers を親に同期
+  useEffect(() => {
     onChange({
-      subscriptions: subs,                  // ← 型に合わせて配列で渡す
-      subscriptionServices: subs,           // ← 型に合わせて配列で渡す
+      subscriptionServices: subs,
       subscriptionMonthly: subsDiscountPreference,
     });
-  };
+  }, [subs, subsDiscountPreference, onChange]);
 
   return (
     <div className="p-6 space-y-6">
       <h2 className="text-2xl font-bold mb-4">⑤ サブスク利用状況</h2>
-
       <div>
-        <p className="font-semibold mb-3">1. 契約中または契約予定のサブスクサービスを選択（複数可）</p>
+        <p className="font-semibold mb-3">契約中または契約予定のサブスクサービスを選択（複数可）</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           {services.map((service) => (
             <label
@@ -78,14 +69,6 @@ export default function Phase2Subscription({ answers, onChange }: Props) {
           ))}
         </div>
       </div>
-
-      <button
-        onClick={handleNext}
-        disabled={subs.length === 0}
-        className="mt-6 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-      >
-        次へ
-      </button>
     </div>
   );
 }

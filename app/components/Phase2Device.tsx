@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Phase2Answers } from "@/types/types";
 
 interface Props {
@@ -20,12 +20,13 @@ export default function Phase2Device({ answers, onChange }: Props) {
     }
   };
 
-  const handleNext = () => {
+  // 選択が変わるたびに親に反映
+  useEffect(() => {
     onChange({
       devicePreference: buyingDevice,
       oldDevicePlan: devicePurchaseMethods.join(", "),
     });
-  };
+  }, [buyingDevice, devicePurchaseMethods, onChange]);
 
   return (
     <div className="p-6 space-y-6">
@@ -66,9 +67,7 @@ export default function Phase2Device({ answers, onChange }: Props) {
               <label
                 key={method}
                 className={`flex items-center space-x-2 cursor-pointer px-3 py-2 rounded-lg ${
-                  devicePurchaseMethods.includes(method)
-                    ? "bg-blue-600 text-white"
-                    : "bg-slate-700 text-slate-200"
+                  devicePurchaseMethods.includes(method) ? "bg-blue-600 text-white" : "bg-slate-700 text-slate-200"
                 }`}
               >
                 <input
@@ -83,14 +82,6 @@ export default function Phase2Device({ answers, onChange }: Props) {
           </div>
         </div>
       )}
-
-      <button
-        onClick={handleNext}
-        disabled={!buyingDevice || (buyingDevice === "はい（端末も一緒に購入する）" && devicePurchaseMethods.length === 0)}
-        className="mt-6 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-      >
-        次へ
-      </button>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Phase2Answers } from "@/types/types";
 
 interface Props {
@@ -13,9 +13,10 @@ export default function Phase2Contract({ answers, onChange }: Props) {
   const [setDiscount, setSetDiscount] = useState<string | null>(answers.setDiscount || null);
   const [infraSet, setInfraSet] = useState<string | null>(answers.infraSet || null);
 
-  const handleNext = () => {
+  // 選択が変わったら即反映
+  useEffect(() => {
     onChange({ familyLines, setDiscount, infraSet });
-  };
+  }, [familyLines, setDiscount, infraSet, onChange]);
 
   return (
     <div className="w-full max-w-4xl mx-auto p-6 space-y-6">
@@ -64,16 +65,6 @@ export default function Phase2Contract({ answers, onChange }: Props) {
             {option}
           </button>
         ))}
-      </div>
-
-      <div className="flex justify-end pt-6">
-        <button
-          onClick={handleNext}
-          disabled={!familyLines || !setDiscount || !infraSet}
-          className="px-8 py-3 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-lg font-semibold transition-all duration-300 shadow-lg shadow-blue-900/40 disabled:opacity-50"
-        >
-          次へ
-        </button>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Phase2Answers } from "@/types/types";
 
 interface Props {
@@ -14,9 +14,10 @@ export default function Phase2Call({ answers, onChange }: Props) {
   const [callOptionsNeeded, setCallOptionsNeeded] = useState<string | null>(answers.callOptionsNeeded || null);
   const [callPurpose, setCallPurpose] = useState<string | null>(answers.callPurpose || null);
 
-  const handleNext = () => {
+  // 選択が変わったら即反映
+  useEffect(() => {
     onChange({ callFrequency, callPriority, callOptionsNeeded, callPurpose });
-  };
+  }, [callFrequency, callPriority, callOptionsNeeded, callPurpose, onChange]);
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6 p-6">
@@ -80,16 +81,6 @@ export default function Phase2Call({ answers, onChange }: Props) {
             {option}
           </button>
         ))}
-      </div>
-
-      <div className="flex justify-end pt-6">
-        <button
-          onClick={handleNext}
-          disabled={!callFrequency || !callPriority || !callOptionsNeeded || !callPurpose}
-          className="px-8 py-3 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-lg font-semibold transition-all duration-300 shadow-lg shadow-blue-900/40 disabled:opacity-50"
-        >
-          次へ
-        </button>
       </div>
     </div>
   );

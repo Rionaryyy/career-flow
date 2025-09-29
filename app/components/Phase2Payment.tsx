@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Phase2Answers } from "@/types/types";
 
 interface Props {
@@ -20,12 +20,13 @@ export default function Phase2Payment({ answers, onChange }: Props) {
     }
   };
 
-  const handleNext = () => {
+  // 選択が変わるたびに親に反映
+  useEffect(() => {
     onChange({
       mainCard: paymentMethods.join(", "),
       paymentTiming,
     });
-  };
+  }, [paymentMethods, paymentTiming, onChange]);
 
   return (
     <div className="p-6 space-y-6">
@@ -62,14 +63,6 @@ export default function Phase2Payment({ answers, onChange }: Props) {
           ))}
         </div>
       </div>
-
-      <button
-        onClick={handleNext}
-        disabled={paymentMethods.length === 0}
-        className="mt-6 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-      >
-        診断結果へ
-      </button>
     </div>
   );
 }
