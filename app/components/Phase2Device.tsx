@@ -29,7 +29,7 @@ export default function Phase2Device({ answers, onChange }: Props) {
   }, [buyingDevice, devicePurchaseMethods, onChange]);
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="w-full p-6 space-y-6">
       <h2 className="text-2xl font-bold mb-4">⑥ 端末・購入形態</h2>
 
       <div>

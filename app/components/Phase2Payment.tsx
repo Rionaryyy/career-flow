@@ -29,7 +29,7 @@ export default function Phase2Payment({ answers, onChange }: Props) {
   }, [paymentMethods, paymentTiming, onChange]);
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="w-full p-6 space-y-6">
       <h2 className="text-2xl font-bold mb-4">⑧ 支払い方法</h2>
 
       <div>

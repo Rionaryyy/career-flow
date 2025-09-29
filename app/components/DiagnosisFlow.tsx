@@ -80,7 +80,7 @@ export default function DiagnosisFlow() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-10">
+    <div className="w-full space-y-8 px-2"> {/* 画面いっぱいに広げる */}
       {step === "start" && (
         <div className="text-center space-y-6">
           <h1 className="text-4xl font-bold text-white">📱 キャリア診断スタート</h1>

@@ -46,7 +46,7 @@ export default function Phase2Subscription({ answers, onChange }: Props) {
   }, [subs, subsDiscountPreference, onChange]);
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="w-full p-6 space-y-6">
       <h2 className="text-2xl font-bold mb-4">⑤ サブスク利用状況</h2>
       <div>
         <p className="font-semibold mb-3">契約中または契約予定のサブスクサービスを選択（複数可）</p>

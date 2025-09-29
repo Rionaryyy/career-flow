@@ -20,7 +20,7 @@ export default function Phase2Call({ answers, onChange }: Props) {
   }, [callFrequency, callPriority, callOptionsNeeded, callPurpose, onChange]);
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6 p-6">
+    <div className="w-full p-6 space-y-6">
       <h2 className="text-3xl font-bold text-center text-white mb-6">② 通話に関する質問</h2>
 
       <div className="rounded-xl p-5 bg-gradient-to-br from-slate-800/90 to-slate-700/80 shadow-lg shadow-slate-900/40 space-y-4">
