@@ -14,7 +14,6 @@ export default function Phase2Call({ answers, onChange }: Props) {
   const [callOptionsNeeded, setCallOptionsNeeded] = useState<string | null>(answers.callOptionsNeeded || null);
   const [callPurpose, setCallPurpose] = useState<string | null>(answers.callPurpose || null);
 
-  // 選択が変わったら即反映
   useEffect(() => {
     onChange({ callFrequency, callPriority, callOptionsNeeded, callPurpose });
   }, [callFrequency, callPriority, callOptionsNeeded, callPurpose, onChange]);
@@ -30,7 +29,9 @@ export default function Phase2Call({ answers, onChange }: Props) {
             key={option}
             onClick={() => setCallFrequency(option)}
             className={`w-full py-3 rounded-lg border transition ${
-              callFrequency === option ? "bg-blue-600 border-blue-400 text-white" : "bg-slate-700 border-slate-600 hover:bg-slate-600 text-gray-200"
+              callFrequency === option
+                ? "bg-blue-600 border-blue-400 text-white"
+                : "bg-slate-700 border-slate-600 hover:bg-slate-600 text-gray-200"
             }`}
           >
             {option}
@@ -45,7 +46,9 @@ export default function Phase2Call({ answers, onChange }: Props) {
             key={option}
             onClick={() => setCallPriority(option)}
             className={`w-full py-3 rounded-lg border transition ${
-              callPriority === option ? "bg-blue-600 border-blue-400 text-white" : "bg-slate-700 border-slate-600 hover:bg-slate-600 text-gray-200"
+              callPriority === option
+                ? "bg-blue-600 border-blue-400 text-white"
+                : "bg-slate-700 border-slate-600 hover:bg-slate-600 text-gray-200"
             }`}
           >
             {option}
@@ -60,7 +63,9 @@ export default function Phase2Call({ answers, onChange }: Props) {
             key={option}
             onClick={() => setCallOptionsNeeded(option)}
             className={`w-full py-3 rounded-lg border transition ${
-              callOptionsNeeded === option ? "bg-blue-600 border-blue-400 text-white" : "bg-slate-700 border-slate-600 hover:bg-slate-600 text-gray-200"
+              callOptionsNeeded === option
+                ? "bg-blue-600 border-blue-400 text-white"
+                : "bg-slate-700 border-slate-600 hover:bg-slate-600 text-gray-200"
             }`}
           >
             {option}
@@ -75,7 +80,9 @@ export default function Phase2Call({ answers, onChange }: Props) {
             key={option}
             onClick={() => setCallPurpose(option)}
             className={`w-full py-3 rounded-lg border transition ${
-              callPurpose === option ? "bg-blue-600 border-blue-400 text-white" : "bg-slate-700 border-slate-600 hover:bg-slate-600 text-gray-200"
+              callPurpose === option
+                ? "bg-blue-600 border-blue-400 text-white"
+                : "bg-slate-700 border-slate-600 hover:bg-slate-600 text-gray-200"
             }`}
           >
             {option}

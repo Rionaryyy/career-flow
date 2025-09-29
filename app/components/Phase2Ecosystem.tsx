@@ -14,12 +14,8 @@ export default function Phase2Ecosystem({ answers, onChange }: Props) {
 
   const optionsMonthly = ["〜5,000円","5,000〜10,000円","10,000〜30,000円","30,000円以上"];
 
-  // 選択が変わるたびに親に反映
   useEffect(() => {
-    onChange({
-      ecosystem,
-      ecosystemMonthly,
-    });
+    onChange({ ecosystem, ecosystemMonthly });
   }, [ecosystem, ecosystemMonthly, onChange]);
 
   return (

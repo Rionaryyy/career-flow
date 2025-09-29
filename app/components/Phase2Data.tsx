@@ -14,7 +14,6 @@ export default function Phase2Data({ answers, onChange }: Props) {
   const [tetheringNeeded, setTetheringNeeded] = useState<string | null>(answers.tetheringNeeded || null);
   const [tetheringUsage, setTetheringUsage] = useState<string | null>(answers.tetheringUsage || null);
 
-  // 選択変更時に親に即反映
   useEffect(() => {
     onChange({ dataUsage, speedLimitImportance, tetheringNeeded, tetheringUsage });
   }, [dataUsage, speedLimitImportance, tetheringNeeded, tetheringUsage, onChange]);
@@ -30,7 +29,9 @@ export default function Phase2Data({ answers, onChange }: Props) {
             key={option}
             onClick={() => setDataUsage(option)}
             className={`w-full py-3 rounded-lg border transition ${
-              dataUsage === option ? "bg-blue-600 border-blue-400 text-white" : "bg-slate-700 border-slate-600 hover:bg-slate-600 text-gray-200"
+              dataUsage === option
+                ? "bg-blue-600 border-blue-400 text-white"
+                : "bg-slate-700 border-slate-600 hover:bg-slate-600 text-gray-200"
             }`}
           >
             {option}
@@ -45,7 +46,9 @@ export default function Phase2Data({ answers, onChange }: Props) {
             key={option}
             onClick={() => setSpeedLimitImportance(option)}
             className={`w-full py-3 rounded-lg border transition ${
-              speedLimitImportance === option ? "bg-blue-600 border-blue-400 text-white" : "bg-slate-700 border-slate-600 hover:bg-slate-600 text-gray-200"
+              speedLimitImportance === option
+                ? "bg-blue-600 border-blue-400 text-white"
+                : "bg-slate-700 border-slate-600 hover:bg-slate-600 text-gray-200"
             }`}
           >
             {option}
@@ -60,7 +63,9 @@ export default function Phase2Data({ answers, onChange }: Props) {
             key={option}
             onClick={() => setTetheringNeeded(option)}
             className={`w-full py-3 rounded-lg border transition ${
-              tetheringNeeded === option ? "bg-blue-600 border-blue-400 text-white" : "bg-slate-700 border-slate-600 hover:bg-slate-600 text-gray-200"
+              tetheringNeeded === option
+                ? "bg-blue-600 border-blue-400 text-white"
+                : "bg-slate-700 border-slate-600 hover:bg-slate-600 text-gray-200"
             }`}
           >
             {option}
@@ -76,7 +81,9 @@ export default function Phase2Data({ answers, onChange }: Props) {
               key={option}
               onClick={() => setTetheringUsage(option)}
               className={`w-full py-3 rounded-lg border transition ${
-                tetheringUsage === option ? "bg-blue-600 border-blue-400 text-white" : "bg-slate-700 border-slate-600 hover:bg-slate-600 text-gray-200"
+                tetheringUsage === option
+                  ? "bg-blue-600 border-blue-400 text-white"
+                  : "bg-slate-700 border-slate-600 hover:bg-slate-600 text-gray-200"
               }`}
             >
               {option}

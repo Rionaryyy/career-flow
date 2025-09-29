@@ -20,12 +20,8 @@ export default function Phase2Payment({ answers, onChange }: Props) {
     }
   };
 
-  // 選択が変わるたびに親に反映
   useEffect(() => {
-    onChange({
-      mainCard: paymentMethods.join(", "),
-      paymentTiming,
-    });
+    onChange({ mainCard: paymentMethods.join(", "), paymentTiming });
   }, [paymentMethods, paymentTiming, onChange]);
 
   return (
@@ -47,9 +43,7 @@ export default function Phase2Payment({ answers, onChange }: Props) {
             <label
               key={method}
               className={`flex items-center space-x-2 cursor-pointer px-3 py-2 rounded-lg ${
-                paymentMethods.includes(method)
-                  ? "bg-blue-600 text-white"
-                  : "bg-slate-700 text-slate-200"
+                paymentMethods.includes(method) ? "bg-blue-600 text-white" : "bg-slate-700 text-slate-200"
               }`}
             >
               <input

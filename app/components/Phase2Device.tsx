@@ -20,7 +20,6 @@ export default function Phase2Device({ answers, onChange }: Props) {
     }
   };
 
-  // 選択が変わるたびに親に反映
   useEffect(() => {
     onChange({
       devicePreference: buyingDevice,
