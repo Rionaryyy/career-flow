@@ -19,10 +19,10 @@ export default function Phase2Data({ answers, onChange }: Props) {
   }, [dataUsage, speedLimitImportance, tetheringNeeded, tetheringUsage, onChange]);
 
   return (
-    <div className="w-full p-6 space-y-6">
-      <h2 className="text-3xl font-bold text-center mb-6 text-white">① データ通信に関する質問</h2>
+    <div className="w-full px-2 sm:px-4 py-6 space-y-4">
+      <h2 className="text-3xl font-bold text-center text-white mb-4">① データ通信に関する質問</h2>
 
-      <div className="rounded-xl p-5 bg-gradient-to-br from-slate-800/90 to-slate-700/80 shadow-lg shadow-slate-900/40 space-y-4">
+      <div className="w-full rounded-xl p-4 bg-gradient-to-br from-slate-800/90 to-slate-700/80 shadow-lg shadow-slate-900/40 space-y-3">
         <p className="text-xl font-semibold text-white text-center">1. 毎月のデータ利用量は？</p>
         {["～5GB","5GB～20GB","20GB以上","無制限が理想"].map((option) => (
           <button
@@ -39,7 +39,7 @@ export default function Phase2Data({ answers, onChange }: Props) {
         ))}
       </div>
 
-      <div className="rounded-xl p-5 bg-gradient-to-br from-slate-800/90 to-slate-700/80 shadow-lg shadow-slate-900/40 space-y-4">
+      <div className="w-full rounded-xl p-4 bg-gradient-to-br from-slate-800/90 to-slate-700/80 shadow-lg shadow-slate-900/40 space-y-3">
         <p className="text-xl font-semibold text-white text-center">2. 速度制限後の速度の重要性は？</p>
         {["あまり気にしない","ある程度重要","非常に重要"].map((option) => (
           <button
@@ -56,7 +56,7 @@ export default function Phase2Data({ answers, onChange }: Props) {
         ))}
       </div>
 
-      <div className="rounded-xl p-5 bg-gradient-to-br from-slate-800/90 to-slate-700/80 shadow-lg shadow-slate-900/40 space-y-4">
+      <div className="w-full rounded-xl p-4 bg-gradient-to-br from-slate-800/90 to-slate-700/80 shadow-lg shadow-slate-900/40 space-y-3">
         <p className="text-xl font-semibold text-white text-center">3. テザリング機能は必要？</p>
         {["不要","必要"].map((option) => (
           <button
@@ -74,7 +74,7 @@ export default function Phase2Data({ answers, onChange }: Props) {
       </div>
 
       {tetheringNeeded === "必要" && (
-        <div className="rounded-xl p-5 bg-gradient-to-br from-slate-800/90 to-slate-700/80 shadow-lg shadow-slate-900/40 space-y-4">
+        <div className="w-full rounded-xl p-4 bg-gradient-to-br from-slate-800/90 to-slate-700/80 shadow-lg shadow-slate-900/40 space-y-3">
           <p className="text-xl font-semibold text-white text-center">4. テザリングの主な用途は？</p>
           {["PC作業","タブレット","その他"].map((option) => (
             <button
