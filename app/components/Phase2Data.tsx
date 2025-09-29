@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Phase2Answers } from "@/types/types";
 
 interface Props {
@@ -8,91 +8,91 @@ interface Props {
   onChange: (updated: Partial<Phase2Answers>) => void;
 }
 
-
 export default function Phase2Data({ answers, onChange }: Props) {
-  const [dataUsage, setDataUsage] = useState<string | null>(null);
-  const [speedLimitImportance, setSpeedLimitImportance] = useState<string | null>(null);
-  const [tetheringNeeded, setTetheringNeeded] = useState<string | null>(null);
-  const [tetheringUsage, setTetheringUsage] = useState<string | null>(null);
+  const [dataUsage, setDataUsage] = useState<string | null>(answers.dataUsage || null);
+  const [speedLimitImportance, setSpeedLimitImportance] = useState<string | null>(answers.speedLimitImportance || null);
+  const [tetheringNeeded, setTetheringNeeded] = useState<string | null>(answers.tetheringNeeded || null);
+  const [tetheringUsage, setTetheringUsage] = useState<string | null>(answers.tetheringUsage || null);
 
   const handleNext = () => {
-    onChange({
-      dataUsage,
-      speedLimitImportance,
-      tetheringNeeded,
-      tetheringUsage,
-    });
+    onChange({ dataUsage, speedLimitImportance, tetheringNeeded, tetheringUsage });
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <h2 className="text-2xl font-bold mb-4">① データ通信に関する質問</h2>
+    <div className="w-full max-w-4xl mx-auto p-6 space-y-6">
+      <h2 className="text-3xl font-bold text-center mb-6 text-white">① データ通信に関する質問</h2>
 
-      <div>
-        <p className="font-semibold mb-2">1. 毎月のデータ利用量は？</p>
-        <select
-          value={dataUsage || ""}
-          onChange={(e) => setDataUsage(e.target.value)}
-          className="border rounded p-2 w-full"
-        >
-          <option value="">選択してください</option>
-          <option value="low">～5GB</option>
-          <option value="medium">5GB～20GB</option>
-          <option value="high">20GB以上</option>
-          <option value="unlimited">無制限が理想</option>
-        </select>
-      </div>
-
-      <div>
-        <p className="font-semibold mb-2">2. 速度制限後の速度の重要性は？</p>
-        <select
-          value={speedLimitImportance || ""}
-          onChange={(e) => setSpeedLimitImportance(e.target.value)}
-          className="border rounded p-2 w-full"
-        >
-          <option value="">選択してください</option>
-          <option value="not_important">あまり気にしない</option>
-          <option value="important">ある程度重要</option>
-          <option value="very_important">非常に重要</option>
-        </select>
-      </div>
-
-      <div>
-        <p className="font-semibold mb-2">3. テザリング機能は必要？</p>
-        <select
-          value={tetheringNeeded || ""}
-          onChange={(e) => setTetheringNeeded(e.target.value)}
-          className="border rounded p-2 w-full"
-        >
-          <option value="">選択してください</option>
-          <option value="no">不要</option>
-          <option value="yes">必要</option>
-        </select>
-      </div>
-
-      {tetheringNeeded === "yes" && (
-        <div>
-          <p className="font-semibold mb-2">4. テザリングの主な用途は？</p>
-          <select
-            value={tetheringUsage || ""}
-            onChange={(e) => setTetheringUsage(e.target.value)}
-            className="border rounded p-2 w-full"
+      <div className="rounded-xl p-5 bg-gradient-to-br from-slate-800/90 to-slate-700/80 shadow-lg shadow-slate-900/40 space-y-4">
+        <p className="text-xl font-semibold text-white text-center">1. 毎月のデータ利用量は？</p>
+        {["～5GB","5GB～20GB","20GB以上","無制限が理想"].map((option) => (
+          <button
+            key={option}
+            onClick={() => setDataUsage(option)}
+            className={`w-full py-3 rounded-lg border transition ${
+              dataUsage === option ? "bg-blue-600 border-blue-400 text-white" : "bg-slate-700 border-slate-600 hover:bg-slate-600 text-gray-200"
+            }`}
           >
-            <option value="">選択してください</option>
-            <option value="pc_work">PC作業</option>
-            <option value="tablet">タブレット</option>
-            <option value="other">その他</option>
-          </select>
+            {option}
+          </button>
+        ))}
+      </div>
+
+      <div className="rounded-xl p-5 bg-gradient-to-br from-slate-800/90 to-slate-700/80 shadow-lg shadow-slate-900/40 space-y-4">
+        <p className="text-xl font-semibold text-white text-center">2. 速度制限後の速度の重要性は？</p>
+        {["あまり気にしない","ある程度重要","非常に重要"].map((option) => (
+          <button
+            key={option}
+            onClick={() => setSpeedLimitImportance(option)}
+            className={`w-full py-3 rounded-lg border transition ${
+              speedLimitImportance === option ? "bg-blue-600 border-blue-400 text-white" : "bg-slate-700 border-slate-600 hover:bg-slate-600 text-gray-200"
+            }`}
+          >
+            {option}
+          </button>
+        ))}
+      </div>
+
+      <div className="rounded-xl p-5 bg-gradient-to-br from-slate-800/90 to-slate-700/80 shadow-lg shadow-slate-900/40 space-y-4">
+        <p className="text-xl font-semibold text-white text-center">3. テザリング機能は必要？</p>
+        {["不要","必要"].map((option) => (
+          <button
+            key={option}
+            onClick={() => setTetheringNeeded(option)}
+            className={`w-full py-3 rounded-lg border transition ${
+              tetheringNeeded === option ? "bg-blue-600 border-blue-400 text-white" : "bg-slate-700 border-slate-600 hover:bg-slate-600 text-gray-200"
+            }`}
+          >
+            {option}
+          </button>
+        ))}
+      </div>
+
+      {tetheringNeeded === "必要" && (
+        <div className="rounded-xl p-5 bg-gradient-to-br from-slate-800/90 to-slate-700/80 shadow-lg shadow-slate-900/40 space-y-4">
+          <p className="text-xl font-semibold text-white text-center">4. テザリングの主な用途は？</p>
+          {["PC作業","タブレット","その他"].map((option) => (
+            <button
+              key={option}
+              onClick={() => setTetheringUsage(option)}
+              className={`w-full py-3 rounded-lg border transition ${
+                tetheringUsage === option ? "bg-blue-600 border-blue-400 text-white" : "bg-slate-700 border-slate-600 hover:bg-slate-600 text-gray-200"
+              }`}
+            >
+              {option}
+            </button>
+          ))}
         </div>
       )}
 
-      <button
-        onClick={handleNext}
-        disabled={!dataUsage}
-        className="mt-6 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-      >
-        次へ
-      </button>
+      <div className="flex justify-end pt-6">
+        <button
+          onClick={handleNext}
+          disabled={!dataUsage || !speedLimitImportance || !tetheringNeeded || (tetheringNeeded === "必要" && !tetheringUsage)}
+          className="px-8 py-3 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-lg font-semibold transition-all duration-300 shadow-lg shadow-blue-900/40 disabled:opacity-50"
+        >
+          次へ
+        </button>
+      </div>
     </div>
   );
 }

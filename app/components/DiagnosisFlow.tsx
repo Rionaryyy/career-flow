@@ -42,24 +42,30 @@ export default function DiagnosisFlow() {
       monthlyUsage: null,
 
       // ⑤ サブスク
-      subs: null,
+      subs: [],
       subsDiscountPreference: null,
-      usingServices: null,
+      usingServices: [],
       monthlySubscriptionCost: null,
-      subscriptions: null,
+      subscriptions: [],
+      subscriptionServices: [],       // ← 追加
+      subscriptionMonthly: null,      // ← 追加
 
       // ⑥ 端末・購入形態
       buyingDevice: null,
-      devicePurchaseMethods: null,
+      devicePurchaseMethods: [],
+      devicePreference: null,
+      oldDevicePlan: null,
 
       // ⑦ 海外利用・特殊ニーズ
       overseasUse: null,
       overseasPreference: null,
       dualSim: null,
-      specialUses: null,
+      specialUses: [],
 
       // ⑧ 支払い方法
-      paymentMethods: null,
+      paymentMethods: [],
+      mainCard: null,
+      paymentTiming: null,
     },
   });
 
@@ -91,11 +97,11 @@ export default function DiagnosisFlow() {
       )}
 
       {step === "phase1" && (
-  <Phase1
-    defaultValues={answers.phase1}
-    onSubmit={handlePhase1Submit}
-  />
-)}
+        <Phase1
+          defaultValues={answers.phase1}
+          onSubmit={handlePhase1Submit}
+        />
+      )}
 
       {step === "phase2" && (
         <Phase2

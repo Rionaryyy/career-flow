@@ -8,9 +8,9 @@ interface Props {
   onChange: (updated: Partial<Phase2Answers>) => void;
 }
 
-
 export default function Phase2Payment({ answers, onChange }: Props) {
-  const [paymentMethods, setPaymentMethods] = useState<string[]>([]);
+  const [paymentMethods, setPaymentMethods] = useState<string[]>(answers.mainCard ? [answers.mainCard] : []);
+  const [paymentTiming, setPaymentTiming] = useState<string | null>(answers.paymentTiming || null);
 
   const toggleMethod = (method: string) => {
     if (paymentMethods.includes(method)) {
@@ -22,7 +22,8 @@ export default function Phase2Payment({ answers, onChange }: Props) {
 
   const handleNext = () => {
     onChange({
-      paymentMethods,
+      mainCard: paymentMethods.join(", "),
+      paymentTiming,
     });
   };
 
@@ -30,11 +31,8 @@ export default function Phase2Payment({ answers, onChange }: Props) {
     <div className="p-6 space-y-6">
       <h2 className="text-2xl font-bold mb-4">⑧ 支払い方法</h2>
 
-      {/* Q15 支払い方法の希望（複数選択可） */}
       <div>
-        <p className="font-semibold mb-3">
-          1. 契約時・毎月の支払い方法として希望するものを選んでください（複数選択可）
-        </p>
+        <p className="font-semibold mb-3">1. 支払い方法（複数選択可）</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           {[
             "クレジットカード",

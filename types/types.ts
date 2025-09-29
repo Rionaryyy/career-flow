@@ -1,5 +1,3 @@
-// types/types.ts
-
 export interface Phase1Answers {
   includePoints: string | null;
   networkQuality: string | null;
@@ -42,12 +40,16 @@ export interface Phase2Answers {
   usingServices: string[] | null;
   monthlySubscriptionCost: string | null;
 
-  // ✅ 追加（Phase2Subscription.tsxで使うsubscriptions対応）
+  // ✅ 追加（Phase2Subscription.tsxで使う）
   subscriptions: string[] | null;
+  subscriptionServices: string[] | null;      // ← 追加
+  subscriptionMonthly: string | null;         // ← 追加
 
   // ⑥ 端末・購入形態
-  buyingDevice: string | null;
-  devicePurchaseMethods: string[] | null;
+  buyingDevice: string | null;                // ← 追加
+  devicePurchaseMethods: string[] | null;     // ← 追加
+  devicePreference?: string | null;           // ← 追加
+  oldDevicePlan?: string | null;              // ← 追加
 
   // ⑦ 海外利用・特殊ニーズ
   overseasUse: string | null;
@@ -57,6 +59,8 @@ export interface Phase2Answers {
 
   // ⑧ 支払い方法
   paymentMethods: string[] | null;
+  mainCard?: string | null;                   // ← 追加
+  paymentTiming?: string | null;              // ← 追加
 }
 
 export interface DiagnosisAnswers {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Phase2Answers } from "@/types/types";
 
 interface Props {
@@ -8,68 +8,67 @@ interface Props {
   onChange: (updated: Partial<Phase2Answers>) => void;
 }
 
-
 export default function Phase2Ecosystem({ answers, onChange }: Props) {
-  const [ecosystem, setEcosystem] = useState<string | null>(null);
-  const [ecosystemMonthly, setEcosystemMonthly] = useState<string | null>(null);
+  const [ecosystem, setEcosystem] = useState<string | null>(answers.ecosystem || null);
+  const [ecosystemMonthly, setEcosystemMonthly] = useState<string | null>(answers.ecosystemMonthly || null);
 
   const handleNext = () => {
-    onChange({
-      ecosystem,
-      ecosystemMonthly,
-    });
+    onChange({ ecosystem, ecosystemMonthly });
   };
 
-  return (
-    <div className="p-6 space-y-6">
-      <h2 className="text-2xl font-bold mb-4">④ 経済圏・ポイント利用状況</h2>
+  const optionsMonthly = ["〜5,000円","5,000〜10,000円","10,000〜30,000円","30,000円以上"];
 
-      {/* Q8 経済圏選択 */}
-      <div>
-        <p className="font-semibold mb-2">
-          1. 現在よく利用している、または今後メインで使う可能性が高いポイント経済圏はどれですか？
-        </p>
-        <select
-          value={ecosystem || ""}
-          onChange={(e) => setEcosystem(e.target.value)}
-          className="border rounded p-2 w-full"
-        >
-          <option value="">選択してください</option>
-          <option value="rakuten">楽天経済圏（楽天カード・楽天市場など）</option>
-          <option value="docomo">dポイント（ドコモ・dカードなど）</option>
-          <option value="softbank">PayPay / ソフトバンク経済圏</option>
-          <option value="au">au PAY / Ponta経済圏</option>
-          <option value="none">特になし</option>
-        </select>
+  return (
+    <div className="w-full max-w-4xl mx-auto p-6 space-y-6">
+      <h2 className="text-3xl font-bold text-center mb-6 text-white">④ 経済圏・ポイント利用状況</h2>
+
+      <div className="rounded-xl p-5 bg-gradient-to-br from-slate-800/90 to-slate-700/80 shadow-lg shadow-slate-900/40 space-y-4">
+        <p className="text-xl font-semibold text-white text-center">1. よく利用しているポイント経済圏は？</p>
+        {[
+          "楽天経済圏（楽天カード・楽天市場など）",
+          "dポイント（ドコモ・dカードなど）",
+          "PayPay / ソフトバンク経済圏",
+          "au PAY / Ponta経済圏",
+          "特になし"
+        ].map((option) => (
+          <button
+            key={option}
+            onClick={() => setEcosystem(option)}
+            className={`w-full py-3 rounded-lg border transition ${
+              ecosystem === option ? "bg-blue-600 border-blue-400 text-white" : "bg-slate-700 border-slate-600 hover:bg-slate-600 text-gray-200"
+            }`}
+          >
+            {option}
+          </button>
+        ))}
       </div>
 
-      {/* Q8-2 利用額（「特になし」以外を選んだときだけ表示） */}
-      {ecosystem && ecosystem !== "none" && (
-        <div>
-          <p className="font-semibold mb-2">
-            2. その経済圏での月間利用額はどのくらいですか？（おおよそでOK）
-          </p>
-          <select
-            value={ecosystemMonthly || ""}
-            onChange={(e) => setEcosystemMonthly(e.target.value)}
-            className="border rounded p-2 w-full"
-          >
-            <option value="">選択してください</option>
-            <option value="~5000">〜5,000円</option>
-            <option value="5000-10000">5,000〜10,000円</option>
-            <option value="10000-30000">10,000〜30,000円</option>
-            <option value="30000+">30,000円以上</option>
-          </select>
+      {ecosystem && ecosystem !== "特になし" && (
+        <div className="rounded-xl p-5 bg-gradient-to-br from-slate-800/90 to-slate-700/80 shadow-lg shadow-slate-900/40 space-y-4">
+          <p className="text-xl font-semibold text-white text-center">2. 月間利用額は？</p>
+          {optionsMonthly.map((option) => (
+            <button
+              key={option}
+              onClick={() => setEcosystemMonthly(option)}
+              className={`w-full py-3 rounded-lg border transition ${
+                ecosystemMonthly === option ? "bg-blue-600 border-blue-400 text-white" : "bg-slate-700 border-slate-600 hover:bg-slate-600 text-gray-200"
+              }`}
+            >
+              {option}
+            </button>
+          ))}
         </div>
       )}
 
-      <button
-        onClick={handleNext}
-        disabled={!ecosystem || (ecosystem !== "none" && !ecosystemMonthly)}
-        className="mt-6 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-      >
-        次へ
-      </button>
+      <div className="flex justify-end pt-6">
+        <button
+          onClick={handleNext}
+          disabled={!ecosystem || (ecosystem !== "特になし" && !ecosystemMonthly)}
+          className="px-8 py-3 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-lg font-semibold transition-all duration-300 shadow-lg shadow-blue-900/40 disabled:opacity-50"
+        >
+          次へ
+        </button>
+      </div>
     </div>
   );
 }

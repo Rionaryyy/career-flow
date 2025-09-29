@@ -1,0 +1,927 @@
+"use client";
+
+import { useState } from "react";
+import { Phase2Answers } from "@/types/types";
+
+// 蜷・そ繧ｯ繧ｷ繝ｧ繝ｳ縺ｮ繧ｳ繝ｳ繝昴・繝阪Φ繝・
+import Phase2Data from "./Phase2Data";
+import Phase2Call from "./Phase2Call";
+import Phase2Contract from "./Phase2Contract";
+import Phase2Ecosystem from "./Phase2Ecosystem";
+import Phase2Subscription from "./Phase2Subscription";
+import Phase2Device from "./Phase2Device";
+import Phase2Overseas from "./Phase2Overseas";
+import Phase2Payment from "./Phase2Payment";
+
+interface Phase2Props {
+  onSubmit: (answers: Phase2Answers) => void;
+  defaultValues: Phase2Answers;
+  onBack?: () => void;
+}
+
+export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props) {
+  const [answers, setAnswers] = useState<Phase2Answers>(defaultValues);
+  const [step, setStep] = useState<number>(0);
+
+  const steps = [
+    { id: "data", label: "竭 繝・・繧ｿ騾壻ｿ｡" },
+    { id: "call", label: "竭｡ 騾夊ｩｱ" },
+    { id: "contract", label: "竭｢ 螂醍ｴ・擅莉ｶ繝ｻ蜑ｲ蠑・ },
+    { id: "ecosystem", label: "竭｣ 邨梧ｸ亥恟繝ｻ繝昴う繝ｳ繝・ },
+    { id: "subscription", label: "竭､ 繧ｵ繝悶せ繧ｯ" },
+    { id: "device", label: "竭･ 遶ｯ譛ｫ繝ｻ雉ｼ蜈･蠖｢諷・ },
+    { id: "overseas", label: "竭ｦ 豬ｷ螟門茜逕ｨ繝ｻ迚ｹ谿翫ル繝ｼ繧ｺ" },
+    { id: "payment", label: "竭ｧ 謾ｯ謇輔＞譁ｹ豕・ },
+  ];
+
+  const updateAnswers = (updated: Partial<Phase2Answers>) => {
+    setAnswers((prev) => ({ ...prev, ...updated }));
+  };
+
+  const handleNext = () => {
+    if (step < steps.length - 1) {
+      setStep(step + 1);
+    } else {
+      onSubmit(answers);
+    }
+  };
+
+  const handleBack = () => {
+    if (step > 0) setStep(step - 1);
+    else onBack && onBack();
+  };
+
+  const renderStep = () => {
+    switch (steps[step].id) {
+      case "data":
+        return <Phase2Data answers={answers} onChange={updateAnswers} />;
+      case "call":
+        return <Phase2Call answers={answers} onChange={updateAnswers} />;
+      case "contract":
+        return <Phase2Contract answers={answers} onChange={updateAnswers} />;
+      case "ecosystem":
+        return <Phase2Ecosystem answers={answers} onChange={updateAnswers} />;
+      case "subscription":
+        return <Phase2Subscription answers={answers} onChange={updateAnswers} />;
+      case "device":
+        return <Phase2Device answers={answers} onChange={updateAnswers} />;
+      case "overseas":
+        return <Phase2Overseas answers={answers} onChange={updateAnswers} />;
+      case "payment":
+        return <Phase2Payment answers={answers} onChange={updateAnswers} />;
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="w-full max-w-4xl mx-auto space-y-8 p-6">
+      <h2 className="text-3xl font-bold text-center text-white mb-4">桃 繝輔ぉ繝ｼ繧ｺ竭｡・夊ｩｳ邏ｰ譚｡莉ｶ</h2>
+
+      <div className="rounded-xl p-5 bg-gradient-to-br from-slate-800/90 to-slate-700/80 shadow-lg shadow-slate-900/40 w-[98%] mx-auto transition-all duration-300">
+        <p className="text-xl font-semibold mb-4 text-white text-center">{steps[step].label}</p>
+        <div className="space-y-4">{renderStep()}</div>
+      </div>
+
+      <div className="flex justify-between items-center pt-6">
+        <button
+          onClick={handleBack}
+          className={`px-4 py-2 rounded-full ${
+            step === 0 && !onBack
+              ? "bg-slate-600 text-slate-300 cursor-not-allowed"
+              : "bg-slate-700 hover:bg-slate-600 text-white"
+          }`}
+        >
+          竊・謌ｻ繧・
+        </button>
+
+        <button
+          onClick={handleNext}
+          className="px-8 py-3 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-lg font-semibold transition-all duration-300 shadow-lg shadow-blue-900/40"
+        >
+          {step === steps.length - 1 ? "邨先棡繧定ｦ九ｋ 竊・ : "谺｡縺ｸ 竊・}
+        </button>
+      </div>
+    </div>
+  );
+}
+"use client";
+
+import { useState } from "react";
+import { Phase2Answers } from "@/types/types";
+
+interface Props {
+  answers: Phase2Answers;
+  onChange: (updated: Partial<Phase2Answers>) => void;
+}
+
+
+export default function Phase2Call({ answers, onChange }: Props) {
+  const [callFrequency, setCallFrequency] = useState<string | null>(null);
+  const [callPriority, setCallPriority] = useState<string | null>(null);
+  const [callOptionsNeeded, setCallOptionsNeeded] = useState<string | null>(null);
+  const [callPurpose, setCallPurpose] = useState<string | null>(null);
+
+  const handleNext = () => {
+    onChange({
+      callFrequency,
+      callPriority,
+      callOptionsNeeded,
+      callPurpose,
+    });
+  };
+
+  return (
+    <div className="p-6 space-y-6">
+      <h2 className="text-2xl font-bold mb-4">竭｡ 騾夊ｩｱ縺ｫ髢｢縺吶ｋ雉ｪ蝠・/h2>
+
+      <div>
+        <p className="font-semibold mb-2">1. 騾夊ｩｱ縺ｮ鬆ｻ蠎ｦ縺ｯ縺ｩ縺ｮ縺上ｉ縺・〒縺吶°・・/p>
+        <select
+          value={callFrequency || ""}
+          onChange={(e) => setCallFrequency(e.target.value)}
+          className="border rounded p-2 w-full"
+        >
+          <option value="">驕ｸ謚槭＠縺ｦ縺上□縺輔＞</option>
+          <option value="rarely">縺ｻ縺ｨ繧薙←縺励↑縺・/option>
+          <option value="sometimes">譎ゅ・☆繧具ｼ域怦謨ｰ蝗橸ｼ・/option>
+          <option value="often">繧医￥縺吶ｋ・磯ｱ謨ｰ蝗槭懈ｯ取律・・/option>
+        </select>
+      </div>
+
+      <div>
+        <p className="font-semibold mb-2">2. 騾夊ｩｱ蜩∬ｳｪ縺ｮ驥崎ｦ門ｺｦ縺ｯ・・/p>
+        <select
+          value={callPriority || ""}
+          onChange={(e) => setCallPriority(e.target.value)}
+          className="border rounded p-2 w-full"
+        >
+          <option value="">驕ｸ謚槭＠縺ｦ縺上□縺輔＞</option>
+          <option value="low">縺ゅ∪繧企㍾隕悶＠縺ｪ縺・/option>
+          <option value="medium">縺ゅｋ遞句ｺｦ驥崎ｦ・/option>
+          <option value="high">髱槫ｸｸ縺ｫ驥崎ｦ・/option>
+        </select>
+      </div>
+
+      <div>
+        <p className="font-semibold mb-2">3. 騾夊ｩｱ繧ｪ繝励す繝ｧ繝ｳ・医°縺第叛鬘後↑縺ｩ・峨・蠢・ｦ・ｼ・/p>
+        <select
+          value={callOptionsNeeded || ""}
+          onChange={(e) => setCallOptionsNeeded(e.target.value)}
+          className="border rounded p-2 w-full"
+        >
+          <option value="">驕ｸ謚槭＠縺ｦ縺上□縺輔＞</option>
+          <option value="no">迚ｹ縺ｫ荳崎ｦ・/option>
+          <option value="short">5蛻・・0蛻・°縺第叛鬘・/option>
+          <option value="unlimited">辟｡蛻ｶ髯舌°縺第叛鬘・/option>
+        </select>
+      </div>
+
+      <div>
+        <p className="font-semibold mb-2">4. 荳ｻ縺ｪ騾夊ｩｱ縺ｮ逶ｮ逧・・・・/p>
+        <select
+          value={callPurpose || ""}
+          onChange={(e) => setCallPurpose(e.target.value)}
+          className="border rounded p-2 w-full"
+        >
+          <option value="">驕ｸ謚槭＠縺ｦ縺上□縺輔＞</option>
+          <option value="personal">繝励Λ繧､繝吶・繝・/option>
+          <option value="business">莉穂ｺ・/option>
+          <option value="mixed">荳｡譁ｹ</option>
+        </select>
+      </div>
+
+      <button
+        onClick={handleNext}
+        disabled={!callFrequency}
+        className="mt-6 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+      >
+        谺｡縺ｸ
+      </button>
+    </div>
+  );
+}
+"use client";
+
+import { useState } from "react";
+import { Phase2Answers } from "@/types/types";
+
+interface Props {
+  answers: Phase2Answers;
+  onChange: (updated: Partial<Phase2Answers>) => void;
+}
+
+
+export default function Phase2Contract({ answers, onChange}: Props) {
+  const [familyLines, setFamilyLines] = useState<string | null>(null);
+  const [setDiscount, setSetDiscount] = useState<string | null>(null);
+  const [infraSet, setInfraSet] = useState<string | null>(null);
+
+  const handleNext = () => {
+    onChange({
+      familyLines,
+      setDiscount,
+      infraSet,
+    });
+  };
+
+  return (
+    <div className="p-6 space-y-6">
+      <h2 className="text-2xl font-bold mb-4">竭｢ 螂醍ｴ・擅莉ｶ繝ｻ蜑ｲ蠑輔↓縺､縺・※</h2>
+
+      {/* Q5 螳ｶ譌丞牡蠑・*/}
+      <div>
+        <p className="font-semibold mb-2">1. 螳ｶ譌丞牡蠑輔ｒ驕ｩ逕ｨ縺ｧ縺阪ｋ蝗樒ｷ壽焚縺ｯ縺ｩ縺ｮ縺上ｉ縺・〒縺吶°・・/p>
+        <select
+          value={familyLines || ""}
+          onChange={(e) => setFamilyLines(e.target.value)}
+          className="border rounded p-2 w-full"
+        >
+          <option value="">驕ｸ謚槭＠縺ｦ縺上□縺輔＞</option>
+          <option value="1">1蝗樒ｷ・/option>
+          <option value="2">2蝗樒ｷ・/option>
+          <option value="3+">3蝗樒ｷ壻ｻ･荳・/option>
+          <option value="none">蛻ｩ逕ｨ縺ｧ縺阪↑縺・/ 繧上°繧峨↑縺・/option>
+        </select>
+      </div>
+
+      {/* Q6 蜈牙屓邱壹そ繝・ヨ蜑ｲ */}
+      <div>
+        <p className="font-semibold mb-2">2. 蜈牙屓邱壹→縺ｮ繧ｻ繝・ヨ蜑ｲ繧帝←逕ｨ縺ｧ縺阪∪縺吶°・・/p>
+        <select
+          value={setDiscount || ""}
+          onChange={(e) => setSetDiscount(e.target.value)}
+          className="border rounded p-2 w-full"
+        >
+          <option value="">驕ｸ謚槭＠縺ｦ縺上□縺輔＞</option>
+          <option value="yes">縺ｯ縺・ｼ亥･醍ｴ・ｸｭ縺ｾ縺溘・螂醍ｴ・ｺ亥ｮ夲ｼ・/option>
+          <option value="no">縺・＞縺・/ 繧上°繧峨↑縺・/option>
+        </select>
+      </div>
+
+      {/* Q7 髮ｻ豌励・繧ｬ繧ｹ縺ｪ縺ｩ縺ｮ繧ｻ繝・ヨ蜑ｲ */}
+      <div>
+        <p className="font-semibold mb-2">3. 髮ｻ豌励ｄ繧ｬ繧ｹ縺ｪ縺ｩ縺ｮ繧､繝ｳ繝輔Λ繧ｵ繝ｼ繝薙せ縺ｨ縺ｮ繧ｻ繝・ヨ蜑ｲ縺ｯ驕ｩ逕ｨ縺ｧ縺阪∪縺吶°・・/p>
+        <select
+          value={infraSet || ""}
+          onChange={(e) => setInfraSet(e.target.value)}
+          className="border rounded p-2 w-full"
+        >
+          <option value="">驕ｸ謚槭＠縺ｦ縺上□縺輔＞</option>
+          <option value="yes">縺ｯ縺・ｼ亥･醍ｴ・ｸｭ縺ｾ縺溘・螂醍ｴ・ｺ亥ｮ夲ｼ・/option>
+          <option value="no">縺・＞縺・/ 繧上°繧峨↑縺・/option>
+        </select>
+      </div>
+
+      <button
+        onClick={handleNext}
+        disabled={!familyLines}
+        className="mt-6 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+      >
+        谺｡縺ｸ
+      </button>
+    </div>
+  );
+}
+"use client";
+
+import { useState } from "react";
+import { Phase2Answers } from "@/types/types";
+
+interface Props {
+  answers: Phase2Answers;
+  onChange: (updated: Partial<Phase2Answers>) => void;
+}
+
+
+export default function Phase2Data({ answers, onChange }: Props) {
+  const [dataUsage, setDataUsage] = useState<string | null>(null);
+  const [speedLimitImportance, setSpeedLimitImportance] = useState<string | null>(null);
+  const [tetheringNeeded, setTetheringNeeded] = useState<string | null>(null);
+  const [tetheringUsage, setTetheringUsage] = useState<string | null>(null);
+
+  const handleNext = () => {
+    onChange({
+      dataUsage,
+      speedLimitImportance,
+      tetheringNeeded,
+      tetheringUsage,
+    });
+  };
+
+  return (
+    <div className="p-6 space-y-6">
+      <h2 className="text-2xl font-bold mb-4">竭 繝・・繧ｿ騾壻ｿ｡縺ｫ髢｢縺吶ｋ雉ｪ蝠・/h2>
+
+      <div>
+        <p className="font-semibold mb-2">1. 豈取怦縺ｮ繝・・繧ｿ蛻ｩ逕ｨ驥上・・・/p>
+        <select
+          value={dataUsage || ""}
+          onChange={(e) => setDataUsage(e.target.value)}
+          className="border rounded p-2 w-full"
+        >
+          <option value="">驕ｸ謚槭＠縺ｦ縺上□縺輔＞</option>
+          <option value="low">・・GB</option>
+          <option value="medium">5GB・・0GB</option>
+          <option value="high">20GB莉･荳・/option>
+          <option value="unlimited">辟｡蛻ｶ髯舌′逅・Φ</option>
+        </select>
+      </div>
+
+      <div>
+        <p className="font-semibold mb-2">2. 騾溷ｺｦ蛻ｶ髯仙ｾ後・騾溷ｺｦ縺ｮ驥崎ｦ∵ｧ縺ｯ・・/p>
+        <select
+          value={speedLimitImportance || ""}
+          onChange={(e) => setSpeedLimitImportance(e.target.value)}
+          className="border rounded p-2 w-full"
+        >
+          <option value="">驕ｸ謚槭＠縺ｦ縺上□縺輔＞</option>
+          <option value="not_important">縺ゅ∪繧頑ｰ励↓縺励↑縺・/option>
+          <option value="important">縺ゅｋ遞句ｺｦ驥崎ｦ・/option>
+          <option value="very_important">髱槫ｸｸ縺ｫ驥崎ｦ・/option>
+        </select>
+      </div>
+
+      <div>
+        <p className="font-semibold mb-2">3. 繝・じ繝ｪ繝ｳ繧ｰ讖溯・縺ｯ蠢・ｦ・ｼ・/p>
+        <select
+          value={tetheringNeeded || ""}
+          onChange={(e) => setTetheringNeeded(e.target.value)}
+          className="border rounded p-2 w-full"
+        >
+          <option value="">驕ｸ謚槭＠縺ｦ縺上□縺輔＞</option>
+          <option value="no">荳崎ｦ・/option>
+          <option value="yes">蠢・ｦ・/option>
+        </select>
+      </div>
+
+      {tetheringNeeded === "yes" && (
+        <div>
+          <p className="font-semibold mb-2">4. 繝・じ繝ｪ繝ｳ繧ｰ縺ｮ荳ｻ縺ｪ逕ｨ騾斐・・・/p>
+          <select
+            value={tetheringUsage || ""}
+            onChange={(e) => setTetheringUsage(e.target.value)}
+            className="border rounded p-2 w-full"
+          >
+            <option value="">驕ｸ謚槭＠縺ｦ縺上□縺輔＞</option>
+            <option value="pc_work">PC菴懈･ｭ</option>
+            <option value="tablet">繧ｿ繝悶Ξ繝・ヨ</option>
+            <option value="other">縺昴・莉・/option>
+          </select>
+        </div>
+      )}
+
+      <button
+        onClick={handleNext}
+        disabled={!dataUsage}
+        className="mt-6 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+      >
+        谺｡縺ｸ
+      </button>
+    </div>
+  );
+}
+"use client";
+
+import { useState } from "react";
+import { Phase2Answers } from "@/types/types";
+
+interface Props {
+  answers: Phase2Answers;
+  onChange: (updated: Partial<Phase2Answers>) => void;
+}
+
+
+export default function Phase2Device({ answers, onChange }: Props) {
+  const [buyingDevice, setBuyingDevice] = useState<string | null>(null);
+  const [devicePurchaseMethods, setDevicePurchaseMethods] = useState<string[]>([]);
+
+  const toggleMethod = (method: string) => {
+    if (devicePurchaseMethods.includes(method)) {
+      setDevicePurchaseMethods(devicePurchaseMethods.filter((m) => m !== method));
+    } else {
+      setDevicePurchaseMethods([...devicePurchaseMethods, method]);
+    }
+  };
+
+  const handleNext = () => {
+    onChange({
+      buyingDevice,
+      devicePurchaseMethods,
+    });
+  };
+
+  return (
+    <div className="p-6 space-y-6">
+      <h2 className="text-2xl font-bold mb-4">竭･ 遶ｯ譛ｫ繝ｻ雉ｼ蜈･蠖｢諷・/h2>
+
+      {/* Q9 遶ｯ譛ｫ雉ｼ蜈･莠亥ｮ・*/}
+      <div>
+        <p className="font-semibold mb-3">1. 譁ｰ縺励＞遶ｯ譛ｫ繧ゆｸ邱偵↓雉ｼ蜈･縺吶ｋ莠亥ｮ壹〒縺吶°・・/p>
+        <div className="space-y-2">
+          {["縺ｯ縺・ｼ育ｫｯ譛ｫ繧ゆｸ邱偵↓雉ｼ蜈･縺吶ｋ・・, "縺・＞縺茨ｼ・IM縺ｮ縺ｿ螂醍ｴ・☆繧倶ｺ亥ｮ夲ｼ・].map((option) => (
+            <label
+              key={option}
+              className={`flex items-center space-x-2 cursor-pointer px-3 py-2 rounded-lg ${
+                buyingDevice === option ? "bg-blue-600 text-white" : "bg-slate-700 text-slate-200"
+              }`}
+            >
+              <input
+                type="radio"
+                name="buyingDevice"
+                value={option}
+                checked={buyingDevice === option}
+                onChange={(e) => setBuyingDevice(e.target.value)}
+                className="accent-blue-500"
+              />
+              <span>{option}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Q9-2 雉ｼ蜈･譁ｹ豕包ｼ郁､・焚驕ｸ謚槫庄・・*/}
+      {buyingDevice === "縺ｯ縺・ｼ育ｫｯ譛ｫ繧ゆｸ邱偵↓雉ｼ蜈･縺吶ｋ・・ && (
+        <div>
+          <p className="font-semibold mb-3">
+            2. 遶ｯ譛ｫ縺ｮ雉ｼ蜈･譁ｹ豕輔→縺励※縲∬ｿ代＞閠・∴譁ｹ繧帝∈繧薙〒縺上□縺輔＞・郁､・焚驕ｸ謚槫庄・・
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            {[
+              "Apple縺ｪ縺ｩ豁｣隕上せ繝医い繝ｻ螳ｶ髮ｻ驥剰ｲｩ蠎励〒譛ｬ菴薙・縺ｿ雉ｼ蜈･縺励◆縺・,
+              "繧ｭ繝｣繝ｪ繧｢縺ｧ遶ｯ譛ｫ繧定ｳｼ蜈･縺励◆縺・ｼ磯壼ｸｸ雉ｼ蜈･・・,
+              "繧ｭ繝｣繝ｪ繧｢縺ｧ遶ｯ譛ｫ繧定ｳｼ蜈･縺励◆縺・ｼ郁ｿ泌唆繝ｻ莠､謠帙・繝ｭ繧ｰ繝ｩ繝繧貞茜逕ｨ縺吶ｋ・・,
+              "縺ｩ繧後′譛繧ゅ♀蠕励°蛻・°繧峨↑縺・・縺ｧ縲√☆縺ｹ縺ｦ縺ｮ繝代ち繝ｼ繝ｳ繧呈ｯ碑ｼ・＠縺溘＞",
+            ].map((method) => (
+              <label
+                key={method}
+                className={`flex items-center space-x-2 cursor-pointer px-3 py-2 rounded-lg ${
+                  devicePurchaseMethods.includes(method)
+                    ? "bg-blue-600 text-white"
+                    : "bg-slate-700 text-slate-200"
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  checked={devicePurchaseMethods.includes(method)}
+                  onChange={() => toggleMethod(method)}
+                  className="accent-blue-500"
+                />
+                <span>{method}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <button
+        onClick={handleNext}
+        disabled={!buyingDevice || (buyingDevice === "縺ｯ縺・ｼ育ｫｯ譛ｫ繧ゆｸ邱偵↓雉ｼ蜈･縺吶ｋ・・ && devicePurchaseMethods.length === 0)}
+        className="mt-6 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+      >
+        谺｡縺ｸ
+      </button>
+    </div>
+  );
+}
+"use client";
+
+import { useState } from "react";
+import { Phase2Answers } from "@/types/types";
+
+interface Props {
+  answers: Phase2Answers;
+  onChange: (updated: Partial<Phase2Answers>) => void;
+}
+
+
+export default function Phase2Ecosystem({ answers, onChange }: Props) {
+  const [ecosystem, setEcosystem] = useState<string | null>(null);
+  const [ecosystemMonthly, setEcosystemMonthly] = useState<string | null>(null);
+
+  const handleNext = () => {
+    onChange({
+      ecosystem,
+      ecosystemMonthly,
+    });
+  };
+
+  return (
+    <div className="p-6 space-y-6">
+      <h2 className="text-2xl font-bold mb-4">竭｣ 邨梧ｸ亥恟繝ｻ繝昴う繝ｳ繝亥茜逕ｨ迥ｶ豕・/h2>
+
+      {/* Q8 邨梧ｸ亥恟驕ｸ謚・*/}
+      <div>
+        <p className="font-semibold mb-2">
+          1. 迴ｾ蝨ｨ繧医￥蛻ｩ逕ｨ縺励※縺・ｋ縲√∪縺溘・莉雁ｾ後Γ繧､繝ｳ縺ｧ菴ｿ縺・庄閭ｽ諤ｧ縺碁ｫ倥＞繝昴う繝ｳ繝育ｵ梧ｸ亥恟縺ｯ縺ｩ繧後〒縺吶°・・
+        </p>
+        <select
+          value={ecosystem || ""}
+          onChange={(e) => setEcosystem(e.target.value)}
+          className="border rounded p-2 w-full"
+        >
+          <option value="">驕ｸ謚槭＠縺ｦ縺上□縺輔＞</option>
+          <option value="rakuten">讌ｽ螟ｩ邨梧ｸ亥恟・域･ｽ螟ｩ繧ｫ繝ｼ繝峨・讌ｽ螟ｩ蟶ょｴ縺ｪ縺ｩ・・/option>
+          <option value="docomo">d繝昴う繝ｳ繝茨ｼ医ラ繧ｳ繝｢繝ｻd繧ｫ繝ｼ繝峨↑縺ｩ・・/option>
+          <option value="softbank">PayPay / 繧ｽ繝輔ヨ繝舌Φ繧ｯ邨梧ｸ亥恟</option>
+          <option value="au">au PAY / Ponta邨梧ｸ亥恟</option>
+          <option value="none">迚ｹ縺ｫ縺ｪ縺・/option>
+        </select>
+      </div>
+
+      {/* Q8-2 蛻ｩ逕ｨ鬘搾ｼ医檎音縺ｫ縺ｪ縺励堺ｻ･螟悶ｒ驕ｸ繧薙□縺ｨ縺阪□縺題｡ｨ遉ｺ・・*/}
+      {ecosystem && ecosystem !== "none" && (
+        <div>
+          <p className="font-semibold mb-2">
+            2. 縺昴・邨梧ｸ亥恟縺ｧ縺ｮ譛磯俣蛻ｩ逕ｨ鬘阪・縺ｩ縺ｮ縺上ｉ縺・〒縺吶°・滂ｼ医♀縺翫ｈ縺昴〒OK・・
+          </p>
+          <select
+            value={ecosystemMonthly || ""}
+            onChange={(e) => setEcosystemMonthly(e.target.value)}
+            className="border rounded p-2 w-full"
+          >
+            <option value="">驕ｸ謚槭＠縺ｦ縺上□縺輔＞</option>
+            <option value="~5000">縲・,000蜀・/option>
+            <option value="5000-10000">5,000縲・0,000蜀・/option>
+            <option value="10000-30000">10,000縲・0,000蜀・/option>
+            <option value="30000+">30,000蜀・ｻ･荳・/option>
+          </select>
+        </div>
+      )}
+
+      <button
+        onClick={handleNext}
+        disabled={!ecosystem || (ecosystem !== "none" && !ecosystemMonthly)}
+        className="mt-6 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+      >
+        谺｡縺ｸ
+      </button>
+    </div>
+  );
+}
+"use client";
+
+import { useState } from "react";
+import { Phase2Answers } from "@/types/types";
+
+interface Props {
+  answers: Phase2Answers;
+  onChange: (updated: Partial<Phase2Answers>) => void;
+}
+
+
+export default function Phase2Call({ answers, onChange }: Props) {
+
+  const [overseasUse, setOverseasUse] = useState<string | null>(null);
+  const [overseasPreference, setOverseasPreference] = useState<string | null>(null);
+  const [dualSim, setDualSim] = useState<string | null>(null);
+  const [specialUses, setSpecialUses] = useState<string[]>([]);
+
+  const toggleSpecialUse = (use: string) => {
+    if (specialUses.includes(use)) {
+      setSpecialUses(specialUses.filter((u) => u !== use));
+    } else {
+      setSpecialUses([...specialUses, use]);
+    }
+  };
+
+  const handleNext = () => {
+    onChange({
+      overseasUse,
+      overseasPreference,
+      dualSim,
+      specialUses,
+    });
+  };
+
+  return (
+    <div className="p-6 space-y-6">
+      <h2 className="text-2xl font-bold mb-4">竭ｦ 豬ｷ螟門茜逕ｨ繝ｻ迚ｹ谿翫ル繝ｼ繧ｺ</h2>
+
+      {/* Q12 豬ｷ螟門茜逕ｨ莠亥ｮ・*/}
+      <div>
+        <p className="font-semibold mb-3">1. 豬ｷ螟悶〒繧ｹ繝槭・繧貞茜逕ｨ縺吶ｋ莠亥ｮ壹・縺ゅｊ縺ｾ縺吶°・・/p>
+        <div className="space-y-2">
+          {[
+            "縺ｯ縺・ｼ育洒譛滓羅陦後・蟷ｴ謨ｰ蝗槭Ξ繝吶Ν・・,
+            "縺ｯ縺・ｼ磯聞譛滓ｻ槫惠繝ｻ逡吝ｭｦ繝ｻ豬ｷ螟門・蠑ｵ縺ｪ縺ｩ・・,
+            "縺・＞縺茨ｼ亥嵜蜀・茜逕ｨ縺ｮ縺ｿ・・,
+          ].map((option) => (
+            <label
+              key={option}
+              className={`flex items-center space-x-2 cursor-pointer px-3 py-2 rounded-lg ${
+                overseasUse === option ? "bg-blue-600 text-white" : "bg-slate-700 text-slate-200"
+              }`}
+            >
+              <input
+                type="radio"
+                name="overseasUse"
+                value={option}
+                checked={overseasUse === option}
+                onChange={(e) => setOverseasUse(e.target.value)}
+                className="accent-blue-500"
+              />
+              <span>{option}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Q12-2 豬ｷ螟門茜逕ｨ譎ゅ・蟶梧悍 */}
+      {overseasUse?.startsWith("縺ｯ縺・) && (
+        <div>
+          <p className="font-semibold mb-3">2. 豬ｷ螟門茜逕ｨ譎ゅ・蟶梧悍縺ｫ霑代＞繧ゅ・繧帝∈繧薙〒縺上□縺輔＞</p>
+          <div className="space-y-2">
+            {[
+              "豬ｷ螟悶〒繧よ律譛ｬ縺ｨ蜷後§繧医≧縺ｫ騾壻ｿ｡縺励◆縺・ｼ医Ο繝ｼ繝溘Φ繧ｰ蜷ｫ繧∽ｽｿ縺・叛鬘後′蟶梧悍・・,
+              "迴ｾ蝨ｰ縺ｧSNS繧・慍蝗ｳ縺縺台ｽｿ縺医ｌ縺ｰOK・井ｽ朱溘・蟆鷹㍼縺ｧ繧ょ庄・・,
+              "蠢・ｦ√↓蠢懊§縺ｦ迴ｾ蝨ｰSIM繧剃ｽｿ縺・・縺ｧ縲∫音縺ｫ蟶梧悍縺ｯ縺ｪ縺・,
+            ].map((option) => (
+              <label
+                key={option}
+                className={`flex items-center space-x-2 cursor-pointer px-3 py-2 rounded-lg ${
+                  overseasPreference === option
+                    ? "bg-blue-600 text-white"
+                    : "bg-slate-700 text-slate-200"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="overseasPreference"
+                  value={option}
+                  checked={overseasPreference === option}
+                  onChange={(e) => setOverseasPreference(e.target.value)}
+                  className="accent-blue-500"
+                />
+                <span>{option}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Q13 繝・Η繧｢繝ｫSIM */}
+      <div>
+        <p className="font-semibold mb-3">3. 繝・Η繧｢繝ｫSIM・・蝗樒ｷ壼茜逕ｨ・峨ｒ讀懆ｨ弱＠縺ｦ縺・∪縺吶°・・/p>
+        <div className="space-y-2">
+          {[
+            "縺ｯ縺・ｼ医Γ繧､繝ｳ・九し繝悶〒菴ｿ縺・・縺代◆縺・ｼ・,
+            "縺ｯ縺・ｼ域ｵｷ螟也畑縺ｨ蝗ｽ蜀・畑縺ｧ菴ｿ縺・・縺代◆縺・ｼ・,
+            "縺・＞縺茨ｼ・蝗樒ｷ壹・縺ｿ縺ｮ莠亥ｮ夲ｼ・,
+          ].map((option) => (
+            <label
+              key={option}
+              className={`flex items-center space-x-2 cursor-pointer px-3 py-2 rounded-lg ${
+                dualSim === option ? "bg-blue-600 text-white" : "bg-slate-700 text-slate-200"
+              }`}
+            >
+              <input
+                type="radio"
+                name="dualSim"
+                value={option}
+                checked={dualSim === option}
+                onChange={(e) => setDualSim(e.target.value)}
+                className="accent-blue-500"
+              />
+              <span>{option}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Q14 迚ｹ谿翫↑蛻ｩ逕ｨ逶ｮ逧・ｼ郁､・焚驕ｸ謚橸ｼ・*/}
+      <div>
+        <p className="font-semibold mb-3">4. 迚ｹ谿翫↑蛻ｩ逕ｨ逶ｮ逧・′縺ゅｊ縺ｾ縺吶°・滂ｼ郁､・焚驕ｸ謚槫庄・・/p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          {[
+            "蜑ｯ蝗樒ｷ壹→縺励※螳我ｾ｡縺ｪ繝励Λ繝ｳ繧呈爾縺励※縺・ｋ・医Γ繧､繝ｳ縺ｨ縺ｯ蛻･・・,
+            "豕穂ｺｺ螂醍ｴ・∪縺溘・讌ｭ蜍咏畑蛻ｩ逕ｨ繧呈､懆ｨ弱＠縺ｦ縺・ｋ",
+            "蟄舌←繧ゅ・鬮倬ｽ｢閠・髄縺代↑縺ｩ螳ｶ譌上・繧ｵ繝門屓邱夂畑騾・,
+            "IoT讖溷勣繝ｻ隕句ｮ医ｊ逕ｨ縺ｪ縺ｩ迚ｹ谿顔畑騾・,
+            "迚ｹ縺ｫ縺ｪ縺・,
+          ].map((use) => (
+            <label
+              key={use}
+              className={`flex items-center space-x-2 cursor-pointer px-3 py-2 rounded-lg ${
+                specialUses.includes(use) ? "bg-blue-600 text-white" : "bg-slate-700 text-slate-200"
+              }`}
+            >
+              <input
+                type="checkbox"
+                checked={specialUses.includes(use)}
+                onChange={() => toggleSpecialUse(use)}
+                className="accent-blue-500"
+              />
+              <span>{use}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <button
+        onClick={handleNext}
+        disabled={!overseasUse || !dualSim}
+        className="mt-6 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+      >
+        谺｡縺ｸ
+      </button>
+    </div>
+  );
+}
+"use client";
+
+import { useState } from "react";
+import { Phase2Answers } from "@/types/types";
+
+interface Props {
+  answers: Phase2Answers;
+  onChange: (updated: Partial<Phase2Answers>) => void;
+}
+
+
+export default function Phase2Payment({ answers, onChange }: Props) {
+  const [paymentMethods, setPaymentMethods] = useState<string[]>([]);
+
+  const toggleMethod = (method: string) => {
+    if (paymentMethods.includes(method)) {
+      setPaymentMethods(paymentMethods.filter((m) => m !== method));
+    } else {
+      setPaymentMethods([...paymentMethods, method]);
+    }
+  };
+
+  const handleNext = () => {
+    onChange({
+      paymentMethods,
+    });
+  };
+
+  return (
+    <div className="p-6 space-y-6">
+      <h2 className="text-2xl font-bold mb-4">竭ｧ 謾ｯ謇輔＞譁ｹ豕・/h2>
+
+      {/* Q15 謾ｯ謇輔＞譁ｹ豕輔・蟶梧悍・郁､・焚驕ｸ謚槫庄・・*/}
+      <div>
+        <p className="font-semibold mb-3">
+          1. 螂醍ｴ・凾繝ｻ豈取怦縺ｮ謾ｯ謇輔＞譁ｹ豕輔→縺励※蟶梧悍縺吶ｋ繧ゅ・繧帝∈繧薙〒縺上□縺輔＞・郁､・焚驕ｸ謚槫庄・・
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          {[
+            "繧ｯ繝ｬ繧ｸ繝・ヨ繧ｫ繝ｼ繝・,
+            "繝・ン繝・ヨ繧ｫ繝ｼ繝・,
+            "蜿｣蠎ｧ謖ｯ譖ｿ",
+            "繧ｭ繝｣繝ｪ繧｢豎ｺ貂・,
+            "繝励Μ繝壹う繝峨・繝舌Φ繝峨Ν繧ｫ繝ｼ繝・,
+            "繝昴う繝ｳ繝域ｮ矩ｫ俶髪謇輔＞",
+            "縺昴・莉厄ｼ亥ｺ苓・謾ｯ謇輔＞縺ｪ縺ｩ・・,
+          ].map((method) => (
+            <label
+              key={method}
+              className={`flex items-center space-x-2 cursor-pointer px-3 py-2 rounded-lg ${
+                paymentMethods.includes(method)
+                  ? "bg-blue-600 text-white"
+                  : "bg-slate-700 text-slate-200"
+              }`}
+            >
+              <input
+                type="checkbox"
+                checked={paymentMethods.includes(method)}
+                onChange={() => toggleMethod(method)}
+                className="accent-blue-500"
+              />
+              <span>{method}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <button
+        onClick={handleNext}
+        disabled={paymentMethods.length === 0}
+        className="mt-6 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+      >
+        險ｺ譁ｭ邨先棡縺ｸ
+      </button>
+    </div>
+  );
+}
+"use client";
+
+import { useState } from "react";
+import { Phase2Answers } from "@/types/types";
+
+interface Props {
+  answers: Phase2Answers;
+  onChange: (updated: Partial<Phase2Answers>) => void;
+}
+
+
+export default function Phase2Subscription({ answers, onChange }: Props) {
+  const [subs, setSubs] = useState<string[]>([]);
+  const [subsDiscountPreference, setSubsDiscountPreference] = useState<string | null>(null);
+
+  const services = [
+    "Netflix",
+    "Amazon Prime",
+    "YouTube Premium",
+    "Apple Music",
+    "Disney+",
+    "LINE MUSIC",
+    "DAZN",
+    "DMM TV / DMM繝励Ξ繝溘い繝",
+    "Spotify",
+    "ABEMA 繝励Ξ繝溘い繝",
+    "U-NEXT",
+    "TELASA・医ユ繝ｩ繧ｵ・・,
+    "迚ｹ縺ｫ縺ｪ縺・,
+  ];
+
+  const toggleSub = (service: string) => {
+    if (subs.includes(service)) {
+      setSubs(subs.filter((s) => s !== service));
+    } else {
+      if (service === "迚ｹ縺ｫ縺ｪ縺・) {
+        setSubs(["迚ｹ縺ｫ縺ｪ縺・]);
+      } else {
+        setSubs(subs.filter((s) => s !== "迚ｹ縺ｫ縺ｪ縺・).concat(service));
+      }
+    }
+  };
+
+  const handleNext = () => {
+    onChange({
+      subs,
+      subsDiscountPreference,
+    });
+  };
+
+  return (
+    <div className="p-6 space-y-6">
+      <h2 className="text-2xl font-bold mb-4">竭､ 繧ｵ繝悶せ繧ｯ蛻ｩ逕ｨ迥ｶ豕・/h2>
+
+      {/* Q9 繧ｵ繝悶せ繧ｯ驕ｸ謚・*/}
+      <div>
+        <p className="font-semibold mb-3">
+          1. 迴ｾ蝨ｨ螂醍ｴ・＠縺ｦ縺・ｋ縲√∪縺溘・莉雁ｾ悟･醍ｴ・ｺ亥ｮ壹・繧ｵ繝悶せ繧ｯ繝ｪ繝励す繝ｧ繝ｳ繧ｵ繝ｼ繝薙せ繧帝∈繧薙〒縺上□縺輔＞・郁､・焚驕ｸ謚槫庄・・
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          {services.map((service) => (
+            <label
+              key={service}
+              className={`flex items-center space-x-2 border rounded-lg px-3 py-2 cursor-pointer ${
+                subs.includes(service) ? "bg-blue-600 text-white" : "bg-slate-700 text-slate-200"
+              }`}
+            >
+              <input
+                type="checkbox"
+                checked={subs.includes(service)}
+                onChange={() => toggleSub(service)}
+                className="form-checkbox accent-blue-500"
+              />
+              <span>{service}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Q9-2 蜑ｲ蠑募ｸ梧悍 */}
+      {subs.length > 0 && !subs.includes("迚ｹ縺ｫ縺ｪ縺・) && (
+        <div>
+          <p className="font-semibold mb-2">
+            2. 螂醍ｴ・＠縺ｦ縺・ｋ・井ｺ亥ｮ壹・・峨し繝悶せ繧ｯ縺ｯ繧ｭ繝｣繝ｪ繧｢繧ｻ繝・ヨ縺ｧ縺ｮ蜑ｲ蠑輔ｒ蟶梧悍縺励∪縺吶°・・
+          </p>
+          <div className="space-y-2">
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="radio"
+                name="subsDiscountPreference"
+                value="縺ｯ縺・
+                checked={subsDiscountPreference === "縺ｯ縺・}
+                onChange={(e) => setSubsDiscountPreference(e.target.value)}
+              />
+              <span>縺ｯ縺・ｼ亥牡蠑募ｯｾ雎｡縺ｮ繧ｭ繝｣繝ｪ繧｢繝ｻ繝励Λ繝ｳ縺後≠繧後・蜆ｪ蜈医＠縺溘＞・・/span>
+            </label>
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="radio"
+                name="subsDiscountPreference"
+                value="縺・＞縺・
+                checked={subsDiscountPreference === "縺・＞縺・}
+                onChange={(e) => setSubsDiscountPreference(e.target.value)}
+              />
+              <span>縺・＞縺茨ｼ医し繝悶せ繧ｯ縺ｯ蛻･縺ｧ螂醍ｴ・☆繧倶ｺ亥ｮ夲ｼ・/span>
+            </label>
+          </div>
+        </div>
+      )}
+
+      <button
+        onClick={handleNext}
+        disabled={subs.length === 0 || (!subs.includes("迚ｹ縺ｫ縺ｪ縺・) && !subsDiscountPreference)}
+        className="mt-6 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+      >
+        谺｡縺ｸ
+      </button>
+    </div>
+  );
+}

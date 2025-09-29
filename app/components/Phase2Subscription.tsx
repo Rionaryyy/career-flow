@@ -8,10 +8,14 @@ interface Props {
   onChange: (updated: Partial<Phase2Answers>) => void;
 }
 
-
 export default function Phase2Subscription({ answers, onChange }: Props) {
-  const [subs, setSubs] = useState<string[]>([]);
-  const [subsDiscountPreference, setSubsDiscountPreference] = useState<string | null>(null);
+  // 型修正に合わせて既存のプロパティを使用
+  const [subs, setSubs] = useState<string[]>(
+    answers.subscriptionServices || [] // 文字列ではなく配列に統一
+  );
+  const [subsDiscountPreference, setSubsDiscountPreference] = useState<string | null>(
+    answers.subscriptionMonthly || null
+  );
 
   const services = [
     "Netflix",
@@ -43,8 +47,9 @@ export default function Phase2Subscription({ answers, onChange }: Props) {
 
   const handleNext = () => {
     onChange({
-      subs,
-      subsDiscountPreference,
+      subscriptions: subs,                  // ← 型に合わせて配列で渡す
+      subscriptionServices: subs,           // ← 型に合わせて配列で渡す
+      subscriptionMonthly: subsDiscountPreference,
     });
   };
 
@@ -52,11 +57,8 @@ export default function Phase2Subscription({ answers, onChange }: Props) {
     <div className="p-6 space-y-6">
       <h2 className="text-2xl font-bold mb-4">⑤ サブスク利用状況</h2>
 
-      {/* Q9 サブスク選択 */}
       <div>
-        <p className="font-semibold mb-3">
-          1. 現在契約している、または今後契約予定のサブスクリプションサービスを選んでください（複数選択可）
-        </p>
+        <p className="font-semibold mb-3">1. 契約中または契約予定のサブスクサービスを選択（複数可）</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           {services.map((service) => (
             <label
@@ -77,40 +79,9 @@ export default function Phase2Subscription({ answers, onChange }: Props) {
         </div>
       </div>
 
-      {/* Q9-2 割引希望 */}
-      {subs.length > 0 && !subs.includes("特になし") && (
-        <div>
-          <p className="font-semibold mb-2">
-            2. 契約している（予定の）サブスクはキャリアセットでの割引を希望しますか？
-          </p>
-          <div className="space-y-2">
-            <label className="flex items-center space-x-2 cursor-pointer">
-              <input
-                type="radio"
-                name="subsDiscountPreference"
-                value="はい"
-                checked={subsDiscountPreference === "はい"}
-                onChange={(e) => setSubsDiscountPreference(e.target.value)}
-              />
-              <span>はい（割引対象のキャリア・プランがあれば優先したい）</span>
-            </label>
-            <label className="flex items-center space-x-2 cursor-pointer">
-              <input
-                type="radio"
-                name="subsDiscountPreference"
-                value="いいえ"
-                checked={subsDiscountPreference === "いいえ"}
-                onChange={(e) => setSubsDiscountPreference(e.target.value)}
-              />
-              <span>いいえ（サブスクは別で契約する予定）</span>
-            </label>
-          </div>
-        </div>
-      )}
-
       <button
         onClick={handleNext}
-        disabled={subs.length === 0 || (!subs.includes("特になし") && !subsDiscountPreference)}
+        disabled={subs.length === 0}
         className="mt-6 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
       >
         次へ

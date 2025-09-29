@@ -8,10 +8,9 @@ interface Props {
   onChange: (updated: Partial<Phase2Answers>) => void;
 }
 
-
 export default function Phase2Device({ answers, onChange }: Props) {
-  const [buyingDevice, setBuyingDevice] = useState<string | null>(null);
-  const [devicePurchaseMethods, setDevicePurchaseMethods] = useState<string[]>([]);
+  const [buyingDevice, setBuyingDevice] = useState<string | null>(answers.devicePreference || null);
+  const [devicePurchaseMethods, setDevicePurchaseMethods] = useState<string[]>(answers.oldDevicePlan ? [answers.oldDevicePlan] : []);
 
   const toggleMethod = (method: string) => {
     if (devicePurchaseMethods.includes(method)) {
@@ -23,8 +22,8 @@ export default function Phase2Device({ answers, onChange }: Props) {
 
   const handleNext = () => {
     onChange({
-      buyingDevice,
-      devicePurchaseMethods,
+      devicePreference: buyingDevice,
+      oldDevicePlan: devicePurchaseMethods.join(", "),
     });
   };
 
@@ -32,37 +31,31 @@ export default function Phase2Device({ answers, onChange }: Props) {
     <div className="p-6 space-y-6">
       <h2 className="text-2xl font-bold mb-4">⑥ 端末・購入形態</h2>
 
-      {/* Q9 端末購入予定 */}
       <div>
         <p className="font-semibold mb-3">1. 新しい端末も一緒に購入する予定ですか？</p>
-        <div className="space-y-2">
-          {["はい（端末も一緒に購入する）", "いいえ（SIMのみ契約する予定）"].map((option) => (
-            <label
-              key={option}
-              className={`flex items-center space-x-2 cursor-pointer px-3 py-2 rounded-lg ${
-                buyingDevice === option ? "bg-blue-600 text-white" : "bg-slate-700 text-slate-200"
-              }`}
-            >
-              <input
-                type="radio"
-                name="buyingDevice"
-                value={option}
-                checked={buyingDevice === option}
-                onChange={(e) => setBuyingDevice(e.target.value)}
-                className="accent-blue-500"
-              />
-              <span>{option}</span>
-            </label>
-          ))}
-        </div>
+        {["はい（端末も一緒に購入する）", "いいえ（SIMのみ契約する予定）"].map((option) => (
+          <label
+            key={option}
+            className={`flex items-center space-x-2 cursor-pointer px-3 py-2 rounded-lg ${
+              buyingDevice === option ? "bg-blue-600 text-white" : "bg-slate-700 text-slate-200"
+            }`}
+          >
+            <input
+              type="radio"
+              name="buyingDevice"
+              value={option}
+              checked={buyingDevice === option}
+              onChange={(e) => setBuyingDevice(e.target.value)}
+              className="accent-blue-500"
+            />
+            <span>{option}</span>
+          </label>
+        ))}
       </div>
 
-      {/* Q9-2 購入方法（複数選択可） */}
       {buyingDevice === "はい（端末も一緒に購入する）" && (
         <div>
-          <p className="font-semibold mb-3">
-            2. 端末の購入方法として、近い考え方を選んでください（複数選択可）
-          </p>
+          <p className="font-semibold mb-3">2. 端末の購入方法（複数選択可）</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             {[
               "Appleなど正規ストア・家電量販店で本体のみ購入したい",
