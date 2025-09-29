@@ -32,13 +32,13 @@ export default function Phase2Call({ answers, onChange }: Props) {
   };
 
   return (
-    <div className="w-full px-0 py-6 space-y-6">
-      <h2 className="text-2xl font-bold mb-4">⑦ 海外利用・特殊ニーズ</h2>
+    <div className="w-full box-border px-2 py-4 space-y-2">
+      <h2 className="text-2xl font-bold mb-4 text-center">⑦ 海外利用・特殊ニーズ</h2>
 
       {/* Q12 海外利用予定 */}
-      <div>
-        <p className="font-semibold mb-3">1. 海外でスマホを利用する予定はありますか？</p>
-        <div className="space-y-2">
+      <div className="w-full bg-slate-800/90 p-4 rounded-xl border border-slate-600">
+        <p className="font-semibold mb-2">1. 海外でスマホを利用する予定はありますか？</p>
+        <div className="space-y-1">
           {[
             "はい（短期旅行・年数回レベル）",
             "はい（長期滞在・留学・海外出張など）",
@@ -46,7 +46,7 @@ export default function Phase2Call({ answers, onChange }: Props) {
           ].map((option) => (
             <label
               key={option}
-              className={`flex items-center space-x-2 cursor-pointer py-2 rounded-lg ${
+              className={`flex items-center w-full cursor-pointer py-2 px-2 rounded-lg ${
                 overseasUse === option ? "bg-blue-600 text-white" : "bg-slate-700 text-slate-200"
               }`}
             >
@@ -56,7 +56,7 @@ export default function Phase2Call({ answers, onChange }: Props) {
                 value={option}
                 checked={overseasUse === option}
                 onChange={(e) => setOverseasUse(e.target.value)}
-                className="accent-blue-500"
+                className="accent-blue-500 mr-2"
               />
               <span>{option}</span>
             </label>
@@ -64,11 +64,11 @@ export default function Phase2Call({ answers, onChange }: Props) {
         </div>
       </div>
 
-      {/* Q12-2 海外利用時の希望 */}
+      {/* Q12-2 海外利用希望 */}
       {overseasUse?.startsWith("はい") && (
-        <div>
-          <p className="font-semibold mb-3">2. 海外利用時の希望に近いものを選んでください</p>
-          <div className="space-y-2">
+        <div className="w-full bg-slate-800/90 p-4 rounded-xl border border-slate-600">
+          <p className="font-semibold mb-2">2. 海外利用時の希望に近いものを選んでください</p>
+          <div className="space-y-1">
             {[
               "海外でも日本と同じように通信したい（ローミング含め使い放題が希望）",
               "現地でSNSや地図だけ使えればOK（低速・少量でも可）",
@@ -76,10 +76,8 @@ export default function Phase2Call({ answers, onChange }: Props) {
             ].map((option) => (
               <label
                 key={option}
-                className={`flex items-center space-x-2 cursor-pointer py-2 rounded-lg ${
-                  overseasPreference === option
-                    ? "bg-blue-600 text-white"
-                    : "bg-slate-700 text-slate-200"
+                className={`flex items-center w-full cursor-pointer py-2 px-2 rounded-lg ${
+                  overseasPreference === option ? "bg-blue-600 text-white" : "bg-slate-700 text-slate-200"
                 }`}
               >
                 <input
@@ -88,7 +86,7 @@ export default function Phase2Call({ answers, onChange }: Props) {
                   value={option}
                   checked={overseasPreference === option}
                   onChange={(e) => setOverseasPreference(e.target.value)}
-                  className="accent-blue-500"
+                  className="accent-blue-500 mr-2"
                 />
                 <span>{option}</span>
               </label>
@@ -98,9 +96,9 @@ export default function Phase2Call({ answers, onChange }: Props) {
       )}
 
       {/* Q13 デュアルSIM */}
-      <div>
-        <p className="font-semibold mb-3">3. デュアルSIM（2回線利用）を検討していますか？</p>
-        <div className="space-y-2">
+      <div className="w-full bg-slate-800/90 p-4 rounded-xl border border-slate-600">
+        <p className="font-semibold mb-2">3. デュアルSIM（2回線利用）を検討していますか？</p>
+        <div className="space-y-1">
           {[
             "はい（メイン＋サブで使い分けたい）",
             "はい（海外用と国内用で使い分けたい）",
@@ -108,7 +106,7 @@ export default function Phase2Call({ answers, onChange }: Props) {
           ].map((option) => (
             <label
               key={option}
-              className={`flex items-center space-x-2 cursor-pointer py-2 rounded-lg ${
+              className={`flex items-center w-full cursor-pointer py-2 px-2 rounded-lg ${
                 dualSim === option ? "bg-blue-600 text-white" : "bg-slate-700 text-slate-200"
               }`}
             >
@@ -118,7 +116,7 @@ export default function Phase2Call({ answers, onChange }: Props) {
                 value={option}
                 checked={dualSim === option}
                 onChange={(e) => setDualSim(e.target.value)}
-                className="accent-blue-500"
+                className="accent-blue-500 mr-2"
               />
               <span>{option}</span>
             </label>
@@ -126,10 +124,10 @@ export default function Phase2Call({ answers, onChange }: Props) {
         </div>
       </div>
 
-      {/* Q14 特殊な利用目的（複数選択） */}
-      <div>
-        <p className="font-semibold mb-3">4. 特殊な利用目的がありますか？（複数選択可）</p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+      {/* Q14 特殊利用 */}
+      <div className="w-full bg-slate-800/90 p-4 rounded-xl border border-slate-600">
+        <p className="font-semibold mb-2">4. 特殊な利用目的がありますか？（複数選択可）</p>
+        <div className="grid grid-cols-1 gap-1 w-full">
           {[
             "副回線として安価なプランを探している（メインとは別）",
             "法人契約または業務用利用を検討している",
@@ -139,7 +137,7 @@ export default function Phase2Call({ answers, onChange }: Props) {
           ].map((use) => (
             <label
               key={use}
-              className={`flex items-center space-x-2 cursor-pointer py-2 rounded-lg ${
+              className={`flex items-center w-full cursor-pointer py-2 px-2 rounded-lg ${
                 specialUses.includes(use) ? "bg-blue-600 text-white" : "bg-slate-700 text-slate-200"
               }`}
             >
@@ -147,7 +145,7 @@ export default function Phase2Call({ answers, onChange }: Props) {
                 type="checkbox"
                 checked={specialUses.includes(use)}
                 onChange={() => toggleSpecialUse(use)}
-                className="accent-blue-500"
+                className="accent-blue-500 mr-2"
               />
               <span>{use}</span>
             </label>
@@ -155,13 +153,7 @@ export default function Phase2Call({ answers, onChange }: Props) {
         </div>
       </div>
 
-      <button
-        onClick={handleNext}
-        disabled={!overseasUse || !dualSim}
-        className="mt-6 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-      >
-        次へ
-      </button>
+      {/* 次へボタンは無し */}
     </div>
   );
 }
