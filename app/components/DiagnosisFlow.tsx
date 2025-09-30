@@ -7,7 +7,8 @@ import Result from "./Result";
 import { Phase1Answers, Phase2Answers, DiagnosisAnswers } from "@/types/types";
 
 export default function DiagnosisFlow() {
-  const [step, setStep] = useState<"start" | "phase1" | "phase2" | "result">("start");
+  // 初期ステップを "phase1" に変更
+  const [step, setStep] = useState<"phase1" | "phase2" | "result">("phase1");
 
   const [answers, setAnswers] = useState<DiagnosisAnswers>({
     phase1: {
@@ -65,23 +66,7 @@ export default function DiagnosisFlow() {
   };
 
   return (
-    // 親背景はページ全体に任せ、ここは透明
     <div className="w-full min-h-screen py-10 px-2 space-y-8">
-      {step === "start" && (
-        <div className="text-center space-y-6">
-          <h1 className="text-4xl font-bold text-white">📱 キャリア診断スタート</h1>
-          <p className="text-slate-300">
-            いくつかの質問に答えるだけで、あなたに最適な通信キャリアとプランを診断します。
-          </p>
-          <button
-            onClick={() => setStep("phase1")}
-            className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white text-lg rounded-2xl shadow-lg transition-all"
-          >
-            診断を始める
-          </button>
-        </div>
-      )}
-
       {step === "phase1" && (
         <Phase1
           defaultValues={answers.phase1}
@@ -99,7 +84,7 @@ export default function DiagnosisFlow() {
       {step === "result" && (
         <Result
           answers={answers}
-          onRestart={() => setStep("start")}
+          onRestart={() => setStep("phase1")}
         />
       )}
     </div>
