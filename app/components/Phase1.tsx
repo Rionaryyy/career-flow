@@ -3,7 +3,7 @@
 import React from "react";
 import { Phase1Answers } from "@/types/types";
 
-export interface Phase1Props {   // ←ここ export を追加！
+export interface Phase1Props {
   defaultValues: Phase1Answers;
   onSubmit: (answers: Phase1Answers) => void;
   onBack?: () => void;
@@ -59,12 +59,12 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-8 p-6">
-      <h2 className="text-3xl font-bold text-center text-white mb-4">📍 フェーズ①：前提条件</h2>
+    <div className="w-full max-w-4xl mx-auto space-y-8 p-6 bg-white rounded-lg shadow-md">
+      <h2 className="text-3xl font-bold text-center text-black mb-6">📍 フェーズ①：前提条件</h2>
 
       {questions.map((q) => (
-        <div key={q.id} className="rounded-xl p-5 bg-gradient-to-br from-slate-800/90 to-slate-700/80 shadow-lg shadow-slate-900/40 w-[98%] mx-auto transition-all duration-300">
-          <p className="text-xl font-semibold mb-4 text-white text-center">{q.question}</p>
+        <div key={q.id} className="rounded-xl p-5 bg-gray-100 shadow-md w-full mx-auto transition-all duration-300">
+          <p className="text-xl font-semibold mb-4 text-black text-center">{q.question}</p>
           <div className="space-y-3">
             {q.options.map((option) => (
               <button
@@ -72,8 +72,8 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
                 onClick={() => handleSelect(q.id, option)}
                 className={`w-full py-3 rounded-lg border transition ${
                   answers[q.id as keyof typeof answers] === option
-                    ? "bg-blue-600 border-blue-400 text-white"
-                    : "bg-slate-700 border-slate-600 hover:bg-slate-600 text-gray-200"
+                    ? "bg-indigo-700 border-indigo-800 text-white"
+                    : "bg-white border-gray-300 hover:bg-gray-200 text-black"
                 }`}
               >
                 {option}
@@ -87,14 +87,14 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
         {onBack && (
           <button
             onClick={onBack}
-            className="px-4 py-2 rounded-full bg-slate-600 hover:bg-slate-500 text-sm"
+            className="px-4 py-2 rounded-full bg-gray-300 hover:bg-gray-400 text-black text-sm transition"
           >
-            戻る
+            ← 戻る
           </button>
         )}
         <button
           onClick={() => onSubmit(answers)}
-          className="px-8 py-3 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-lg font-semibold transition-all duration-300 shadow-lg shadow-blue-900/40"
+          className="px-8 py-3 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-lg transition shadow-md"
         >
           次へ進む
         </button>

@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import Phase1, { Phase1Props } from "./Phase1";
+import Phase1 from "./Phase1";
 import Phase2 from "./Phase2";
 import Result from "./Result";
 import { Phase1Answers, Phase2Answers, DiagnosisAnswers } from "@/types/types";
 
 export default function DiagnosisFlow() {
-  // 初期ステップを "phase1" に変更
   const [step, setStep] = useState<"phase1" | "phase2" | "result">("phase1");
 
   const [answers, setAnswers] = useState<DiagnosisAnswers>({
@@ -66,27 +65,29 @@ export default function DiagnosisFlow() {
   };
 
   return (
-    <div className="w-full min-h-screen py-10 px-2 space-y-8">
-      {step === "phase1" && (
-        <Phase1
-          defaultValues={answers.phase1}
-          onSubmit={handlePhase1Submit}
-        />
-      )}
+    <div className="min-h-screen bg-white text-black py-12 px-4">
+      <div className="max-w-4xl mx-auto space-y-8">
+        {step === "phase1" && (
+          <Phase1
+            defaultValues={answers.phase1}
+            onSubmit={handlePhase1Submit}
+          />
+        )}
 
-      {step === "phase2" && (
-        <Phase2
-          onSubmit={handlePhase2Submit}
-          defaultValues={answers.phase2}
-        />
-      )}
+        {step === "phase2" && (
+          <Phase2
+            onSubmit={handlePhase2Submit}
+            defaultValues={answers.phase2}
+          />
+        )}
 
-      {step === "result" && (
-        <Result
-          answers={answers}
-          onRestart={() => setStep("phase1")}
-        />
-      )}
+        {step === "result" && (
+          <Result
+            answers={answers}
+            onRestart={() => setStep("phase1")}
+          />
+        )}
+      </div>
     </div>
   );
 }
