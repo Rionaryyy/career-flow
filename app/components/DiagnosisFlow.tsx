@@ -18,51 +18,36 @@ export default function DiagnosisFlow() {
       contractLockPreference: null,
     },
     phase2: {
-      // ① データ通信ニーズ
       dataUsage: null,
       speedLimitImportance: null,
       tetheringNeeded: null,
       tetheringUsage: null,
-
-      // ② 通話
       callFrequency: null,
       callPriority: null,
       callOptionsNeeded: null,
       callPurpose: null,
-
-      // ③ 契約条件・割引
       familyLines: null,
       setDiscount: null,
       infraSet: null,
-
-      // ④ 経済圏・ポイント
       ecosystem: null,
       ecosystemMonthly: null,
       usingEcosystem: null,
       monthlyUsage: null,
-
-      // ⑤ サブスク
       subs: [],
       subsDiscountPreference: null,
       usingServices: [],
       monthlySubscriptionCost: null,
       subscriptions: [],
-      subscriptionServices: [],       // ← 追加
-      subscriptionMonthly: null,      // ← 追加
-
-      // ⑥ 端末・購入形態
+      subscriptionServices: [],
+      subscriptionMonthly: null,
       buyingDevice: null,
       devicePurchaseMethods: [],
       devicePreference: null,
       oldDevicePlan: null,
-
-      // ⑦ 海外利用・特殊ニーズ
       overseasUse: null,
       overseasPreference: null,
       dualSim: null,
       specialUses: [],
-
-      // ⑧ 支払い方法
       paymentMethods: [],
       mainCard: null,
       paymentTiming: null,
@@ -80,7 +65,7 @@ export default function DiagnosisFlow() {
   };
 
   return (
-    <div className="w-full space-y-8 px-2"> {/* 画面いっぱいに広げる */}
+    <div className="w-full min-h-screen bg-gray-50 py-10 px-2 space-y-8">
       {step === "start" && (
         <div className="text-center space-y-6">
           <h1 className="text-4xl font-bold text-white">📱 キャリア診断スタート</h1>
@@ -97,24 +82,30 @@ export default function DiagnosisFlow() {
       )}
 
       {step === "phase1" && (
-        <Phase1
-          defaultValues={answers.phase1}
-          onSubmit={handlePhase1Submit}
-        />
+        <div className="max-w-xl mx-auto bg-white p-6 rounded-2xl shadow-lg">
+          <Phase1
+            defaultValues={answers.phase1}
+            onSubmit={handlePhase1Submit}
+          />
+        </div>
       )}
 
       {step === "phase2" && (
-        <Phase2
-          onSubmit={handlePhase2Submit}
-          defaultValues={answers.phase2}
-        />
+        <div className="max-w-xl mx-auto bg-white p-6 rounded-2xl shadow-lg">
+          <Phase2
+            onSubmit={handlePhase2Submit}
+            defaultValues={answers.phase2}
+          />
+        </div>
       )}
 
       {step === "result" && (
-        <Result
-          answers={answers}
-          onRestart={() => setStep("start")}
-        />
+        <div className="max-w-xl mx-auto bg-white p-6 rounded-2xl shadow-lg">
+          <Result
+            answers={answers}
+            onRestart={() => setStep("start")}
+          />
+        </div>
       )}
     </div>
   );
