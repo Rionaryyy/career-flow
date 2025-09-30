@@ -3,7 +3,9 @@ import DiagnosisFlow from "../components/DiagnosisFlow";
 
 export default function DiagnosisPage() {
   return (
-    <main className="min-h-screen bg-gray-50 py-10 px-4">
+    // ページ全体の背景をグレーに設定
+    <main className="min-h-screen bg-gray-200 py-10 px-4">
+      {/* DiagnosisFlow の親 div は透明のままでOK */}
       <DiagnosisFlow />
     </main>
   );
