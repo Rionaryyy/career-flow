@@ -63,7 +63,10 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
       <h2 className="text-2xl font-bold text-center text-black mb-3">📍 フェーズ①：前提条件</h2>
 
       {questions.map((q) => (
-        <div key={q.id} className="rounded-xl p-4 bg-gray-100 shadow-md w-full mx-auto transition-all duration-300">
+        <div
+          key={q.id}
+          className="rounded-xl p-4 bg-green-100 shadow-md w-full mx-auto transition-all duration-300"
+        >
           <p className="text-lg font-semibold mb-2 text-black text-center">{q.question}</p>
           <div className="space-y-2">
             {q.options.map((option) => (
@@ -72,8 +75,8 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
                 onClick={() => handleSelect(q.id, option)}
                 className={`w-full py-2.5 rounded-lg border transition ${
                   answers[q.id as keyof typeof answers] === option
-                    ? "bg-indigo-700 border-indigo-800 text-white"
-                    : "bg-white border-gray-300 hover:bg-gray-200 text-black"
+                    ? "bg-pink-300 border-pink-400 text-black"
+                    : "bg-blue-100 border-blue-200 hover:bg-blue-200 text-black"
                 }`}
               >
                 {option}
@@ -87,14 +90,14 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
         {onBack && (
           <button
             onClick={onBack}
-            className="px-4 py-2 rounded-full bg-gray-300 hover:bg-gray-400 text-black text-sm transition"
+            className="px-4 py-2 rounded-full bg-purple-100 hover:bg-purple-200 text-black text-sm transition"
           >
             ← 戻る
           </button>
         )}
         <button
           onClick={() => onSubmit(answers)}
-          className="px-8 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-lg transition shadow-md"
+          className="px-8 py-2.5 rounded-full bg-pink-300 hover:bg-pink-400 text-black font-semibold text-lg transition shadow-md"
         >
           次へ進む
         </button>
