@@ -65,7 +65,8 @@ export default function DiagnosisFlow() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-gray-50 py-10 px-2 space-y-8">
+    // 親背景はページ全体に任せ、ここは透明
+    <div className="w-full min-h-screen py-10 px-2 space-y-8">
       {step === "start" && (
         <div className="text-center space-y-6">
           <h1 className="text-4xl font-bold text-white">📱 キャリア診断スタート</h1>
@@ -82,30 +83,24 @@ export default function DiagnosisFlow() {
       )}
 
       {step === "phase1" && (
-        <div className="max-w-xl mx-auto bg-white p-6 rounded-2xl shadow-lg">
-          <Phase1
-            defaultValues={answers.phase1}
-            onSubmit={handlePhase1Submit}
-          />
-        </div>
+        <Phase1
+          defaultValues={answers.phase1}
+          onSubmit={handlePhase1Submit}
+        />
       )}
 
       {step === "phase2" && (
-        <div className="max-w-xl mx-auto bg-white p-6 rounded-2xl shadow-lg">
-          <Phase2
-            onSubmit={handlePhase2Submit}
-            defaultValues={answers.phase2}
-          />
-        </div>
+        <Phase2
+          onSubmit={handlePhase2Submit}
+          defaultValues={answers.phase2}
+        />
       )}
 
       {step === "result" && (
-        <div className="max-w-xl mx-auto bg-white p-6 rounded-2xl shadow-lg">
-          <Result
-            answers={answers}
-            onRestart={() => setStep("start")}
-          />
-        </div>
+        <Result
+          answers={answers}
+          onRestart={() => setStep("start")}
+        />
       )}
     </div>
   );
