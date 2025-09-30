@@ -59,18 +59,18 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-8 p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-3xl font-bold text-center text-black mb-6">📍 フェーズ①：前提条件</h2>
+    <div className="w-full max-w-4xl mx-auto space-y-4 p-4 bg-white rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold text-center text-black mb-3">📍 フェーズ①：前提条件</h2>
 
       {questions.map((q) => (
-        <div key={q.id} className="rounded-xl p-5 bg-gray-100 shadow-md w-full mx-auto transition-all duration-300">
-          <p className="text-xl font-semibold mb-4 text-black text-center">{q.question}</p>
-          <div className="space-y-3">
+        <div key={q.id} className="rounded-xl p-4 bg-gray-100 shadow-md w-full mx-auto transition-all duration-300">
+          <p className="text-lg font-semibold mb-2 text-black text-center">{q.question}</p>
+          <div className="space-y-2">
             {q.options.map((option) => (
               <button
                 key={option}
                 onClick={() => handleSelect(q.id, option)}
-                className={`w-full py-3 rounded-lg border transition ${
+                className={`w-full py-2.5 rounded-lg border transition ${
                   answers[q.id as keyof typeof answers] === option
                     ? "bg-indigo-700 border-indigo-800 text-white"
                     : "bg-white border-gray-300 hover:bg-gray-200 text-black"
@@ -83,7 +83,7 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
         </div>
       ))}
 
-      <div className="flex justify-between items-center pt-6">
+      <div className="flex justify-between items-center pt-4">
         {onBack && (
           <button
             onClick={onBack}
@@ -94,7 +94,7 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
         )}
         <button
           onClick={() => onSubmit(answers)}
-          className="px-8 py-3 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-lg transition shadow-md"
+          className="px-8 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-lg transition shadow-md"
         >
           次へ進む
         </button>
