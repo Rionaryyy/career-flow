@@ -1,11 +1,16 @@
-// app/page.tsx
-import React from "react";
-import DiagnosisFlow from "./components/DiagnosisFlow";
+"use client";
 
-export default function Page() {
+import HeroSection from "./components/HeroSection";
+import FeatureHighlights from "./components/FeatureHighlights";
+
+export default function HomePage() {
   return (
-    <main className="min-h-screen bg-slate-900 text-white">
-      <DiagnosisFlow />
+    <main className="min-h-screen bg-gray-50">
+      {/* ヒーローセクション */}
+      <HeroSection />
+
+      {/* サービス特徴の3つの強み */}
+      <FeatureHighlights />
     </main>
   );
 }
