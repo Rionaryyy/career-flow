@@ -68,9 +68,9 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
   const progress = (answeredCount / questions.length) * 100;
 
   return (
-    <div className="w-full min-h-screen bg-white flex flex-col items-center justify-start py-10 overflow-x-hidden">
+    <div className="w-full min-h-screen bg-white flex flex-col items-center justify-start py-8 overflow-x-hidden">
       {/* 進捗バー */}
-      <div className="w-full max-w-5xl mb-8">
+      <div className="w-full px-4 mb-6">
         <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
           <div
             className="h-2 bg-pink-400 transition-all duration-500"
@@ -83,21 +83,21 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
       </div>
 
       {/* タイトル */}
-      <h2 className="text-2xl font-bold text-black mb-10 text-center">
+      <h2 className="text-2xl font-bold text-black mb-8 text-center px-4">
         📍 フェーズ①：前提条件
       </h2>
 
       {/* 質問カード一覧 */}
-      <div className="w-full max-w-5xl space-y-8 px-4">
+      <div className="w-full px-2 space-y-5">
         {questions.map((q, index) => (
           <div
             key={q.id}
-            className="w-full bg-gradient-to-br from-pink-50 to-blue-50 rounded-2xl shadow-lg p-6 transition hover:shadow-xl"
+            className="w-full bg-gradient-to-br from-pink-50 to-blue-50 rounded-2xl shadow-lg p-5 transition hover:shadow-xl"
           >
-            <p className="text-lg font-semibold text-center text-black mb-5">
+            <p className="text-lg font-semibold text-center text-black mb-4">
               {index + 1}. {q.question}
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3">
               {q.options.map((option) => (
                 <button
                   key={option}
@@ -117,7 +117,7 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
       </div>
 
       {/* ナビゲーションボタン */}
-      <div className="w-full max-w-5xl flex justify-between items-center mt-12 px-4">
+      <div className="w-full flex justify-between items-center mt-10 px-4">
         {onBack && (
           <button
             onClick={onBack}
