@@ -1,7 +1,9 @@
+// components/phase1/Phase1.tsx
 "use client";
 
 import React from "react";
 import { Phase1Answers } from "@/types/types";
+import QuestionLayout from "./layouts/QuestionLayout";
 
 export interface Phase1Props {
   defaultValues: Phase1Answers;
@@ -56,90 +58,48 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
   const [answers, setAnswers] = React.useState<Phase1Answers>(defaultValues);
 
   const handleSelect = (id: string, option: string) => {
-    setAnswers((prev) => ({
-      ...prev,
-      [id]: option,
-    }));
+    setAnswers((prev) => ({ ...prev, [id]: option }));
   };
 
   const answeredCount = questions.filter(
     (q) => answers[q.id as keyof typeof answers]
   ).length;
-  const progress = (answeredCount / questions.length) * 100;
 
   return (
-    <div className="w-full min-h-screen bg-white flex flex-col items-center justify-start overflow-x-hidden">
-      {/* 固定ヘッダー */}
-      <div className="fixed top-0 left-0 w-full bg-white z-50 shadow-md py-3 px-2 flex flex-col space-y-2">
-        {/* 進捗説明 */}
-        <p className="text-sm text-gray-600 text-center">
-          現在の回答状況：{answeredCount} / {questions.length} 問
-        </p>
-
-        {/* 進捗バー */}
-        <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
-          <div
-            className="h-2 bg-pink-400 transition-all duration-500 ease-in-out"
-            style={{ width: `${progress}%` }}
-          ></div>
-        </div>
-
-        {/* タイトル */}
-        <h2 className="text-lg sm:text-2xl font-bold text-black text-center">
-          📍 フェーズ①：前提条件
-        </h2>
-
-        {/* ナビゲーションボタン */}
-        <div className="w-full flex justify-between items-center">
-          {onBack ? (
-            <button
-              onClick={onBack}
-              className="px-4 py-2 rounded-full bg-purple-100 hover:bg-purple-200 text-black text-sm transition"
-            >
-              ← 戻る
-            </button>
-          ) : (
-            <div /> // 戻るがない場合は空divでスペース確保
-          )}
-          <button
-            onClick={() => onSubmit(answers)}
-            className="px-6 py-2 rounded-full bg-pink-400 hover:bg-pink-500 text-black font-semibold text-sm sm:text-base transition shadow-md disabled:opacity-50"
-            disabled={answeredCount < questions.length}
-          >
-            次へ進む →
-          </button>
-        </div>
-      </div>
-
-      {/* コンテンツ領域（固定ヘッダー分の余白を追加） */}
-      <div className="w-full flex flex-col items-center justify-start pt-36 px-2 space-y-4">
-        {/* 質問カード一覧 */}
-        {questions.map((q, index) => (
-          <div
-            key={q.id}
-            className="w-full bg-gradient-to-br from-pink-50 to-blue-50 rounded-2xl shadow-lg p-5 transition hover:shadow-xl"
-          >
-            <p className="text-lg font-semibold text-center text-black mb-4">
-              {index + 1}. {q.question}
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {q.options.map((option) => (
-                <button
-                  key={option}
-                  onClick={() => handleSelect(q.id, option)}
-                  className={`w-full py-3 rounded-xl border transition-all text-black text-base ${
-                    answers[q.id as keyof typeof answers] === option
-                      ? "bg-pink-300 border-pink-400 shadow-md scale-[1.02]"
-                      : "bg-white border-blue-200 hover:bg-blue-100"
-                  }`}
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
+    <QuestionLayout
+      title="📍 フェーズ①：前提条件"
+      onNext={() => onSubmit(answers)}
+      onBack={onBack}
+      answeredCount={answeredCount}
+      totalCount={questions.length}
+      nextLabel="次へ進む →"
+    >
+      {/* 質問カード */}
+      {questions.map((q, index) => (
+        <div
+          key={q.id}
+          className="w-full bg-gradient-to-br from-pink-50 to-blue-50 rounded-2xl shadow-lg p-5 transition hover:shadow-xl mb-4"
+        >
+          <p className="text-lg font-semibold text-center text-black mb-4">
+            {index + 1}. {q.question}
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {q.options.map((option) => (
+              <button
+                key={option}
+                onClick={() => handleSelect(q.id, option)}
+                className={`w-full py-3 rounded-xl border transition-all text-black text-base ${
+                  answers[q.id as keyof typeof answers] === option
+                    ? "bg-pink-300 border-pink-400 shadow-md scale-[1.02]"
+                    : "bg-white border-blue-200 hover:bg-blue-100"
+                }`}
+              >
+                {option}
+              </button>
+            ))}
           </div>
-        ))}
-      </div>
-    </div>
+        </div>
+      ))}
+    </QuestionLayout>
   );
 }
