@@ -62,19 +62,18 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
     }));
   };
 
-  // 回答済み数をカウント（進捗バー用）
   const answeredCount = questions.filter(
     (q) => answers[q.id as keyof typeof answers]
   ).length;
   const progress = (answeredCount / questions.length) * 100;
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-6 bg-white rounded-2xl shadow-lg">
+    <div className="w-screen min-h-screen bg-white flex flex-col items-center justify-start py-10 px-4">
       {/* 進捗バー */}
-      <div className="mb-6">
-        <div className="w-full bg-gray-200 h-2 rounded-full">
+      <div className="w-full max-w-5xl mb-8 px-4">
+        <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
           <div
-            className="h-2 bg-pink-400 rounded-full transition-all duration-500"
+            className="h-2 bg-pink-400 transition-all duration-500"
             style={{ width: `${progress}%` }}
           ></div>
         </div>
@@ -83,21 +82,22 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
         </p>
       </div>
 
-      <h2 className="text-2xl font-bold text-center text-black mb-8">
+      {/* タイトル */}
+      <h2 className="text-2xl font-bold text-black mb-10 text-center">
         📍 フェーズ①：前提条件
       </h2>
 
-      {/* 質問一覧 */}
-      <div className="space-y-8">
+      {/* 質問カード一覧 */}
+      <div className="w-full max-w-5xl space-y-8">
         {questions.map((q, index) => (
           <div
             key={q.id}
-            className="p-6 bg-gradient-to-br from-blue-50 to-pink-50 rounded-2xl shadow-md transition hover:shadow-lg"
+            className="w-full bg-gradient-to-br from-pink-50 to-blue-50 rounded-2xl shadow-lg p-6 transition hover:shadow-xl"
           >
-            <p className="text-lg font-semibold text-black mb-4 text-center">
+            <p className="text-lg font-semibold text-center text-black mb-5">
               {index + 1}. {q.question}
             </p>
-            <div className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {q.options.map((option) => (
                 <button
                   key={option}
@@ -116,19 +116,19 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
         ))}
       </div>
 
-      {/* ナビゲーション */}
-      <div className="flex justify-between items-center mt-10">
+      {/* ナビゲーションボタン */}
+      <div className="w-full max-w-5xl flex justify-between items-center mt-12 px-4">
         {onBack && (
           <button
             onClick={onBack}
-            className="px-4 py-2 rounded-full bg-purple-100 hover:bg-purple-200 text-black text-sm transition"
+            className="px-6 py-2 rounded-full bg-purple-100 hover:bg-purple-200 text-black text-sm transition"
           >
             ← 戻る
           </button>
         )}
         <button
           onClick={() => onSubmit(answers)}
-          className="px-8 py-3 rounded-full bg-pink-400 hover:bg-pink-500 text-black font-semibold text-lg transition shadow-md disabled:opacity-50"
+          className="px-10 py-3 rounded-full bg-pink-400 hover:bg-pink-500 text-black font-semibold text-lg transition shadow-md disabled:opacity-50"
           disabled={answeredCount < questions.length}
         >
           次へ進む →
