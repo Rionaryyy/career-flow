@@ -71,10 +71,15 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
     <div className="w-full min-h-screen bg-white flex flex-col items-center justify-start overflow-x-hidden">
       {/* 固定ヘッダー */}
       <div className="fixed top-0 left-0 w-full bg-white z-50 shadow-md py-3 px-2 flex flex-col space-y-2">
+        {/* 進捗説明 */}
+        <p className="text-sm text-gray-600 text-center">
+          現在の回答状況：{answeredCount} / {questions.length} 問
+        </p>
+
         {/* 進捗バー */}
         <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
           <div
-            className="h-2 bg-pink-400 transition-all duration-500"
+            className="h-2 bg-pink-400 transition-all duration-500 ease-in-out"
             style={{ width: `${progress}%` }}
           ></div>
         </div>
@@ -86,13 +91,15 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
 
         {/* ナビゲーションボタン */}
         <div className="w-full flex justify-between items-center">
-          {onBack && (
+          {onBack ? (
             <button
               onClick={onBack}
               className="px-4 py-2 rounded-full bg-purple-100 hover:bg-purple-200 text-black text-sm transition"
             >
               ← 戻る
             </button>
+          ) : (
+            <div /> // 戻るがない場合は空divでスペース確保
           )}
           <button
             onClick={() => onSubmit(answers)}
@@ -105,7 +112,7 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
       </div>
 
       {/* コンテンツ領域（固定ヘッダー分の余白を追加） */}
-      <div className="w-full flex flex-col items-center justify-start pt-32 px-2 space-y-4">
+      <div className="w-full flex flex-col items-center justify-start pt-36 px-2 space-y-4">
         {/* 質問カード一覧 */}
         {questions.map((q, index) => (
           <div
