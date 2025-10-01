@@ -4,6 +4,7 @@ import { useState } from "react";
 import Phase1 from "./Phase1";
 import Phase2 from "./Phase2";
 import Result from "./Result";
+import FeatureHighlightsFlow from "./FeatureHighlightsFlow"; // ← 新規追加
 import { Phase1Answers, Phase2Answers, DiagnosisAnswers } from "@/types/types";
 
 export default function DiagnosisFlow() {
@@ -87,6 +88,9 @@ export default function DiagnosisFlow() {
             onRestart={() => setStep("phase1")}
           />
         )}
+
+        {/* 診断フロー用の下部セクション */}
+        <FeatureHighlightsFlow />
       </div>
     </div>
   );
