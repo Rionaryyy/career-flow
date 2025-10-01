@@ -68,9 +68,9 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
   const progress = (answeredCount / questions.length) * 100;
 
   return (
-    <div className="w-full min-h-screen bg-white flex flex-col items-center justify-start py-8 overflow-x-hidden">
+    <div className="w-full min-h-screen bg-white flex flex-col items-center justify-start py-6 overflow-x-hidden">
       {/* 進捗バー */}
-      <div className="w-full px-4 mb-6">
+      <div className="w-full px-2 mb-4">
         <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
           <div
             className="h-2 bg-pink-400 transition-all duration-500"
@@ -83,12 +83,12 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
       </div>
 
       {/* タイトル */}
-      <h2 className="text-2xl font-bold text-black mb-8 text-center px-4">
+      <h2 className="w-full text-2xl font-bold text-black mb-6 text-center px-2">
         📍 フェーズ①：前提条件
       </h2>
 
       {/* 質問カード一覧 */}
-      <div className="w-full px-2 space-y-5">
+      <div className="w-full px-2 space-y-4">
         {questions.map((q, index) => (
           <div
             key={q.id}
@@ -117,7 +117,7 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
       </div>
 
       {/* ナビゲーションボタン */}
-      <div className="w-full flex justify-between items-center mt-10 px-4">
+      <div className="w-full flex justify-between items-center mt-8 px-2">
         {onBack && (
           <button
             onClick={onBack}
