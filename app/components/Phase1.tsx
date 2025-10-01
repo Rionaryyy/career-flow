@@ -97,7 +97,7 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
             <p className="text-lg font-semibold text-center text-black mb-4">
               {index + 1}. {q.question}
             </p>
-            <div className="grid grid-cols-1 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {q.options.map((option) => (
                 <button
                   key={option}
