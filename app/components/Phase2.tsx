@@ -54,21 +54,21 @@ export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props)
   const renderStep = () => {
     switch (steps[step].id) {
       case "data":
-        return <Phase2Data answers={answers} onChange={updateAnswers} />;
+        return <Phase2Data answers={answers} onChange={updateAnswers} onNext={handleNext} onBack={handleBack} />;
       case "call":
-        return <Phase2Call answers={answers} onChange={updateAnswers} />;
+        return <Phase2Call answers={answers} onChange={updateAnswers} onNext={handleNext} onBack={handleBack} />;
       case "contract":
-        return <Phase2Contract answers={answers} onChange={updateAnswers} />;
+        return <Phase2Contract answers={answers} onChange={updateAnswers} onNext={handleNext} onBack={handleBack} />;
       case "ecosystem":
-        return <Phase2Ecosystem answers={answers} onChange={updateAnswers} />;
+        return <Phase2Ecosystem answers={answers} onChange={updateAnswers} onNext={handleNext} onBack={handleBack} />;
       case "subscription":
-        return <Phase2Subscription answers={answers} onChange={updateAnswers} />;
+        return <Phase2Subscription answers={answers} onChange={updateAnswers} onNext={handleNext} onBack={handleBack} />;
       case "device":
-        return <Phase2Device answers={answers} onChange={updateAnswers} />;
+        return <Phase2Device answers={answers} onChange={updateAnswers} onNext={handleNext} onBack={handleBack} />;
       case "overseas":
-        return <Phase2Overseas answers={answers} onChange={updateAnswers} />;
+        return <Phase2Overseas answers={answers} onChange={updateAnswers} onNext={handleNext} onBack={handleBack} />;
       case "payment":
-        return <Phase2Payment answers={answers} onChange={updateAnswers} />;
+        return <Phase2Payment answers={answers} onChange={updateAnswers} onNext={handleNext} onBack={handleBack} />;
       default:
         return null;
     }
