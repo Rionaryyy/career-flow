@@ -44,7 +44,11 @@ const questions = [
   {
     id: "contractLockPreference",
     question: "契約期間の縛りや解約金について、どの程度気にしますか？",
-    options: ["絶対に嫌（縛りなしが前提）", "できれば避けたいが内容次第", "気にしない（条件次第でOK）"],
+    options: [
+      "絶対に嫌（縛りなしが前提）",
+      "できれば避けたいが内容次第",
+      "気にしない（条件次第でOK）",
+    ],
   },
 ];
 
@@ -58,35 +62,62 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
     }));
   };
 
+  // 回答済み数をカウント（進捗バー用）
+  const answeredCount = questions.filter(
+    (q) => answers[q.id as keyof typeof answers]
+  ).length;
+  const progress = (answeredCount / questions.length) * 100;
+
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-4 p-4 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold text-center text-black mb-3">📍 フェーズ①：前提条件</h2>
-
-      {questions.map((q) => (
-        <div
-          key={q.id}
-          className="rounded-xl p-4 bg-green-100 shadow-md w-full mx-auto transition-all duration-300"
-        >
-          <p className="text-lg font-semibold mb-2 text-black text-center">{q.question}</p>
-          <div className="space-y-2">
-            {q.options.map((option) => (
-              <button
-                key={option}
-                onClick={() => handleSelect(q.id, option)}
-                className={`w-full py-2.5 rounded-lg border transition ${
-                  answers[q.id as keyof typeof answers] === option
-                    ? "bg-pink-300 border-pink-400 text-black"
-                    : "bg-blue-100 border-blue-200 hover:bg-blue-200 text-black"
-                }`}
-              >
-                {option}
-              </button>
-            ))}
-          </div>
+    <div className="w-full max-w-4xl mx-auto p-6 bg-white rounded-2xl shadow-lg">
+      {/* 進捗バー */}
+      <div className="mb-6">
+        <div className="w-full bg-gray-200 h-2 rounded-full">
+          <div
+            className="h-2 bg-pink-400 rounded-full transition-all duration-500"
+            style={{ width: `${progress}%` }}
+          ></div>
         </div>
-      ))}
+        <p className="text-center text-sm text-gray-500 mt-2">
+          {answeredCount} / {questions.length} 問回答済み
+        </p>
+      </div>
 
-      <div className="flex justify-between items-center pt-4">
+      <h2 className="text-2xl font-bold text-center text-black mb-8">
+        📍 フェーズ①：前提条件
+      </h2>
+
+      {/* 質問一覧 */}
+      <div className="space-y-8">
+        {questions.map((q, index) => (
+          <div
+            key={q.id}
+            className="p-6 bg-gradient-to-br from-blue-50 to-pink-50 rounded-2xl shadow-md transition hover:shadow-lg"
+          >
+            <p className="text-lg font-semibold text-black mb-4 text-center">
+              {index + 1}. {q.question}
+            </p>
+            <div className="space-y-3">
+              {q.options.map((option) => (
+                <button
+                  key={option}
+                  onClick={() => handleSelect(q.id, option)}
+                  className={`w-full py-3 rounded-xl border transition-all text-black text-base ${
+                    answers[q.id as keyof typeof answers] === option
+                      ? "bg-pink-300 border-pink-400 shadow-md scale-[1.02]"
+                      : "bg-white border-blue-200 hover:bg-blue-100"
+                  }`}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ナビゲーション */}
+      <div className="flex justify-between items-center mt-10">
         {onBack && (
           <button
             onClick={onBack}
@@ -97,9 +128,10 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
         )}
         <button
           onClick={() => onSubmit(answers)}
-          className="px-8 py-2.5 rounded-full bg-pink-300 hover:bg-pink-400 text-black font-semibold text-lg transition shadow-md"
+          className="px-8 py-3 rounded-full bg-pink-400 hover:bg-pink-500 text-black font-semibold text-lg transition shadow-md disabled:opacity-50"
+          disabled={answeredCount < questions.length}
         >
-          次へ進む
+          次へ進む →
         </button>
       </div>
     </div>
