@@ -68,9 +68,9 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
   const progress = (answeredCount / questions.length) * 100;
 
   return (
-    <div className="w-screen min-h-screen bg-white flex flex-col items-center justify-start py-10 px-4">
+    <div className="w-full min-h-screen bg-white flex flex-col items-center justify-start py-10 overflow-x-hidden">
       {/* 進捗バー */}
-      <div className="w-full max-w-5xl mb-8 px-4">
+      <div className="w-full max-w-5xl mb-8">
         <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
           <div
             className="h-2 bg-pink-400 transition-all duration-500"
@@ -88,7 +88,7 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
       </h2>
 
       {/* 質問カード一覧 */}
-      <div className="w-full max-w-5xl space-y-8">
+      <div className="w-full max-w-5xl space-y-8 px-4">
         {questions.map((q, index) => (
           <div
             key={q.id}
