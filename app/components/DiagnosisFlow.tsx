@@ -66,31 +66,32 @@ export default function DiagnosisFlow() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-black py-12 px-4 space-y-8">
+    <div className="min-h-screen bg-white text-black py-12 space-y-8">
 
       {/* フェーズ1 */}
       {step === "phase1" && (
-        <div className="max-w-4xl mx-auto space-y-8">
+        <div className="max-w-4xl mx-auto space-y-8 px-4 sm:px-6 lg:px-8">
           <Phase1 defaultValues={answers.phase1} onSubmit={handlePhase1Submit} />
         </div>
       )}
 
       {/* フェーズ2：画面端まで広げる */}
       {step === "phase2" && (
-  <div className="w-full bg-red-100">
-    <Phase2 onSubmit={handlePhase2Submit} defaultValues={answers.phase2} />
-  </div>
-)}
+        <div className="w-full">
+          <Phase2 onSubmit={handlePhase2Submit} defaultValues={answers.phase2} />
+        </div>
+      )}
+
       {/* 結果画面 */}
       {step === "result" && (
-        <div className="max-w-4xl mx-auto space-y-8">
+        <div className="max-w-4xl mx-auto space-y-8 px-4 sm:px-6 lg:px-8">
           <Result answers={answers} onRestart={() => setStep("phase1")} />
         </div>
       )}
 
-      {/* 下部セクション */}
+      {/* 下部セクション（必要に応じてラップ） */}
       {step !== "phase2" && (
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <FeatureHighlightsFlow />
         </div>
       )}
