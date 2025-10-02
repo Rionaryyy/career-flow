@@ -77,10 +77,11 @@ export default function Phase2Call({ answers, onChange, onNext, onBack }: Props)
   question={q.question}
   options={q.options}
   type={q.type}
-  value={currentValue}
-  onChange={(value) => handleChange(q.id, value)}
-  answers={answers} // ←これを追加
+  value={answers[q.id as keyof Phase2Answers] as string | null}
+  onChange={handleChange} // ← そのまま渡す
+  answers={answers}
 />
+
           );
         })}
       </div>

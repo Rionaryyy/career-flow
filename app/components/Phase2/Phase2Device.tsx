@@ -57,15 +57,16 @@ export default function Phase2Device({ answers, onChange, onNext, onBack }: Prop
 
           return (
             <QuestionCard
-              key={q.id}
-              id={q.id}
-              question={q.question}
-              options={q.options}
-              type={q.type}
-              value={currentValue}
-              onChange={handleChange} // ← そのまま渡す
-              answers={answers}
-            />
+  key={q.id}
+  id={q.id}
+  question={q.question}
+  options={q.options}
+  type={q.type}
+  value={answers[q.id as keyof Phase2Answers] as string | null}
+  onChange={handleChange} // ← そのまま渡す
+  answers={answers}
+/>
+
           );
         })}
       </div>
