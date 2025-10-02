@@ -25,7 +25,7 @@ export default function Phase2Call({ answers, onChange, onNext, onBack }: Props)
 
   return (
     <QuestionLayout title="② 通話に関する質問" onNext={onNext} onBack={onBack}>
-      <div className="w-full py-6 space-y-6">
+      <div className="w-full space-y-6">
         {questions.map((q) => (
           <QuestionCard
             key={q.id}
