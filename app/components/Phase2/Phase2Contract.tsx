@@ -48,9 +48,10 @@ export default function Phase2Contract({ answers, onChange, onNext, onBack }: Pr
   options={q.options}
   type={q.type}
   value={answers[q.id as keyof Phase2Answers] as string | null}
-  onChange={(value) => handleChange(q.id, value)}
+  onChange={handleChange} // ← そのまま渡す
   answers={answers}
 />
+
 
         ))}
       </div>
