@@ -72,14 +72,15 @@ export default function Phase2Call({ answers, onChange, onNext, onBack }: Props)
 
           return (
             <QuestionCard
-              key={q.id}
-              id={q.id}
-              question={q.question}
-              options={q.options}
-              type={q.type}
-              value={currentValue || undefined}
-              onChange={(value) => handleChange(q.id, value)}
-            />
+  key={q.id}
+  id={q.id}
+  question={q.question}
+  options={q.options}
+  type={q.type}
+  value={currentValue}
+  onChange={(value) => handleChange(q.id, value)}
+  answers={answers} // ←これを追加
+/>
           );
         })}
       </div>

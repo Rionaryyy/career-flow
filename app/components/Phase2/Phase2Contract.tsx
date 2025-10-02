@@ -42,14 +42,16 @@ export default function Phase2Contract({ answers, onChange, onNext, onBack }: Pr
       <div className="w-full py-6 space-y-6">
         {questions.map((q) => (
           <QuestionCard
-            key={q.id}
-            id={q.id} // ← ここを追加
-            question={q.question}
-            options={q.options}
-            type={q.type}
-            value={answers[q.id as keyof Phase2Answers] ?? null} // ← null を許容
+  key={q.id}
+  id={q.id}
+  question={q.question}
+  options={q.options}
+  type={q.type}
+ value={answers[q.id as keyof Phase2Answers] ?? null} // ← null を許容
             onChange={(value) => handleChange(q.id, value)}
-          />
+  answers={answers} // ←これを追加
+/>
+
         ))}
       </div>
     </QuestionLayout>

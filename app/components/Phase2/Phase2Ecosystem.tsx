@@ -48,14 +48,15 @@ export default function Phase2Ecosystem({ answers, onChange, onNext, onBack }: P
 
           return (
             <QuestionCard
-              key={q.id}
-              id={q.id}
-              question={q.question}
-              options={q.options}
-              type={q.type}
-              value={currentValue}
-              onChange={(value) => handleChange(q.id, value)}
-            />
+  key={q.id}
+  id={q.id}
+  question={q.question}
+  options={q.options}
+  type={q.type}
+  value={currentValue}
+  onChange={(value) => handleChange(q.id, value)}
+  answers={answers} // ←これを追加
+/>
           );
         })}
       </div>
