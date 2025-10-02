@@ -88,12 +88,8 @@ export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props)
         📍 フェーズ②：詳細条件
       </h2>
 
-      {/* フェーズ①と同じカード幅・影・角丸仕様 */}
-      <div className="space-y-6 max-w-4xl mx-auto">
-        <div className="rounded-2xl shadow-lg bg-gradient-to-br from-pink-50 to-blue-50 p-6">
-          {renderStep()}
-        </div>
-      </div>
+      {/* 外枠を削除してシンプルにレンダリング */}
+      {renderStep()}
 
       {/* ナビゲーションボタン */}
       <div className="flex justify-between items-center pt-6 px-6 max-w-4xl mx-auto">
