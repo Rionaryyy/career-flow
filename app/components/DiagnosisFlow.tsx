@@ -77,11 +77,10 @@ export default function DiagnosisFlow() {
 
       {/* フェーズ2：画面端まで広げる */}
       {step === "phase2" && (
-        <div className="w-full space-y-8">
-          <Phase2 onSubmit={handlePhase2Submit} defaultValues={answers.phase2} />
-        </div>
-      )}
-
+  <div className="w-full bg-red-100">
+    <Phase2 onSubmit={handlePhase2Submit} defaultValues={answers.phase2} />
+  </div>
+)}
       {/* 結果画面 */}
       {step === "result" && (
         <div className="max-w-4xl mx-auto space-y-8">
