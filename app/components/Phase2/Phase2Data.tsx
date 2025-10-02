@@ -40,9 +40,10 @@ export default function Phase2Data({ answers, onChange, onNext, onBack }: Props)
     },
   ];
 
-  const handleChange = (id: string, value: string) => {
-    onChange({ [id]: value } as Partial<Phase2Answers>);
-  };
+  const handleChange = (id: string, value: string | string[]) => {
+  onChange({ [id]: value } as Partial<Phase2Answers>);
+};
+
 
   return (
     <QuestionLayout title="① データ通信に関する質問" onNext={onNext} onBack={onBack}>
@@ -60,8 +61,8 @@ export default function Phase2Data({ answers, onChange, onNext, onBack }: Props)
   options={q.options}
   type={q.type}
   value={currentValue}
-  onChange={(value) => handleChange(q.id, value)}
-  answers={answers} // ←これを追加
+  onChange={handleChange} // ← そのまま渡す（idも含めて2引数）
+  answers={answers}
 />
           );
         })}
