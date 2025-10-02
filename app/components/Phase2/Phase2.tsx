@@ -76,16 +76,15 @@ export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props)
 
   return (
     <div className="w-full max-w-none space-y-8 px-4 sm:px-6 lg:px-0">
-      <h2 className="text-3xl font-bold text-center text-sky-900 mb-4">📍 フェーズ②：詳細条件</h2>
+      <h2 className="text-3xl font-bold text-center text-sky-900 mb-4">
+        📍 フェーズ②：詳細条件
+      </h2>
 
-      {/* カード */}
-      <div className="rounded-xl bg-white border border-sky-200 shadow-md w-full transition-all duration-300">
-        <p className="text-xl font-semibold mb-4 text-sky-900 text-center">{steps[step].label}</p>
-        <div className="space-y-4 px-6 py-6">{renderStep()}</div>
-      </div>
+      {/* カード単位で表示、パートタイトルなし */}
+      <div className="space-y-6 px-0">{renderStep()}</div>
 
       {/* ナビゲーションボタン */}
-      <div className="flex justify-between items-center pt-6 px-6">
+      <div className="flex justify-between items-center pt-6 px-0">
         <button
           onClick={handleBack}
           className={`px-4 py-2 rounded-full ${
