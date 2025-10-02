@@ -59,8 +59,8 @@ export default function Phase2Call({ answers, onChange, onNext, onBack }: Props)
   ];
 
   const handleChange = (id: string, value: string | string[]) => {
-    onChange({ [id]: value } as Partial<Phase2Answers>);
-  };
+  onChange({ [id]: value } as Partial<Phase2Answers>);
+};
 
   return (
     <QuestionLayout title="⑦ 海外利用・特殊ニーズ" onNext={onNext} onBack={onBack}>

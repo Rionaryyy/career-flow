@@ -13,8 +13,10 @@ interface Props {
 }
 
 export default function Phase2Subscription({ answers, onChange, onNext, onBack }: Props) {
-  const handleChange = (id: keyof Phase2Answers, value: string | string[]) => {
-    onChange({ [id]: Array.isArray(value) ? value.join(", ") : value });
+  // onChange を直接渡す形に変更
+  const handleChange = (id: string, value: string | string[]) => {
+    const val = Array.isArray(value) ? value.join(", ") : value;
+    onChange({ [id]: val });
   };
 
   return (
@@ -27,15 +29,15 @@ export default function Phase2Subscription({ answers, onChange, onNext, onBack }
 
           return (
             <QuestionCard
-  key={q.id}
-  id={q.id}
-  question={q.question}
-  options={q.options}
-  type={q.type}
-  value={currentValue}
-  onChange={(value) => handleChange(q.id, value)}
-  answers={answers} // ←これを追加
-/>
+              key={q.id}
+              id={q.id}
+              question={q.question}
+              options={q.options}
+              type={q.type}
+              value={currentValue}
+              onChange={handleChange} // ← ラムダではなく直接渡す
+              answers={answers}
+            />
           );
         })}
       </div>

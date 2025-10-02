@@ -29,13 +29,16 @@ export default function Phase2Device({ answers, onChange, onNext, onBack }: Prop
         "どれが最もお得か分からないので、すべてのパターンを比較したい",
       ],
       type: "checkbox" as const,
-      condition: (ans: Phase2Answers) => ans.devicePreference === "はい（端末も一緒に購入する）",
+      condition: (ans: Phase2Answers) =>
+        ans.devicePreference === "はい（端末も一緒に購入する）",
     },
   ];
 
+  // 変更処理を id, value の 2 引数のまま保持
   const handleChange = (id: string, value: string | string[]) => {
     if (id === "oldDevicePlan") {
-      onChange({ oldDevicePlan: (value as string[]).join(", ") });
+      const val = Array.isArray(value) ? value.join(", ") : value;
+      onChange({ oldDevicePlan: val });
     } else {
       onChange({ [id]: value } as Partial<Phase2Answers>);
     }
@@ -47,19 +50,22 @@ export default function Phase2Device({ answers, onChange, onNext, onBack }: Prop
         {questions.map((q) => {
           if (q.condition && !q.condition(answers)) return null;
 
-          const currentValue = answers[q.id as keyof Phase2Answers] as string | string[] | null;
+          const currentValue = answers[q.id as keyof Phase2Answers] as
+            | string
+            | string[]
+            | null;
 
           return (
             <QuestionCard
-  key={q.id}
-  id={q.id}
-  question={q.question}
-  options={q.options}
-  type={q.type}
-  value={currentValue}
-  onChange={(value) => handleChange(q.id, value)}
-  answers={answers} // ←これを追加
-/>
+              key={q.id}
+              id={q.id}
+              question={q.question}
+              options={q.options}
+              type={q.type}
+              value={currentValue}
+              onChange={handleChange} // ← そのまま渡す
+              answers={answers}
+            />
           );
         })}
       </div>

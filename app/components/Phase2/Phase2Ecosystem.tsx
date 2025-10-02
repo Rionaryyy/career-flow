@@ -34,9 +34,9 @@ export default function Phase2Ecosystem({ answers, onChange, onNext, onBack }: P
     },
   ];
 
-  const handleChange = (id: string, value: string) => {
-    onChange({ [id]: value } as Partial<Phase2Answers>);
-  };
+  const handleChange = (id: string, value: string | string[]) => {
+  onChange({ [id]: value } as Partial<Phase2Answers>);
+};
 
   return (
     <QuestionLayout title="④ 経済圏・ポイント利用状況" onNext={onNext} onBack={onBack}>

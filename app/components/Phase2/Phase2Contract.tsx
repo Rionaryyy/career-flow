@@ -34,8 +34,8 @@ export default function Phase2Contract({ answers, onChange, onNext, onBack }: Pr
   ];
 
   const handleChange = (id: string, value: string | string[]) => {
-    onChange({ [id]: value } as Partial<Phase2Answers>);
-  };
+  onChange({ [id]: value } as Partial<Phase2Answers>);
+};
 
   return (
     <QuestionLayout title="③ 契約条件・割引について" onNext={onNext} onBack={onBack}>
