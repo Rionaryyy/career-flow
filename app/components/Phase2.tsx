@@ -75,29 +75,31 @@ export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props)
   };
 
   return (
-    <div className="w-full max-w-none space-y-8">
-      <h2 className="text-3xl font-bold text-center text-white mb-4">📍 フェーズ②：詳細条件</h2>
+    <div className="w-full max-w-none space-y-8 px-4 sm:px-6 lg:px-0">
+      <h2 className="text-3xl font-bold text-center text-sky-900 mb-4">📍 フェーズ②：詳細条件</h2>
 
-      <div className="rounded-xl bg-gradient-to-br from-slate-800/90 to-slate-700/80 shadow-lg shadow-slate-900/40 w-full transition-all duration-300">
-        <p className="text-xl font-semibold mb-4 text-white text-center">{steps[step].label}</p>
+      {/* カード */}
+      <div className="rounded-xl bg-white border border-sky-200 shadow-md w-full transition-all duration-300">
+        <p className="text-xl font-semibold mb-4 text-sky-900 text-center">{steps[step].label}</p>
         <div className="space-y-4 px-6 py-6">{renderStep()}</div>
       </div>
 
+      {/* ナビゲーションボタン */}
       <div className="flex justify-between items-center pt-6 px-6">
         <button
           onClick={handleBack}
           className={`px-4 py-2 rounded-full ${
             step === 0 && !onBack
-              ? "bg-slate-600 text-slate-300 cursor-not-allowed"
-              : "bg-slate-700 hover:bg-slate-600 text-white"
-          }`}
+              ? "bg-sky-100 text-sky-300 cursor-not-allowed"
+              : "bg-sky-200 hover:bg-sky-300 text-sky-900 shadow-sm"
+          } transition-all duration-200`}
         >
           ← 戻る
         </button>
 
         <button
           onClick={handleNext}
-          className="px-8 py-3 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-lg font-semibold transition-all duration-300 shadow-lg shadow-blue-900/40"
+          className="px-8 py-3 rounded-full bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-300 hover:to-sky-400 text-lg font-semibold text-white shadow-md transition-all duration-200"
         >
           {step === steps.length - 1 ? "結果を見る →" : "次へ →"}
         </button>
