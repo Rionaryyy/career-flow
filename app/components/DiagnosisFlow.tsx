@@ -4,7 +4,7 @@ import { useState } from "react";
 import Phase1 from "./Phase1/Phase1";
 import Phase2 from "./Phase2/Phase2";
 import Result from "./Result";
-import FeatureHighlightsFlow from "./FeatureHighlightsFlow"; // ← 新規追加
+import FeatureHighlightsFlow from "./FeatureHighlightsFlow";
 import { Phase1Answers, Phase2Answers, DiagnosisAnswers } from "@/types/types";
 
 export default function DiagnosisFlow() {
@@ -66,32 +66,35 @@ export default function DiagnosisFlow() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-black py-12 px-4">
-      <div className="max-w-4xl mx-auto space-y-8">
-        {step === "phase1" && (
-          <Phase1
-            defaultValues={answers.phase1}
-            onSubmit={handlePhase1Submit}
-          />
-        )}
+    <div className="min-h-screen bg-white text-black py-12 px-4 space-y-8">
 
-        {step === "phase2" && (
-          <Phase2
-            onSubmit={handlePhase2Submit}
-            defaultValues={answers.phase2}
-          />
-        )}
+      {/* フェーズ1 */}
+      {step === "phase1" && (
+        <div className="max-w-4xl mx-auto space-y-8">
+          <Phase1 defaultValues={answers.phase1} onSubmit={handlePhase1Submit} />
+        </div>
+      )}
 
-        {step === "result" && (
-          <Result
-            answers={answers}
-            onRestart={() => setStep("phase1")}
-          />
-        )}
+      {/* フェーズ2：幅を広げたい */}
+      {step === "phase2" && (
+        <div className="w-full space-y-8">
+          <Phase2 onSubmit={handlePhase2Submit} defaultValues={answers.phase2} />
+        </div>
+      )}
 
-        {/* 診断フロー用の下部セクション */}
-        <FeatureHighlightsFlow />
-      </div>
+      {/* 結果画面 */}
+      {step === "result" && (
+        <div className="max-w-4xl mx-auto space-y-8">
+          <Result answers={answers} onRestart={() => setStep("phase1")} />
+        </div>
+      )}
+
+      {/* 下部セクション（必要に応じてラップ） */}
+      {step !== "phase2" && (
+        <div className="max-w-4xl mx-auto">
+          <FeatureHighlightsFlow />
+        </div>
+      )}
     </div>
   );
 }
