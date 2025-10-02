@@ -47,9 +47,9 @@ export default function Phase2Contract({ answers, onChange, onNext, onBack }: Pr
   question={q.question}
   options={q.options}
   type={q.type}
- value={answers[q.id as keyof Phase2Answers] ?? null} // ← null を許容
-            onChange={(value) => handleChange(q.id, value)}
-  answers={answers} // ←これを追加
+  value={answers[q.id as keyof Phase2Answers] as string | null}
+  onChange={(value) => handleChange(q.id, value)}
+  answers={answers}
 />
 
         ))}
