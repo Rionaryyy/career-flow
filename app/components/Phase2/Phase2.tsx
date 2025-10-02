@@ -89,7 +89,7 @@ export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props)
   </h2>
 
   {/* 各カードラップ */}
-  <div className="w-full space-y-6">
+  <div className="w-full px-0">
     {renderStep()}
   </div>
 
