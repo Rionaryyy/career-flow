@@ -52,25 +52,31 @@ export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props)
     else onBack && onBack();
   };
 
+  const stepProps = {
+    answers,
+    onChange: updateAnswers,
+    onNext: handleNext,
+    onBack: handleBack,
+  };
+
   const renderStep = () => {
-    const commonProps = { answers, onChange: updateAnswers, onNext: handleNext, onBack: handleBack };
     switch (steps[step].id) {
       case "data":
-        return <Phase2Data {...commonProps} />;
+        return <Phase2Data {...stepProps} />;
       case "call":
-        return <Phase2Call {...commonProps} />;
+        return <Phase2Call {...stepProps} />;
       case "contract":
-        return <Phase2Contract {...commonProps} />;
+        return <Phase2Contract {...stepProps} />;
       case "ecosystem":
-        return <Phase2Ecosystem {...commonProps} />;
+        return <Phase2Ecosystem {...stepProps} />;
       case "subscription":
-        return <Phase2Subscription {...commonProps} />;
+        return <Phase2Subscription {...stepProps} />;
       case "device":
-        return <Phase2Device {...commonProps} />;
+        return <Phase2Device {...stepProps} />;
       case "overseas":
-        return <Phase2Overseas {...commonProps} />;
+        return <Phase2Overseas {...stepProps} />;
       case "payment":
-        return <Phase2Payment {...commonProps} />;
+        return <Phase2Payment {...stepProps} />;
       default:
         return null;
     }
@@ -78,9 +84,11 @@ export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props)
 
   return (
     <div className="w-full space-y-8 px-4 sm:px-6 lg:px-0">
-      <h2 className="text-3xl font-bold text-center text-sky-900 mb-4">📍 フェーズ②：詳細条件</h2>
+      <h2 className="text-3xl font-bold text-center text-sky-900 mb-4">
+        📍 フェーズ②：詳細条件
+      </h2>
 
-      {/* カード全体をフェーズ①と同じ幅・影・角丸仕様でラップ */}
+      {/* フェーズ①と同じカード幅・影・角丸仕様 */}
       <div className="space-y-6 max-w-4xl mx-auto">
         <div className="rounded-2xl shadow-lg bg-gradient-to-br from-pink-50 to-blue-50 p-6">
           {renderStep()}
