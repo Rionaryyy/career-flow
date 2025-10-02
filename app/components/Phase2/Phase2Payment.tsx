@@ -29,36 +29,28 @@ export default function Phase2Payment({ answers, onChange, onNext, onBack }: Pro
     },
   ];
 
+  // 配列のまま保持する
   const handleChange = (id: string, value: string | string[]) => {
-    if (id === "mainCard") {
-      const val = Array.isArray(value) ? value.join(", ") : value;
-      onChange({ mainCard: val });
-    } else {
-      onChange({ [id]: value } as Partial<Phase2Answers>);
-    }
+    onChange({ [id]: value } as Partial<Phase2Answers>);
   };
 
   return (
     <QuestionLayout title="⑧ 支払い方法" onNext={onNext} onBack={onBack}>
       <div className="w-full py-6 space-y-6">
         {questions.map((q) => {
-          const currentValue = answers[q.id as keyof Phase2Answers] as
-            | string
-            | string[]
-            | null;
+          const currentValue = answers[q.id as keyof Phase2Answers] as string[] | string | null;
 
           return (
             <QuestionCard
-  key={q.id}
-  id={q.id}
-  question={q.question}
-  options={q.options}
-  type={q.type}
-  value={answers[q.id as keyof Phase2Answers] as string | null}
-  onChange={handleChange} // ← そのまま渡す
-  answers={answers}
-/>
-
+              key={q.id}
+              id={q.id}
+              question={q.question}
+              options={q.options}
+              type={q.type}
+              value={currentValue}  // ← 配列をそのまま渡す
+              onChange={handleChange} // id と value の2引数で渡す
+              answers={answers}
+            />
           );
         })}
       </div>

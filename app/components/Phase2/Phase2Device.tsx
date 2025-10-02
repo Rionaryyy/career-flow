@@ -34,14 +34,9 @@ export default function Phase2Device({ answers, onChange, onNext, onBack }: Prop
     },
   ];
 
-  // 変更処理を id, value の 2 引数のまま保持
+  // 配列のまま保持して渡す
   const handleChange = (id: string, value: string | string[]) => {
-    if (id === "oldDevicePlan") {
-      const val = Array.isArray(value) ? value.join(", ") : value;
-      onChange({ oldDevicePlan: val });
-    } else {
-      onChange({ [id]: value } as Partial<Phase2Answers>);
-    }
+    onChange({ [id]: value } as Partial<Phase2Answers>);
   };
 
   return (
@@ -50,23 +45,19 @@ export default function Phase2Device({ answers, onChange, onNext, onBack }: Prop
         {questions.map((q) => {
           if (q.condition && !q.condition(answers)) return null;
 
-          const currentValue = answers[q.id as keyof Phase2Answers] as
-            | string
-            | string[]
-            | null;
+          const currentValue = answers[q.id as keyof Phase2Answers] as string | string[] | null;
 
           return (
             <QuestionCard
-  key={q.id}
-  id={q.id}
-  question={q.question}
-  options={q.options}
-  type={q.type}
-  value={answers[q.id as keyof Phase2Answers] as string | null}
-  onChange={handleChange} // ← そのまま渡す
-  answers={answers}
-/>
-
+              key={q.id}
+              id={q.id}
+              question={q.question}
+              options={q.options}
+              type={q.type}
+              value={currentValue} // ← 配列のまま渡す
+              onChange={handleChange} // id と value の2引数で渡す
+              answers={answers}
+            />
           );
         })}
       </div>

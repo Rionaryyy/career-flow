@@ -13,10 +13,9 @@ interface Props {
 }
 
 export default function Phase2Subscription({ answers, onChange, onNext, onBack }: Props) {
-  // onChange を直接渡す形に変更
+  // 配列のまま保持して渡す
   const handleChange = (id: string, value: string | string[]) => {
-    const val = Array.isArray(value) ? value.join(", ") : value;
-    onChange({ [id]: val });
+    onChange({ [id]: value } as Partial<Phase2Answers>);
   };
 
   return (
@@ -25,20 +24,19 @@ export default function Phase2Subscription({ answers, onChange, onNext, onBack }
         {phase2SubscriptionQuestions.map((q) => {
           if (q.condition && !q.condition(answers)) return null;
 
-          const currentValue = answers[q.id] as string | string[] | undefined;
+          const currentValue = answers[q.id as keyof Phase2Answers] as string | string[] | null;
 
           return (
             <QuestionCard
-  key={q.id}
-  id={q.id}
-  question={q.question}
-  options={q.options}
-  type={q.type}
-  value={answers[q.id as keyof Phase2Answers] as string | null}
-  onChange={handleChange} // ← そのまま渡す
-  answers={answers}
-/>
-
+              key={q.id}
+              id={q.id}
+              question={q.question}
+              options={q.options}
+              type={q.type}
+              value={currentValue} // ← 配列のまま渡す
+              onChange={handleChange} // id と value の2引数で渡す
+              answers={answers}
+            />
           );
         })}
       </div>
