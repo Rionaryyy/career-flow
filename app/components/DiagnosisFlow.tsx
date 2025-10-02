@@ -75,7 +75,7 @@ export default function DiagnosisFlow() {
         </div>
       )}
 
-      {/* フェーズ2：幅を広げたい */}
+      {/* フェーズ2：画面端まで広げる */}
       {step === "phase2" && (
         <div className="w-full space-y-8">
           <Phase2 onSubmit={handlePhase2Submit} defaultValues={answers.phase2} />
@@ -89,7 +89,7 @@ export default function DiagnosisFlow() {
         </div>
       )}
 
-      {/* 下部セクション（必要に応じてラップ） */}
+      {/* 下部セクション */}
       {step !== "phase2" && (
         <div className="max-w-4xl mx-auto">
           <FeatureHighlightsFlow />
