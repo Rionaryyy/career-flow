@@ -1,6 +1,6 @@
 // app/components/Phase2SubscriptionQuestions.ts
 import { Phase2Answers } from "@/types/types";
-import { Question } from "./layouts/types";
+import { Question } from "../layouts/types";
 
 export const phase2SubscriptionQuestions: Question<Phase2Answers>[] = [
   {

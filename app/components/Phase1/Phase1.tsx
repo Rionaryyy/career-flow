@@ -3,7 +3,7 @@
 
 import React from "react";
 import { Phase1Answers } from "@/types/types";
-import QuestionLayout from "./layouts/QuestionLayout";
+import QuestionLayout from "../layouts/QuestionLayout";
 
 export interface Phase1Props {
   defaultValues: Phase1Answers;
