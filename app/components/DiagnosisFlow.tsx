@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Phase1 from "./Phase1";
-import Phase2 from "./Phase2";
+import Phase1 from "./Phase1/Phase1";
+import Phase2 from "./Phase2/Phase2";
 import Result from "./Result";
 import FeatureHighlightsFlow from "./FeatureHighlightsFlow"; // ← 新規追加
 import { Phase1Answers, Phase2Answers, DiagnosisAnswers } from "@/types/types";

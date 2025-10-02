@@ -8,7 +8,7 @@ interface QuestionCardProps {
   question: string;
   options: string[];
   type: "radio" | "checkbox";
-  value?: string | string[];
+  value?: string | string[] | null;
   onChange: (id: string, value: string | string[]) => void;
   condition?: (answers: Phase2Answers) => boolean;
   answers?: Phase2Answers;
