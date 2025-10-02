@@ -14,15 +14,13 @@ interface Question {
 
 interface QuestionLayoutProps {
   title: string;
-  children?: ReactNode; // 直接書く場合もあるので optional
+  children?: ReactNode;
   onNext: () => void;
   onBack?: () => void;
   nextLabel?: string;
   backLabel?: string;
   answeredCount?: number;
   totalCount?: number;
-
-  // ここから追加
   questions?: Question[];
   answers?: Phase2Answers;
   onChange?: (updated: Partial<Phase2Answers>) => void;
@@ -49,7 +47,9 @@ export default function QuestionLayout({
       onChange({ [id]: option });
     } else if (type === "checkbox") {
       const prev = (answers[id as keyof Phase2Answers] as string[]) || [];
-      const updated = prev.includes(option) ? prev.filter((o) => o !== option) : [...prev, option];
+      const updated = prev.includes(option)
+        ? prev.filter((o) => o !== option)
+        : [...prev, option];
       onChange({ [id]: updated });
     }
   };
@@ -74,57 +74,72 @@ export default function QuestionLayout({
         <h2 className="text-lg sm:text-2xl font-bold text-black text-center">{title}</h2>
         <div className="w-full flex justify-between items-center">
           {onBack ? (
-            <button onClick={onBack} className="px-4 py-2 rounded-full bg-purple-100 hover:bg-purple-200 text-black text-sm transition">
+            <button
+              onClick={onBack}
+              className="px-4 py-2 rounded-full bg-purple-100 hover:bg-purple-200 text-black text-sm transition"
+            >
               {backLabel}
             </button>
           ) : (
             <div />
           )}
-          <button onClick={onNext} className="px-6 py-2 rounded-full bg-pink-400 hover:bg-pink-500 text-black font-semibold text-sm sm:text-base transition shadow-md">
+          <button
+            onClick={onNext}
+            className="px-6 py-2 rounded-full bg-pink-400 hover:bg-pink-500 text-black font-semibold text-sm sm:text-base transition shadow-md"
+          >
             {nextLabel}
           </button>
         </div>
       </div>
 
       {/* コンテンツ領域 */}
-      <div className="w-full flex flex-col items-center justify-start pt-36 px-2 space-y-4">
+      <div className="w-full max-w-4xl flex flex-col items-center justify-start pt-36 px-2 sm:px-6 lg:px-0 space-y-4">
         {children}
 
-        {questions && answers && onChange && questions.map((q) => {
-          if (q.condition && !q.condition(answers)) return null;
-          const value = answers[q.id as keyof Phase2Answers];
-          return (
-            <div key={q.id} className="w-full bg-slate-800/90 p-4 rounded-xl border border-slate-600 space-y-2">
-              <p className="font-semibold text-white">{q.question}</p>
-              <div className="grid grid-cols-1 gap-2 w-full">
-                {q.options.map((opt) => (
-                  <label
-                    key={opt}
-                    className={`flex items-center w-full cursor-pointer py-2 px-2 rounded-lg ${
-                      q.type === "radio"
-                        ? value === opt
+        {/* 条件付き質問リストもサポート */}
+        {questions &&
+          answers &&
+          onChange &&
+          questions.map((q) => {
+            if (q.condition && !q.condition(answers)) return null;
+            const value = answers[q.id as keyof Phase2Answers];
+            return (
+              <div
+                key={q.id}
+                className="w-full bg-slate-800/90 p-4 rounded-xl border border-slate-600 space-y-2"
+              >
+                <p className="font-semibold text-white">{q.question}</p>
+                <div className="grid grid-cols-1 gap-2 w-full">
+                  {q.options.map((opt) => (
+                    <label
+                      key={opt}
+                      className={`flex items-center w-full cursor-pointer py-2 px-2 rounded-lg ${
+                        q.type === "radio"
+                          ? value === opt
+                            ? "bg-blue-600 text-white"
+                            : "bg-slate-700 text-slate-200"
+                          : (value as string[])?.includes(opt)
                           ? "bg-blue-600 text-white"
                           : "bg-slate-700 text-slate-200"
-                        : (value as string[])?.includes(opt)
-                        ? "bg-blue-600 text-white"
-                        : "bg-slate-700 text-slate-200"
-                    }`}
-                  >
-                    <input
-                      type={q.type}
-                      checked={
-                        q.type === "radio" ? value === opt : (value as string[])?.includes(opt)
-                      }
-                      onChange={() => handleSelect(q.id, opt, q.type)}
-                      className="accent-blue-500 mr-2"
-                    />
-                    <span>{opt}</span>
-                  </label>
-                ))}
+                      }`}
+                    >
+                      <input
+                        type={q.type}
+                        checked={
+                          q.type === "radio"
+                            ? value === opt
+                            : (value as string[])?.includes(opt)
+                        }
+                        onChange={() => handleSelect(q.id, opt, q.type)}
+                        className="accent-blue-500 mr-2"
+                      />
+                      <span>{opt}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
       </div>
     </div>
   );
