@@ -46,7 +46,7 @@ export default function Phase2Data({ answers, onChange, onNext, onBack }: Props)
 
   return (
     <QuestionLayout title="① データ通信に関する質問" onNext={onNext} onBack={onBack}>
-      <div className="w-full py-6 space-y-6">
+      <div className="w-full max-w-4xl mx-auto space-y-6 py-6">
         {questions.map((q) => {
           if (q.condition && !q.condition(answers)) return null;
 
