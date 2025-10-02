@@ -25,14 +25,14 @@ export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props)
   const [step, setStep] = useState<number>(0);
 
   const steps = [
-    { id: "data", label: "① データ通信" },
-    { id: "call", label: "② 通話" },
-    { id: "contract", label: "③ 契約条件・割引" },
-    { id: "ecosystem", label: "④ 経済圏・ポイント" },
-    { id: "subscription", label: "⑤ サブスク" },
-    { id: "device", label: "⑥ 端末・購入形態" },
-    { id: "overseas", label: "⑦ 海外利用・特殊ニーズ" },
-    { id: "payment", label: "⑧ 支払い方法" },
+    { id: "data", label: "データ通信" },
+    { id: "call", label: "通話" },
+    { id: "contract", label: "契約条件・割引" },
+    { id: "ecosystem", label: "経済圏・ポイント" },
+    { id: "subscription", label: "サブスク" },
+    { id: "device", label: "端末・購入形態" },
+    { id: "overseas", label: "海外利用・特殊ニーズ" },
+    { id: "payment", label: "支払い方法" },
   ];
 
   const updateAnswers = (updated: Partial<Phase2Answers>) => {
@@ -40,8 +40,11 @@ export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props)
   };
 
   const handleNext = () => {
-    if (step < steps.length - 1) setStep(step + 1);
-    else onSubmit(answers);
+    if (step < steps.length - 1) {
+      setStep(step + 1);
+    } else {
+      onSubmit(answers);
+    }
   };
 
   const handleBack = () => {
@@ -80,16 +83,16 @@ export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props)
   };
 
   return (
-    <div className="w-full space-y-8 px-4 sm:px-6 lg:px-0 max-w-4xl mx-auto">
+    <div className="w-full space-y-8 px-4 sm:px-6 lg:px-0">
       <h2 className="text-3xl font-bold text-center text-sky-900 mb-4">
         📍 フェーズ②：詳細条件
       </h2>
 
-      {/* 各質問カード */}
-      <div className="space-y-6 w-full">{renderStep()}</div>
+      {/* 各カードをフェーズ①と同じ横幅・中央揃え仕様に */}
+      <div className="space-y-6 w-full max-w-4xl mx-auto">{renderStep()}</div>
 
       {/* ナビゲーションボタン */}
-      <div className="flex justify-between items-center pt-6 w-full">
+      <div className="flex justify-between items-center pt-6 w-full max-w-4xl mx-auto">
         <button
           onClick={handleBack}
           className={`px-4 py-2 rounded-full ${
