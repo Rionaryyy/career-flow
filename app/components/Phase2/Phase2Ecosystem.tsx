@@ -40,7 +40,7 @@ export default function Phase2Ecosystem({ answers, onChange, onNext, onBack }: P
 
   return (
     <QuestionLayout title="④ 経済圏・ポイント利用状況" onNext={onNext} onBack={onBack}>
-      <div className="w-full max-w-4xl mx-auto p-6 space-y-6">
+      <div className="w-full py-6 space-y-6">
         {questions.map((q) => {
           if (q.condition && !q.condition(answers)) return null;
 

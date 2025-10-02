@@ -19,7 +19,7 @@ export default function Phase2Subscription({ answers, onChange, onNext, onBack }
 
   return (
     <QuestionLayout title="⑤ サブスク利用状況" onNext={onNext} onBack={onBack}>
-      <div className="w-full px-2 sm:px-4 py-6 space-y-4">
+      <div className="w-full py-6 space-y-6">
         {phase2SubscriptionQuestions.map((q) => {
           if (q.condition && !q.condition(answers)) return null;
 

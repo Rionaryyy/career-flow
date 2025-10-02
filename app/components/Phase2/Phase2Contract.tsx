@@ -39,7 +39,7 @@ export default function Phase2Contract({ answers, onChange, onNext, onBack }: Pr
 
   return (
     <QuestionLayout title="③ 契約条件・割引について" onNext={onNext} onBack={onBack}>
-      <div className="w-full px-2 sm:px-4 py-6 space-y-6">
+      <div className="w-full py-6 space-y-6">
         {questions.map((q) => (
           <QuestionCard
             key={q.id}

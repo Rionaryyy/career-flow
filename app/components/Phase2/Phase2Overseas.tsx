@@ -64,7 +64,7 @@ export default function Phase2Call({ answers, onChange, onNext, onBack }: Props)
 
   return (
     <QuestionLayout title="⑦ 海外利用・特殊ニーズ" onNext={onNext} onBack={onBack}>
-      <div className="w-full px-2 sm:px-4 py-6 space-y-6">
+      <div className="w-full py-6 space-y-6">
         {questions.map((q) => {
           if (q.condition && !q.condition(answers)) return null;
 
