@@ -1,3 +1,4 @@
+// components/phase2/Phase2.tsx
 "use client";
 
 import { useState } from "react";
@@ -52,39 +53,42 @@ export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props)
   };
 
   const renderStep = () => {
+    const commonProps = { answers, onChange: updateAnswers, onNext: handleNext, onBack: handleBack };
     switch (steps[step].id) {
       case "data":
-        return <Phase2Data answers={answers} onChange={updateAnswers} onNext={handleNext} onBack={handleBack} />;
+        return <Phase2Data {...commonProps} />;
       case "call":
-        return <Phase2Call answers={answers} onChange={updateAnswers} onNext={handleNext} onBack={handleBack} />;
+        return <Phase2Call {...commonProps} />;
       case "contract":
-        return <Phase2Contract answers={answers} onChange={updateAnswers} onNext={handleNext} onBack={handleBack} />;
+        return <Phase2Contract {...commonProps} />;
       case "ecosystem":
-        return <Phase2Ecosystem answers={answers} onChange={updateAnswers} onNext={handleNext} onBack={handleBack} />;
+        return <Phase2Ecosystem {...commonProps} />;
       case "subscription":
-        return <Phase2Subscription answers={answers} onChange={updateAnswers} onNext={handleNext} onBack={handleBack} />;
+        return <Phase2Subscription {...commonProps} />;
       case "device":
-        return <Phase2Device answers={answers} onChange={updateAnswers} onNext={handleNext} onBack={handleBack} />;
+        return <Phase2Device {...commonProps} />;
       case "overseas":
-        return <Phase2Overseas answers={answers} onChange={updateAnswers} onNext={handleNext} onBack={handleBack} />;
+        return <Phase2Overseas {...commonProps} />;
       case "payment":
-        return <Phase2Payment answers={answers} onChange={updateAnswers} onNext={handleNext} onBack={handleBack} />;
+        return <Phase2Payment {...commonProps} />;
       default:
         return null;
     }
   };
 
   return (
-    <div className="w-full max-w-none space-y-8 px-4 sm:px-6 lg:px-0">
-      <h2 className="text-3xl font-bold text-center text-sky-900 mb-4">
-        📍 フェーズ②：詳細条件
-      </h2>
+    <div className="w-full space-y-8 px-4 sm:px-6 lg:px-0">
+      <h2 className="text-3xl font-bold text-center text-sky-900 mb-4">📍 フェーズ②：詳細条件</h2>
 
-      {/* カード単位で表示、パートタイトルなし */}
-      <div className="space-y-6 px-0">{renderStep()}</div>
+      {/* カード全体をフェーズ①と同じ幅・影・角丸仕様でラップ */}
+      <div className="space-y-6 max-w-4xl mx-auto">
+        <div className="rounded-2xl shadow-lg bg-gradient-to-br from-pink-50 to-blue-50 p-6">
+          {renderStep()}
+        </div>
+      </div>
 
       {/* ナビゲーションボタン */}
-      <div className="flex justify-between items-center pt-6 px-0">
+      <div className="flex justify-between items-center pt-6 px-6 max-w-4xl mx-auto">
         <button
           onClick={handleBack}
           className={`px-4 py-2 rounded-full ${
