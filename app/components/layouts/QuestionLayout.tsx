@@ -93,7 +93,7 @@ export default function QuestionLayout({
       </div>
 
       {/* コンテンツ領域 */}
-      <div className="w-full flex flex-col justify-start pt-36 px-4 sm:px-6 lg:px-0 space-y-6">
+      <div className="w-full max-w-4xl flex flex-col items-center justify-start pt-36 px-2 sm:px-6 lg:px-0 space-y-4">
         {children}
 
         {/* 条件付き質問リストもサポート */}
