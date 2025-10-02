@@ -89,7 +89,10 @@ export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props)
       </h2>
 
       {/* 各カードをフェーズ①と同じ横幅・中央揃え仕様に */}
-      <div className="space-y-6 w-full max-w-4xl mx-auto">{renderStep()}</div>
+      <div className="w-full rounded-2xl shadow-lg bg-white p-6">
+  {renderStep()}
+</div>
+
 
       {/* ナビゲーションボタン */}
       <div className="flex justify-between items-center pt-6 w-full max-w-4xl mx-auto">
