@@ -77,7 +77,7 @@ export default function DiagnosisFlow() {
 
       {/* フェーズ2：画面端まで広げる */}
       {step === "phase2" && (
-        <div className="w-full bg-red-100">
+        <div className="w-full">
           <Phase2 onSubmit={handlePhase2Submit} defaultValues={answers.phase2} />
         </div>
       )}
