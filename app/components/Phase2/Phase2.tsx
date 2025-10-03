@@ -90,7 +90,7 @@ export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props)
   }, [step]);
 
   return (
-    <QuestionLayout answeredCount={answeredCount} totalCount={totalCount}>
+    <QuestionLayout answeredCount={step + 2} totalCount={9}>
       {/* 各ステップタイトル */}
       <h2 className="text-3xl font-bold text-sky-900 text-center mb-6">
         {steps[step].label}

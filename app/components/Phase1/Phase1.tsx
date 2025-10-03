@@ -83,7 +83,7 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
   // -------------------
 
   return (
-    <QuestionLayout answeredCount={answeredCount+1} totalCount={totalCount}>
+    <QuestionLayout answeredCount={1} totalCount={9}>
       {/* 画面上部にタイトル */}
       <h1 className="text-3xl font-bold text-sky-900 text-center mb-6">
         📍 フェーズ①：基本条件
