@@ -10,11 +10,11 @@ export default function Header() {
 
   return (
     <header className="fixed top-0 left-0 w-full bg-white z-50 shadow-md py-3 px-4 flex items-center justify-between">
-      {/* サイトタイトル（トップに戻る） */}
-      <Link href="/" className="flex items-center space-x-2">
+      {/* サイトタイトル（クリック不可） */}
+      <div className="flex items-center space-x-2 cursor-default select-none">
         <DevicePhoneMobileIcon className="w-6 h-6 text-sky-500" />
         <span className="text-xl font-bold text-sky-900">通信キャリア診断</span>
-      </Link>
+      </div>
 
       {/* ハンバーガーメニュー */}
       <button
@@ -30,11 +30,20 @@ export default function Header() {
 
       {/* メニュー */}
       <nav
-        className={`absolute top-full right-4 w-48 bg-white shadow-lg rounded-md overflow-hidden transition-all duration-300 ${
+        className={`absolute top-full right-4 w-48 bg-white shadow-lg rounded-md overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out ${
           menuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
         }`}
       >
         <ul className="flex flex-col">
+          <li>
+            <Link
+              href="/"
+              className="block px-4 py-2 hover:bg-sky-100 transition"
+              onClick={() => setMenuOpen(false)}
+            >
+              ホーム
+            </Link>
+          </li>
           <li>
             <Link
               href="/about"
