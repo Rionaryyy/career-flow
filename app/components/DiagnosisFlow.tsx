@@ -55,14 +55,18 @@ export default function DiagnosisFlow() {
     },
   });
 
+  // フェーズ①完了 → フェーズ②に進む
   const handlePhase1Submit = (phase1Answers: Phase1Answers) => {
     setAnswers((prev) => ({ ...prev, phase1: phase1Answers }));
     setStep("phase2");
+    window.scrollTo({ top: 0, behavior: "auto" }); // スクロールリセット
   };
 
+  // フェーズ②完了 → 結果画面に進む
   const handlePhase2Submit = (phase2Answers: Phase2Answers) => {
     setAnswers((prev) => ({ ...prev, phase2: phase2Answers }));
     setStep("result");
+    window.scrollTo({ top: 0, behavior: "auto" }); // スクロールリセット
   };
 
   return (
@@ -71,29 +75,41 @@ export default function DiagnosisFlow() {
       {/* フェーズ1 */}
       {step === "phase1" && (
         <div className="max-w-4xl mx-auto space-y-8 px-4 sm:px-6 lg:px-8">
-          <Phase1 defaultValues={answers.phase1} onSubmit={handlePhase1Submit} />
+          <Phase1
+            defaultValues={answers.phase1}
+            onSubmit={handlePhase1Submit}
+          />
         </div>
       )}
 
       {/* フェーズ2：画面端まで広げる */}
       {step === "phase2" && (
-  <div className="w-full">
-    <Phase2
-      onSubmit={handlePhase2Submit}
-      defaultValues={answers.phase2}
-      onBack={() => setStep("phase1")} // ← ★ これを追加！
-    />
-  </div>
-)}
+        <div className="w-full">
+          <Phase2
+            onSubmit={handlePhase2Submit}
+            defaultValues={answers.phase2}
+            onBack={() => {
+              setStep("phase1"); // フェーズ①に戻る
+              window.scrollTo({ top: 0, behavior: "auto" }); // スクロールリセット
+            }}
+          />
+        </div>
+      )}
 
       {/* 結果画面 */}
       {step === "result" && (
         <div className="max-w-4xl mx-auto space-y-8 px-4 sm:px-6 lg:px-8">
-          <Result answers={answers} onRestart={() => setStep("phase1")} />
+          <Result
+            answers={answers}
+            onRestart={() => {
+              setStep("phase1");
+              window.scrollTo({ top: 0, behavior: "auto" });
+            }}
+          />
         </div>
       )}
 
-      {/* 下部セクション（必要に応じてラップ） */}
+      {/* 下部セクション（フェーズ②以外で表示） */}
       {step !== "phase2" && (
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <FeatureHighlightsFlow />
