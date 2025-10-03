@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Header from "./layouts/Header"; // ←追加
 import Phase1 from "./Phase1/Phase1";
 import Phase2 from "./Phase2/Phase2";
 import Result from "./Result";
@@ -55,66 +56,70 @@ export default function DiagnosisFlow() {
     },
   });
 
-  // フェーズ①完了 → フェーズ②に進む
   const handlePhase1Submit = (phase1Answers: Phase1Answers) => {
     setAnswers((prev) => ({ ...prev, phase1: phase1Answers }));
     setStep("phase2");
-    window.scrollTo({ top: 0, behavior: "auto" }); // スクロールリセット
+    window.scrollTo({ top: 0, behavior: "auto" });
   };
 
-  // フェーズ②完了 → 結果画面に進む
   const handlePhase2Submit = (phase2Answers: Phase2Answers) => {
     setAnswers((prev) => ({ ...prev, phase2: phase2Answers }));
     setStep("result");
-    window.scrollTo({ top: 0, behavior: "auto" }); // スクロールリセット
+    window.scrollTo({ top: 0, behavior: "auto" });
   };
 
   return (
-    <div className="min-h-screen bg-white text-black py-12 space-y-8">
+    <div className="min-h-screen bg-white text-black">
 
-      {/* フェーズ1 */}
-      {step === "phase1" && (
-        <div className="max-w-4xl mx-auto space-y-8 px-4 sm:px-6 lg:px-8">
-          <Phase1
-            defaultValues={answers.phase1}
-            onSubmit={handlePhase1Submit}
-          />
-        </div>
-      )}
+      {/* ヘッダーを常に表示 */}
+      <Header />
 
-      {/* フェーズ2：画面端まで広げる */}
-      {step === "phase2" && (
-        <div className="w-full">
-          <Phase2
-            onSubmit={handlePhase2Submit}
-            defaultValues={answers.phase2}
-            onBack={() => {
-              setStep("phase1"); // フェーズ①に戻る
-              window.scrollTo({ top: 0, behavior: "auto" }); // スクロールリセット
-            }}
-          />
-        </div>
-      )}
+      {/* ヘッダーの高さ分パディング追加 */}
+      <div className="pt-16 space-y-8">
+        {/* フェーズ1 */}
+        {step === "phase1" && (
+          <div className="max-w-4xl mx-auto space-y-8 px-4 sm:px-6 lg:px-8">
+            <Phase1
+              defaultValues={answers.phase1}
+              onSubmit={handlePhase1Submit}
+            />
+          </div>
+        )}
 
-      {/* 結果画面 */}
-      {step === "result" && (
-        <div className="max-w-4xl mx-auto space-y-8 px-4 sm:px-6 lg:px-8">
-          <Result
-            answers={answers}
-            onRestart={() => {
-              setStep("phase1");
-              window.scrollTo({ top: 0, behavior: "auto" });
-            }}
-          />
-        </div>
-      )}
+        {/* フェーズ2 */}
+        {step === "phase2" && (
+          <div className="w-full">
+            <Phase2
+              onSubmit={handlePhase2Submit}
+              defaultValues={answers.phase2}
+              onBack={() => {
+                setStep("phase1");
+                window.scrollTo({ top: 0, behavior: "auto" });
+              }}
+            />
+          </div>
+        )}
 
-      {/* 下部セクション（フェーズ②以外で表示） */}
-      {step !== "phase2" && (
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <FeatureHighlightsFlow />
-        </div>
-      )}
+        {/* 結果画面 */}
+        {step === "result" && (
+          <div className="max-w-4xl mx-auto space-y-8 px-4 sm:px-6 lg:px-8">
+            <Result
+              answers={answers}
+              onRestart={() => {
+                setStep("phase1");
+                window.scrollTo({ top: 0, behavior: "auto" });
+              }}
+            />
+          </div>
+        )}
+
+        {/* 下部セクション（フェーズ②以外で表示） */}
+        {step !== "phase2" && (
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <FeatureHighlightsFlow />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
