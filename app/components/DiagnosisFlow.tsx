@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Header from "./layouts/Header"; // ←追加
+import Header from "./layouts/Header"; // ヘッダー
 import Phase1 from "./Phase1/Phase1";
 import Phase2 from "./Phase2/Phase2";
 import Result from "./Result";
@@ -71,11 +71,12 @@ export default function DiagnosisFlow() {
   return (
     <div className="min-h-screen bg-white text-black">
 
-      {/* ヘッダーを常に表示 */}
+      {/* ヘッダー常時表示 */}
       <Header />
 
-      {/* ヘッダーの高さ分パディング追加 */}
+      {/* ヘッダーの高さ分だけパディング */}
       <div className="pt-16 space-y-8">
+
         {/* フェーズ1 */}
         {step === "phase1" && (
           <div className="max-w-4xl mx-auto space-y-8 px-4 sm:px-6 lg:px-8">
@@ -113,12 +114,11 @@ export default function DiagnosisFlow() {
           </div>
         )}
 
-        {/* 下部セクション（フェーズ②以外で表示） */}
-        {step !== "phase2" && (
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <FeatureHighlightsFlow />
-          </div>
-        )}
+        {/* 下部セクション（全ステップ共通で表示） */}
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <FeatureHighlightsFlow />
+        </div>
+
       </div>
     </div>
   );
