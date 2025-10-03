@@ -23,8 +23,19 @@ export default function Phase2Call({ answers, onChange, onNext, onBack }: Props)
     onChange({ [id]: value } as Partial<Phase2Answers>);
   };
 
+  // --- ここで追加 ---
+  const answeredCount = Object.values(answers).filter(Boolean).length;
+  const handleNext = () => onNext();
+  const handleBack = () => onBack?.();
+  // ------------------
+
   return (
-    <QuestionLayout onNext={onNext} onBack={onBack}>
+    <QuestionLayout
+      pageTitle="📞 フェーズ②：通話条件"
+      answeredCount={answeredCount}
+      onNext={handleNext}
+      onBack={handleBack}
+    >
       <div className="w-full py-6 space-y-6">
         {questions.map((q) => (
           <QuestionCard

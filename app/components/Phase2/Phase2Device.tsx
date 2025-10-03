@@ -34,13 +34,22 @@ export default function Phase2Device({ answers, onChange, onNext, onBack }: Prop
     },
   ];
 
-  // 配列のまま保持して渡す
   const handleChange = (id: string, value: string | string[]) => {
     onChange({ [id]: value } as Partial<Phase2Answers>);
   };
 
+  // 進捗バー用の回答済み数
+  const answeredCount = Object.values(answers).filter(Boolean).length;
+  const handleNext = () => onNext();
+  const handleBack = () => onBack?.();
+
   return (
-    <QuestionLayout  onNext={onNext} onBack={onBack}>
+    <QuestionLayout
+      pageTitle="📱 フェーズ②：端末条件"
+      answeredCount={answeredCount}
+      onNext={handleNext}
+      onBack={handleBack}
+    >
       <div className="w-full py-6 space-y-6">
         {questions.map((q) => {
           if (q.condition && !q.condition(answers)) return null;
@@ -54,8 +63,8 @@ export default function Phase2Device({ answers, onChange, onNext, onBack }: Prop
               question={q.question}
               options={q.options}
               type={q.type}
-              value={currentValue} // ← 配列のまま渡す
-              onChange={handleChange} // id と value の2引数で渡す
+              value={currentValue}
+              onChange={handleChange}
               answers={answers}
             />
           );

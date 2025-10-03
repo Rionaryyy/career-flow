@@ -59,11 +59,20 @@ export default function Phase2Call({ answers, onChange, onNext, onBack }: Props)
   ];
 
   const handleChange = (id: string, value: string | string[]) => {
-  onChange({ [id]: value } as Partial<Phase2Answers>);
-};
+    onChange({ [id]: value } as Partial<Phase2Answers>);
+  };
+
+  const answeredCount = Object.values(answers).filter(Boolean).length;
+  const handleNext = () => onNext();
+  const handleBack = () => onBack?.();
 
   return (
-    <QuestionLayout  onNext={onNext} onBack={onBack}>
+    <QuestionLayout
+      pageTitle="🌏 フェーズ②：海外・特殊利用条件"
+      answeredCount={answeredCount}
+      onNext={handleNext}
+      onBack={handleBack}
+    >
       <div className="w-full py-6 space-y-6">
         {questions.map((q) => {
           if (q.condition && !q.condition(answers)) return null;
@@ -72,16 +81,15 @@ export default function Phase2Call({ answers, onChange, onNext, onBack }: Props)
 
           return (
             <QuestionCard
-  key={q.id}
-  id={q.id}
-  question={q.question}
-  options={q.options}
-  type={q.type}
-  value={answers[q.id as keyof Phase2Answers] as string | null}
-  onChange={handleChange} // ← そのまま渡す
-  answers={answers}
-/>
-
+              key={q.id}
+              id={q.id}
+              question={q.question}
+              options={q.options}
+              type={q.type}
+              value={currentValue}
+              onChange={handleChange}
+              answers={answers}
+            />
           );
         })}
       </div>

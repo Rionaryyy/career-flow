@@ -15,25 +15,33 @@ interface Props {
 export default function Phase2Subscription({ answers, onChange, onNext, onBack }: Props) {
   // 配列のまま保持して渡す
   const handleChange = (id: string, value: string | string[]) => {
-  // サブスク選択肢用の排他制御
-  if (id === "subscriptionServices") {  // ← id は質問定義のID名に合わせて変更
-    // value が配列の場合だけ排他処理
-    if (Array.isArray(value)) {
-      // 「特になし」が選ばれていたら他は全部解除
-      if (value.includes("特になし")) {
-        value = ["特になし"];
-      } else {
-        // 「特になし」が含まれていれば削除
-        value = value.filter((v) => v !== "特になし");
+    // サブスク選択肢用の排他制御
+    if (id === "subscriptionServices") {
+      if (Array.isArray(value)) {
+        if (value.includes("特になし")) {
+          value = ["特になし"];
+        } else {
+          value = value.filter((v) => v !== "特になし");
+        }
       }
     }
-  }
+    onChange({ [id]: value } as Partial<Phase2Answers>);
+  };
 
-  onChange({ [id]: value } as Partial<Phase2Answers>);
-};
+  // 進捗バー用：回答済みの質問数をカウント
+  const answeredCount = phase2SubscriptionQuestions.reduce((count, q) => {
+    if (q.condition && !q.condition(answers)) return count; // 条件を満たさなければカウントしない
+    const val = answers[q.id as keyof Phase2Answers];
+    if (Array.isArray(val)) {
+      return val.length > 0 ? count + 1 : count;
+    } else if (val) {
+      return count + 1;
+    }
+    return count;
+  }, 0);
 
   return (
-    <QuestionLayout  onNext={onNext} onBack={onBack}>
+    <QuestionLayout answeredCount={answeredCount} totalCount={phase2SubscriptionQuestions.length} onNext={onNext} onBack={onBack} pageTitle="📦 フェーズ②：サブスク条件">
       <div className="w-full py-6 space-y-6">
         {phase2SubscriptionQuestions.map((q) => {
           if (q.condition && !q.condition(answers)) return null;
@@ -47,8 +55,8 @@ export default function Phase2Subscription({ answers, onChange, onNext, onBack }
               question={q.question}
               options={q.options}
               type={q.type}
-              value={currentValue} // ← 配列のまま渡す
-              onChange={handleChange} // id と value の2引数で渡す
+              value={currentValue}
+              onChange={handleChange}
               answers={answers}
             />
           );
