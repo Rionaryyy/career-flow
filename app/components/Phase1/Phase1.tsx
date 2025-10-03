@@ -1,4 +1,3 @@
-// components/phase1/Phase1.tsx
 "use client";
 
 import React from "react";
@@ -56,6 +55,18 @@ const phase1Questions = [
       "絶対に嫌（縛りなしが前提）",
       "できれば避けたいが内容次第",
       "気にしない（条件次第でOK）",
+    ],
+  },
+  // 🔹 Q6 を追加
+  {
+    id: "initialCostImportance",
+    question: "初期費用やキャッシュバックの有無はどのくらい重視しますか？",
+    type: "radio",
+    options: [
+      "🔥 非常に重視する（高額CBがあるプランを優先したい）",
+      "💰 少し気にする（他条件が同じならCB付きがいい）",
+      "🤔 あまり気にしない（長期的なコスパ重視）",
+      "🪶 全く気にしない（月額や品質だけで決めたい）",
     ],
   },
 ];
