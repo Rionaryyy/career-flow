@@ -57,7 +57,6 @@ const phase1Questions = [
       "気にしない（条件次第でOK）",
     ],
   },
-  // 🔹 Q6 を追加
   {
     id: "initialCostImportance",
     question: "初期費用やキャッシュバックの有無はどのくらい重視しますか？",
@@ -83,14 +82,8 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
   ).length;
 
   return (
-    <QuestionLayout
-      title="📍 フェーズ①：前提条件"
-      onNext={() => onSubmit(answers)}
-      onBack={onBack}
-      answeredCount={answeredCount}
-      totalCount={phase1Questions.length}
-      nextLabel="次へ進む →"
-    >
+    <QuestionLayout title="📍 フェーズ①：前提条件">
+      {/* 質問リスト */}
       <div className="space-y-6 w-full">
         {phase1Questions.map((q) => (
           <QuestionCard
@@ -103,6 +96,26 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
             onChange={handleChange}
           />
         ))}
+      </div>
+
+      {/* 下部ナビボタン */}
+      <div className="flex justify-between w-full max-w-4xl mt-8">
+        <button
+          onClick={onBack}
+          className={`px-4 py-2 rounded-full bg-gray-200 hover:bg-gray-300 text-black font-medium ${
+            !onBack ? "opacity-50 cursor-not-allowed" : ""
+          }`}
+          disabled={!onBack}
+        >
+          ← 戻る
+        </button>
+
+        <button
+          onClick={() => onSubmit(answers)}
+          className="px-6 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white font-semibold"
+        >
+          次へ進む →
+        </button>
       </div>
     </QuestionLayout>
   );
