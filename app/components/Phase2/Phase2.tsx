@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import { Phase2Answers } from "@/types/types";
+import FeatureHighlightsFlow from "../FeatureHighlightsFlow"; 
 
 // 各セクションのコンポーネント
 import Phase2Data from "./Phase2Data";
@@ -82,37 +83,41 @@ export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props)
     }
   };
 
+ 
   return (
     <div className="w-full max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-  <h2 className="text-3xl font-bold text-center text-sky-900 mb-4">
-    📍 フェーズ②：詳細条件
-  </h2>
+      <h2 className="text-3xl font-bold text-center text-sky-900 mb-4">
+        📍 フェーズ②：詳細条件
+      </h2>
 
-  {/* 各カードラップ */}
-  <div className="w-full px-0">
-    {renderStep()}
-  </div>
+      {/* 各カードラップ */}
+      <div className="w-full px-0">
+        {renderStep()}
+      </div>
 
-  {/* ナビボタン */}
-  <div className="flex justify-between items-center pt-6 w-full">
-    <button
-      onClick={handleBack}
-      className={`px-4 py-2 rounded-full ${
-        step === 0 && !onBack
-          ? "bg-sky-100 text-sky-300 cursor-not-allowed"
-          : "bg-sky-200 hover:bg-sky-300 text-sky-900 shadow-sm"
-      } transition-all duration-200`}
-    >
-      ← 戻る
-    </button>
+      {/* ナビボタン */}
+      <div className="flex justify-between items-center pt-6 w-full">
+        <button
+          onClick={handleBack}
+          className={`px-4 py-2 rounded-full ${
+            step === 0 && !onBack
+              ? "bg-sky-100 text-sky-300 cursor-not-allowed"
+              : "bg-sky-200 hover:bg-sky-300 text-sky-900 shadow-sm"
+          } transition-all duration-200`}
+        >
+          ← 戻る
+        </button>
 
-    <button
-      onClick={handleNext}
-      className="px-8 py-3 rounded-full bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-300 hover:to-sky-400 text-lg font-semibold text-white shadow-md transition-all duration-200"
-    >
-      {step === steps.length - 1 ? "結果を見る →" : "次へ →"}
-    </button>
-  </div>
-</div>
+        <button
+          onClick={handleNext}
+          className="px-8 py-3 rounded-full bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-300 hover:to-sky-400 text-lg font-semibold text-white shadow-md transition-all duration-200"
+        >
+          {step === steps.length - 1 ? "結果を見る →" : "次へ →"}
+        </button>
+      </div>
+
+      {/* 👇 ここに追加すればフェーズ②の全画面で共通表示 */}
+      <FeatureHighlightsFlow />
+    </div>
   );
 }
