@@ -77,13 +77,16 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
     setAnswers((prev) => ({ ...prev, [id]: value as string }));
   };
 
+  // フェーズ①は全体ステップ9のうち0/9スタート
+  const currentStep = 0;
+  const totalSteps = 9;
+
   return (
     <QuestionLayout>
-      {/* 画面上部に直接タイトル */}
-      <h1 className="text-3xl font-bold text-sky-900 text-center mb-6">
-        📍 フェーズ①：前提条件
-      </h1>
-
+          {/* 画面上部に直接タイトル */}
+          <h1 className="text-3xl font-bold text-sky-900 text-center mb-6">
+            📍 フェーズ②：詳細条件
+          </h1>
       {/* 質問リスト */}
       <div className="space-y-6 w-full">
         {phase1Questions.map((q) => (
