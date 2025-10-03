@@ -23,7 +23,6 @@ export default function QuestionLayout({ answeredCount, totalCount, children }: 
       {/* ステップと％表示 */}
       <div className="mb-2 text-sm text-sky-900 font-semibold flex justify-between">
         <span>ステップ {answeredCount} / {totalCount}</span>
-        <span>{percent}%</span>
       </div>
 
       {/* 進捗バー */}
