@@ -1,17 +1,14 @@
 "use client";
 
-import QuestionLayout from "../layouts/QuestionLayout";
 import QuestionCard from "../layouts/QuestionCard";
 import { Phase2Answers } from "@/types/types";
 
 interface Props {
   answers: Phase2Answers;
   onChange: (updated: Partial<Phase2Answers>) => void;
-  onNext: () => void;
-  onBack?: () => void;
 }
 
-export default function Phase2Call({ answers, onChange, onNext, onBack }: Props) {
+export default function Phase2Call({ answers, onChange }: Props) {
   const questions = [
     {
       id: "overseasUse",
@@ -62,36 +59,26 @@ export default function Phase2Call({ answers, onChange, onNext, onBack }: Props)
     onChange({ [id]: value } as Partial<Phase2Answers>);
   };
 
-  const answeredCount = Object.values(answers).filter(Boolean).length;
-  const handleNext = () => onNext();
-  const handleBack = () => onBack?.();
-
   return (
-    <QuestionLayout>
-              {/* 画面上部に直接タイトル */}
-              <h1 className="text-3xl font-bold text-sky-900 text-center mb-6">
-                📍 フェーズ②：詳細条件
-              </h1>
-      <div className="w-full py-6 space-y-6">
-        {questions.map((q) => {
-          if (q.condition && !q.condition(answers)) return null;
+    <div className="w-full py-6 space-y-6">
+      {questions.map((q) => {
+        if (q.condition && !q.condition(answers)) return null;
 
-          const currentValue = answers[q.id as keyof Phase2Answers] as string | string[] | null;
+        const currentValue = answers[q.id as keyof Phase2Answers] as string | string[] | null;
 
-          return (
-            <QuestionCard
-              key={q.id}
-              id={q.id}
-              question={q.question}
-              options={q.options}
-              type={q.type}
-              value={currentValue}
-              onChange={handleChange}
-              answers={answers}
-            />
-          );
-        })}
-      </div>
-    </QuestionLayout>
+        return (
+          <QuestionCard
+            key={q.id}
+            id={q.id}
+            question={q.question}
+            options={q.options}
+            type={q.type}
+            value={currentValue}
+            onChange={handleChange}
+            answers={answers}
+          />
+        );
+      })}
+    </div>
   );
 }

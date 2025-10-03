@@ -1,17 +1,14 @@
 "use client";
 
-import QuestionLayout from "../layouts/QuestionLayout";
 import QuestionCard from "../layouts/QuestionCard";
 import { Phase2Answers } from "@/types/types";
 
 interface Props {
   answers: Phase2Answers;
   onChange: (updated: Partial<Phase2Answers>) => void;
-  onNext: () => void;
-  onBack?: () => void;
 }
 
-export default function Phase2Call({ answers, onChange, onNext, onBack }: Props) {
+export default function Phase2Call({ answers, onChange }: Props) {
   const questions = [
     { id: "callFrequency", question: "1. 通話の頻度は？", options: ["ほとんどしない","時々する","よくする"], type: "radio" as const },
     { id: "callPriority", question: "2. 通話品質の重視度は？", options: ["あまり重視しない","ある程度重視","非常に重視"], type: "radio" as const },
@@ -23,32 +20,20 @@ export default function Phase2Call({ answers, onChange, onNext, onBack }: Props)
     onChange({ [id]: value } as Partial<Phase2Answers>);
   };
 
-  // --- ここで追加 ---
-  const answeredCount = Object.values(answers).filter(Boolean).length;
-  const handleNext = () => onNext();
-  const handleBack = () => onBack?.();
-  // ------------------
-
   return (
-    <QuestionLayout>
-          {/* 画面上部に直接タイトル */}
-          <h1 className="text-3xl font-bold text-sky-900 text-center mb-6">
-            📍 フェーズ②：詳細条件
-          </h1>
-      <div className="w-full py-6 space-y-6">
-        {questions.map((q) => (
-          <QuestionCard
-            key={q.id}
-            id={q.id}
-            question={q.question}
-            options={q.options}
-            type={q.type}
-            value={answers[q.id as keyof Phase2Answers]}
-            onChange={handleChange}
-            answers={answers}
-          />
-        ))}
-      </div>
-    </QuestionLayout>
+    <div className="w-full py-6 space-y-6">
+      {questions.map((q) => (
+        <QuestionCard
+          key={q.id}
+          id={q.id}
+          question={q.question}
+          options={q.options}
+          type={q.type}
+          value={answers[q.id as keyof Phase2Answers]}
+          onChange={handleChange}
+          answers={answers}
+        />
+      ))}
+    </div>
   );
 }
