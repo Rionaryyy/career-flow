@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Phase2Answers } from "@/types/types";
-import FeatureHighlightsFlow from "../FeatureHighlightsFlow"; 
+import QuestionLayout from "../layouts/QuestionLayout";
 
 // 各セクションのコンポーネント
 import Phase2Data from "./Phase2Data";
@@ -44,7 +44,7 @@ export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props)
       setStep(step + 1);
     } else {
       onSubmit(answers);
-      window.scrollTo({ top: 0, behavior: "auto" }); // フェーズ②→結果でもスクロール
+      window.scrollTo({ top: 0, behavior: "auto" });
     }
   };
 
@@ -53,16 +53,11 @@ export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props)
       setStep(step - 1);
     } else {
       onBack && onBack();
-      window.scrollTo({ top: 0, behavior: "auto" }); // フェーズ②→フェーズ①でもスクロール
+      window.scrollTo({ top: 0, behavior: "auto" });
     }
   };
 
-  const stepProps = {
-    answers,
-    onChange: updateAnswers,
-    onNext: handleNext,
-    onBack: handleBack,
-  };
+  const stepProps = { answers, onChange: updateAnswers, onNext: handleNext, onBack: handleBack };
 
   const renderStep = () => {
     switch (steps[step].id) {
@@ -87,26 +82,44 @@ export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props)
     }
   };
 
-  // 👇 stepが変わるたびにスクロールトップ
+  // 👇 フェーズ①を1としてカウント、進捗バーは 1/9 → 8/9
+  const answeredCount = 1 + step;
+  const totalCount = 9;
+
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "auto" });
   }, [step]);
 
   return (
-    <div className="w-full max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-      <h2 className="text-3xl font-bold text-center text-sky-900 mb-4">
-        📍 フェーズ②：詳細条件
-      </h2>
+    <QuestionLayout
+      pageTitle="📍 フェーズ②：詳細条件"
+      answeredCount={answeredCount}
+      totalCount={totalCount}
+      // onNext/onBackは使わない（下部ボタンで制御）
+    >
+      {/* 各ステップのコンテンツ */}
+      <div className="w-full px-0">{renderStep()}</div>
 
-      {/* 各カードラップ */}
-      <div className="w-full px-0">
-        {renderStep()}
+      {/* 下部ナビボタン */}
+      <div className="flex justify-between items-center pt-6 w-full max-w-4xl">
+        <button
+          onClick={handleBack}
+          className={`px-4 py-2 rounded-full ${
+            step === 0 && !onBack
+              ? "bg-sky-100 text-sky-300 cursor-not-allowed"
+              : "bg-sky-200 hover:bg-sky-300 text-sky-900 shadow-sm"
+          } transition-all duration-200`}
+        >
+          ← 戻る
+        </button>
+
+        <button
+          onClick={handleNext}
+          className="px-8 py-3 rounded-full bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-300 hover:to-sky-400 text-lg font-semibold text-white shadow-md transition-all duration-200"
+        >
+          {step === steps.length - 1 ? "結果を見る →" : "次へ →"}
+        </button>
       </div>
-
-      
-
-      {/* フェーズ②全体で共通表示 */}
-      <FeatureHighlightsFlow />
-    </div>
+    </QuestionLayout>
   );
 }

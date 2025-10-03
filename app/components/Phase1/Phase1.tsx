@@ -77,52 +77,52 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
     setAnswers((prev) => ({ ...prev, [id]: value as string }));
   };
 
-  const answeredCount = phase1Questions.filter(
-    (q) => answers[q.id as keyof Phase1Answers]
-  ).length;
+  // フェーズ①は全体ステップ9のうち0/9スタート
+  const currentStep = 0;
+  const totalSteps = 9;
 
- return (
-  <QuestionLayout
-    pageTitle="📍 フェーズ①：前提条件"
-    answeredCount={answeredCount}
-    totalCount={phase1Questions.length} // optional、動的に設定
-  >
-    {/* 質問リスト */}
-    <div className="space-y-6 w-full">
-      {phase1Questions.map((q) => (
-        <QuestionCard
-          key={q.id}
-          id={q.id}
-          question={q.question}
-          options={q.options}
-          type={q.type as "radio" | "checkbox"}
-          value={answers[q.id as keyof Phase1Answers] as string}
-          onChange={handleChange}
-        />
-      ))}
-    </div>
+  return (
+    <QuestionLayout
+      pageTitle="📍 フェーズ①：前提条件"
+      answeredCount={currentStep} // 0/9
+      totalCount={totalSteps} 
+    >
+      {/* 質問リスト */}
+      <div className="space-y-6 w-full">
+        {phase1Questions.map((q) => (
+          <QuestionCard
+            key={q.id}
+            id={q.id}
+            question={q.question}
+            options={q.options}
+            type={q.type as "radio" | "checkbox"}
+            value={answers[q.id as keyof Phase1Answers] as string}
+            onChange={handleChange}
+          />
+        ))}
+      </div>
 
-    {/* ナビボタン */}
-    <div className="flex justify-between items-center pt-6 w-full max-w-4xl">
-      <button
-        onClick={onBack}
-        className={`px-4 py-2 rounded-full ${
-          !onBack
-            ? "bg-sky-100 text-sky-300 cursor-not-allowed"
-            : "bg-sky-200 hover:bg-sky-300 text-sky-900 shadow-sm"
-        } transition-all duration-200`}
-        disabled={!onBack}
-      >
-        ← 戻る
-      </button>
+      {/* ナビボタン */}
+      <div className="flex justify-between items-center pt-6 w-full max-w-4xl">
+        <button
+          onClick={onBack}
+          className={`px-4 py-2 rounded-full ${
+            !onBack
+              ? "bg-sky-100 text-sky-300 cursor-not-allowed"
+              : "bg-sky-200 hover:bg-sky-300 text-sky-900 shadow-sm"
+          } transition-all duration-200`}
+          disabled={!onBack}
+        >
+          ← 戻る
+        </button>
 
-      <button
-        onClick={() => onSubmit(answers)}
-        className="px-8 py-3 rounded-full bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-300 hover:to-sky-400 text-lg font-semibold text-white shadow-md transition-all duration-200"
-      >
-        次へ →
-      </button>
-    </div>
-  </QuestionLayout>
-);
+        <button
+          onClick={() => onSubmit(answers)}
+          className="px-8 py-3 rounded-full bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-300 hover:to-sky-400 text-lg font-semibold text-white shadow-md transition-all duration-200"
+        >
+          次へ →
+        </button>
+      </div>
+    </QuestionLayout>
+  );
 }
