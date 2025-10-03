@@ -82,21 +82,17 @@ export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props)
     }
   };
 
-  // 👇 フェーズ①を1としてカウント、進捗バーは 1/9 → 8/9
-  const answeredCount = 1 + step;
-  const totalCount = 9;
-
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "auto" });
   }, [step]);
 
   return (
-    <QuestionLayout
-      pageTitle="📍 フェーズ②：詳細条件"
-      answeredCount={answeredCount}
-      totalCount={totalCount}
-      // onNext/onBackは使わない（下部ボタンで制御）
-    >
+    <QuestionLayout>
+      {/* 画面上部に直接タイトル */}
+      <h1 className="text-3xl font-bold text-sky-900 text-center mb-6">
+        📍 フェーズ②：詳細条件
+      </h1>
+
       {/* 各ステップのコンテンツ */}
       <div className="w-full px-0">{renderStep()}</div>
 
@@ -109,6 +105,7 @@ export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props)
               ? "bg-sky-100 text-sky-300 cursor-not-allowed"
               : "bg-sky-200 hover:bg-sky-300 text-sky-900 shadow-sm"
           } transition-all duration-200`}
+          disabled={step === 0 && !onBack}
         >
           ← 戻る
         </button>
@@ -117,7 +114,7 @@ export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props)
           onClick={handleNext}
           className="px-8 py-3 rounded-full bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-300 hover:to-sky-400 text-lg font-semibold text-white shadow-md transition-all duration-200"
         >
-          {step === steps.length - 1 ? "結果を見る →" : "次へ →"}
+          {step < steps.length - 1 ? "次へ →" : "診断結果へ →"}
         </button>
       </div>
     </QuestionLayout>

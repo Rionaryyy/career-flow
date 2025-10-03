@@ -44,12 +44,11 @@ export default function Phase2Contract({ answers, onChange, onNext, onBack }: Pr
   // ----------------
 
   return (
-    <QuestionLayout
-      pageTitle="🏠 フェーズ②：契約・セット割"
-      answeredCount={answeredCount}
-      onNext={handleNext}
-      onBack={handleBack}
-    >
+    <QuestionLayout>
+              {/* 画面上部に直接タイトル */}
+              <h1 className="text-3xl font-bold text-sky-900 text-center mb-6">
+                📍 フェーズ②：詳細条件
+              </h1>
       <div className="w-full py-6 space-y-6">
         {questions.map((q) => (
           <QuestionCard
