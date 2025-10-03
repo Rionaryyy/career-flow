@@ -13,8 +13,8 @@ export default function FeatureHighlightsFlow() {
   ];
 
   return (
-    <footer className="w-full bg-sky-50 pt-16 pb-12">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-20 text-left">
+    <footer className="bg-sky-50">
+  <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-20 py-16 text-left">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
           {/* サイト情報 */}
           <div>
