@@ -15,8 +15,22 @@ interface Props {
 export default function Phase2Subscription({ answers, onChange, onNext, onBack }: Props) {
   // 配列のまま保持して渡す
   const handleChange = (id: string, value: string | string[]) => {
-    onChange({ [id]: value } as Partial<Phase2Answers>);
-  };
+  // サブスク選択肢用の排他制御
+  if (id === "subscriptionServices") {  // ← id は質問定義のID名に合わせて変更
+    // value が配列の場合だけ排他処理
+    if (Array.isArray(value)) {
+      // 「特になし」が選ばれていたら他は全部解除
+      if (value.includes("特になし")) {
+        value = ["特になし"];
+      } else {
+        // 「特になし」が含まれていれば削除
+        value = value.filter((v) => v !== "特になし");
+      }
+    }
+  }
+
+  onChange({ [id]: value } as Partial<Phase2Answers>);
+};
 
   return (
     <QuestionLayout title="⑤ サブスク利用状況" onNext={onNext} onBack={onBack}>
