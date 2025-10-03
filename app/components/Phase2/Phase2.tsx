@@ -1,7 +1,6 @@
-// components/phase2/Phase2.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Phase2Answers } from "@/types/types";
 import FeatureHighlightsFlow from "../FeatureHighlightsFlow"; 
 
@@ -45,12 +44,17 @@ export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props)
       setStep(step + 1);
     } else {
       onSubmit(answers);
+      window.scrollTo({ top: 0, behavior: "auto" }); // フェーズ②→結果でもスクロール
     }
   };
 
   const handleBack = () => {
-    if (step > 0) setStep(step - 1);
-    else onBack && onBack();
+    if (step > 0) {
+      setStep(step - 1);
+    } else {
+      onBack && onBack();
+      window.scrollTo({ top: 0, behavior: "auto" }); // フェーズ②→フェーズ①でもスクロール
+    }
   };
 
   const stepProps = {
@@ -83,7 +87,11 @@ export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props)
     }
   };
 
- 
+  // 👇 stepが変わるたびにスクロールトップ
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, [step]);
+
   return (
     <div className="w-full max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
       <h2 className="text-3xl font-bold text-center text-sky-900 mb-4">
@@ -116,7 +124,7 @@ export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props)
         </button>
       </div>
 
-      {/* 👇 ここに追加すればフェーズ②の全画面で共通表示 */}
+      {/* フェーズ②全体で共通表示 */}
       <FeatureHighlightsFlow />
     </div>
   );
