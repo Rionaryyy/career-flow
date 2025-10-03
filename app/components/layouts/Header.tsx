@@ -5,18 +5,15 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { Bars3Icon, XMarkIcon, DevicePhoneMobileIcon } from "@heroicons/react/24/solid";
 
-interface HeaderProps {
-  title: string;
-}
-
-export default function Header({ title }: HeaderProps) {
+export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <header className="fixed top-0 left-0 w-full bg-white z-50 shadow-md py-3 px-4 flex items-center justify-between">
       {/* サイトタイトル（トップに戻る） */}
-      <Link href="/" className="text-xl font-bold text-sky-900">
-        {title}
+      <Link href="/" className="flex items-center space-x-2">
+        <DevicePhoneMobileIcon className="w-6 h-6 text-sky-500" />
+        <span className="text-xl font-bold text-sky-900">通信キャリア診断</span>
       </Link>
 
       {/* ハンバーガーメニュー */}

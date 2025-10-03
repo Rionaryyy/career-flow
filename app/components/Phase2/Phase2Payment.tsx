@@ -35,7 +35,7 @@ export default function Phase2Payment({ answers, onChange, onNext, onBack }: Pro
   };
 
   return (
-    <QuestionLayout title="⑧ 支払い方法" onNext={onNext} onBack={onBack}>
+    <QuestionLayout  onNext={onNext} onBack={onBack}>
       <div className="w-full py-6 space-y-6">
         {questions.map((q) => {
           const currentValue = answers[q.id as keyof Phase2Answers] as string[] | string | null;

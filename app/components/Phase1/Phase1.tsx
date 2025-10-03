@@ -82,7 +82,7 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
   ).length;
 
   return (
-    <QuestionLayout title="📍 フェーズ①：前提条件">
+    <QuestionLayout>
       {/* 質問リスト */}
       <div className="space-y-6 w-full">
         {phase1Questions.map((q) => (

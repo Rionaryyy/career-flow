@@ -40,7 +40,7 @@ export default function Phase2Device({ answers, onChange, onNext, onBack }: Prop
   };
 
   return (
-    <QuestionLayout title="⑥ 端末・購入形態" onNext={onNext} onBack={onBack}>
+    <QuestionLayout  onNext={onNext} onBack={onBack}>
       <div className="w-full py-6 space-y-6">
         {questions.map((q) => {
           if (q.condition && !q.condition(answers)) return null;
