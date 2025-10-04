@@ -105,27 +105,27 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
       </div>
 
       {/* ナビボタン */}
-      <div className="flex justify-between items-center pt-6 w-full max-w-4xl">
-        <button
-          onClick={onBack}
-          className={`px-4 py-2 rounded-full ${
-            !onBack
-              ? "bg-sky-100 text-sky-300 cursor-not-allowed"
-              : "bg-sky-200 hover:bg-sky-300 text-sky-900 shadow-sm"
-          } transition-all duration-200`}
-          disabled={!onBack}
-        >
-          ← 戻る
-        </button>
+<div className="flex justify-between items-center pt-6 w-full max-w-4xl">
+  <button
+    onClick={onBack}
+    className={`px-4 sm:px-6 py-2 sm:py-3 rounded-full ${
+      !onBack
+        ? "bg-sky-100 text-sky-300 cursor-not-allowed"
+        : "bg-sky-200 hover:bg-sky-300 text-sky-900 shadow-sm"
+    } transition-all duration-200`}
+    disabled={!onBack}
+  >
+    ← 戻る
+  </button>
 
-        <button
-  onClick={() => onSubmit(answers)}
-  className="px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-gradient-to-r from-sky-200 to-sky-300 text-base sm:text-lg font-semibold text-white shadow-sm transition-all duration-200"
->
-  次へ →
-</button>
+  <button
+    onClick={() => onSubmit(answers)}
+    className="px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-gradient-to-r from-sky-400 to-sky-500 text-base sm:text-lg font-semibold text-white drop-shadow-md transition-all duration-200"
+  >
+    次へ →
+  </button>
+</div>
 
-      </div>
     </QuestionLayout>
   );
 }
