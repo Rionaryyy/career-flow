@@ -13,6 +13,9 @@ interface Props {
 export default function Phase2Payment({ answers, onChange, phase1Answers }: Props) {
   const [showCardDetail, setShowCardDetail] = useState(false);
 
+  // フェーズ①で「いいえ」を選択した場合のみ表示
+  const showComponent = phase1Answers?.considerCardAndPayment === "いいえ";
+
   const questions = [
     {
       id: "mainCard",
@@ -32,7 +35,6 @@ export default function Phase2Payment({ answers, onChange, phase1Answers }: Prop
       question:
         "通信料金の支払いに利用できるカード・銀行を選んでください（複数選択可）\n※クレジットカードまたは銀行口座を選択した場合に表示",
       options: [
-        // クレジットカード
         "dカード",
         "dカード GOLD",
         "au PAYカード",
@@ -48,7 +50,6 @@ export default function Phase2Payment({ answers, onChange, phase1Answers }: Prop
         "UQカード",
         "NUROモバイルクレジットカード",
         "その他",
-        // 銀行口座
         "みずほ銀行",
         "三井住友銀行",
         "三菱UFJ銀行",
@@ -57,11 +58,6 @@ export default function Phase2Payment({ answers, onChange, phase1Answers }: Prop
       type: "checkbox" as const,
     },
   ];
-
-  // フェーズ①で「いいえ」を選んだ場合のみ表示
-  if (!phase1Answers || phase1Answers.considerCardAndPayment !== "いいえ") {
-    return null;
-  }
 
   // Q1の選択に応じてQ2の表示を切り替え
   useEffect(() => {
@@ -72,7 +68,6 @@ export default function Phase2Payment({ answers, onChange, phase1Answers }: Prop
     }
 
     const selected = Array.isArray(mainCardAnswer) ? mainCardAnswer : [mainCardAnswer];
-
     setShowCardDetail(
       selected.includes("クレジットカード") || selected.includes("銀行口座引き落とし")
     );
@@ -82,10 +77,11 @@ export default function Phase2Payment({ answers, onChange, phase1Answers }: Prop
     onChange({ [id]: value } as Partial<Phase2Answers>);
   };
 
+  if (!showComponent) return null;
+
   return (
     <div className="w-full py-6 space-y-6">
       {questions.map((q) => {
-        // Q2はshowCardDetailがtrueのときのみ表示
         if (q.id === "cardDetail" && !showCardDetail) return null;
 
         const currentValue = answers[q.id as keyof Phase2Answers] as
