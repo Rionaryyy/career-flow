@@ -26,8 +26,6 @@ export default function HeroMini() {
         </p>
       </motion.div>
 
-      {/* 下スクロール誘導 */}
-      <div className="absolute bottom-4 animate-bounce text-white text-2xl">↓</div>
     </section>
   );
 }

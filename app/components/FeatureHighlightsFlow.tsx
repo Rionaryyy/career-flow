@@ -13,13 +13,19 @@ export default function FeatureHighlightsFlow() {
   ];
 
   return (
-    <footer className="bg-sky-50">
-  <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-20 py-16 text-left">
+    <footer
+      className="relative text-white bg-cover bg-center"
+      style={{
+        backgroundImage:
+          "linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/images/tech-bg.jpg')",
+      }}
+    >
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-20 py-16 text-left">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
           {/* サイト情報 */}
           <div>
             <h3 className="text-2xl font-bold mb-3">通信キャリア診断</h3>
-            <p className="text-gray-700">
+            <p>
               あなたに最適なキャリア・プランを提案する診断サービスです。
             </p>
           </div>
@@ -30,7 +36,7 @@ export default function FeatureHighlightsFlow() {
             <ul>
               {links.map((link) => (
                 <li key={link.name} className="mb-2">
-                  <Link href={link.href} className="hover:underline text-gray-800">
+                  <Link href={link.href} className="hover:underline">
                     {link.name}
                   </Link>
                 </li>
@@ -41,7 +47,7 @@ export default function FeatureHighlightsFlow() {
           {/* 著作権情報 */}
           <div>
             <h4 className="font-semibold mb-3">情報</h4>
-            <p className="text-gray-600">&copy; 2025 通信キャリア診断. All Rights Reserved.</p>
+            <p>&copy; 2025 通信キャリア診断. All Rights Reserved.</p>
           </div>
         </div>
       </div>
