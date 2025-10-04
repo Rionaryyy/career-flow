@@ -13,12 +13,13 @@ export interface Phase1Props {
 
 const phase1Questions = [
   {
-    id: "includePoints",
-    question: "ポイント還元や経済圏特典も“実質料金”に含めて考えますか？",
+    id: "carrierType",
+    question: "キャリアの種類に希望はありますか？",
     type: "radio",
     options: [
-      "はい（ポイントも含めて最安を知りたい）",
-      "いいえ（現金支出だけで比べたい）",
+      "大手キャリア（ドコモ / au / ソフトバンク / 楽天）",
+      "サブブランド（ahamo / povo / LINEMO / UQなど）もOK",
+      "格安SIM（IIJ / mineo / NUROなど）も含めて検討したい",
     ],
   },
   {
@@ -32,20 +33,22 @@ const phase1Questions = [
     ],
   },
   {
-    id: "carrierType",
-    question: "キャリアの種類に希望はありますか？",
+    id: "includePoints",
+    question: "ポイント還元や経済圏特典も“実質料金”に含めて考えますか？",
     type: "radio",
     options: [
-      "大手キャリア（ドコモ / au / ソフトバンク / 楽天）",
-      "サブブランド（ahamo / povo / LINEMO / UQなど）もOK",
-      "格安SIM（IIJ / mineo / NUROなど）も含めて検討したい",
+      "はい（ポイントも含めて最安を知りたい）",
+      "いいえ（現金支出だけで比べたい）",
     ],
   },
   {
-    id: "supportPreference",
-    question: "契約・サポートはオンライン完結で問題ありませんか？",
+    id: "appCallUnlimited",
+    question: "通話専用アプリでの通話は“かけ放題”としてカウントしてよいですか？",
     type: "radio",
-    options: ["はい（店舗サポートは不要）", "いいえ（店頭での手続きや相談が必要）"],
+    options: [
+      "はい（アプリ経由ならかけ放題として扱う）",
+      "いいえ（通常プランのかけ放題のみを考慮する）",
+    ],
   },
   {
     id: "contractLockPreference",
@@ -56,6 +59,12 @@ const phase1Questions = [
       "できれば避けたいが内容次第",
       "気にしない（条件次第でOK）",
     ],
+  },
+  {
+    id: "supportPreference",
+    question: "契約・サポートはオンライン完結で問題ありませんか？",
+    type: "radio",
+    options: ["はい（店舗サポートは不要）", "いいえ（店頭での手続きや相談が必要）"],
   },
   {
     id: "initialCostImportance",
