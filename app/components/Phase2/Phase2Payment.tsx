@@ -12,7 +12,6 @@ interface Props {
 
 export default function Phase2Payment({ answers, onChange, phase1Answers }: Props) {
   const [showCardDetail, setShowCardDetail] = useState(false);
-  const [showComponent, setShowComponent] = useState(false); // 前提条件チェック用
 
   const questions = [
     {
@@ -57,13 +56,6 @@ export default function Phase2Payment({ answers, onChange, phase1Answers }: Prop
     },
   ];
 
-  // フェーズ①の前提条件で「いいえ」を選んだ場合のみ表示
-  useEffect(() => {
-    setShowComponent(
-      phase1Answers?.considerCardAndPayment === "いいえ"
-    );
-  }, [phase1Answers]);
-
   // Q1の選択に応じてQ2の表示を切り替え
   useEffect(() => {
     const mainCardAnswer = answers["mainCard"] as string[] | string | null;
@@ -87,7 +79,9 @@ export default function Phase2Payment({ answers, onChange, phase1Answers }: Prop
   };
 
   // フェーズ①で「いいえ」を選んだ場合のみ表示
-  if (!showComponent) return null;
+  if (!phase1Answers || phase1Answers.considerCardAndPayment !== "いいえ") {
+    return null;
+  }
 
   return (
     <div className="w-full py-6 space-y-6">
