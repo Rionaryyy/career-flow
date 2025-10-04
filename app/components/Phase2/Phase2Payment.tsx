@@ -8,14 +8,15 @@ interface Props {
   answers: Phase2Answers;
   onChange: (updated: Partial<Phase2Answers>) => void;
   phase1Answers: Phase1Answers; // フェーズ①の回答を受け取る
+  onNext: () => void; // 「結果を見る」ボタン用
 }
 
-export default function Phase2Payment({ answers, onChange, phase1Answers }: Props) {
+export default function Phase2Payment({ answers, onChange, phase1Answers, onNext }: Props) {
   const [showCardDetail, setShowCardDetail] = useState(false);
 
-  // フェーズ①で「いいえ」を選択した場合のみ表示
-  const showComponent = phase1Answers?.considerCardAndPayment?.toString().startsWith("いいえ");
-
+  // フェーズ①で「いいえ」を選択した場合のみ質問を表示
+  const showQuestions = phase1Answers?.considerCardAndPayment?.toString().startsWith("いいえ");
+  const showExplanationOnly = !showQuestions;
 
   const questions = [
     {
@@ -34,7 +35,7 @@ export default function Phase2Payment({ answers, onChange, phase1Answers }: Prop
     {
       id: "cardDetail",
       question:
-        "通信料金の支払いに利用できるカード・銀行を選んでください（複数選択可）\n※クレジットカードまたは銀行口座を選択した場合に表示",
+        "通信料金の支払いに利用できるカード・銀行を選んでください（複数選択可）",
       options: [
         "dカード",
         "dカード GOLD",
@@ -78,8 +79,27 @@ export default function Phase2Payment({ answers, onChange, phase1Answers }: Prop
     onChange({ [id]: value } as Partial<Phase2Answers>);
   };
 
-  if (!showComponent) return null;
+  // はいの場合は説明文と「結果を見る」ボタンだけ表示
+  if (showExplanationOnly) {
+    return (
+      <div className="w-full py-6 space-y-6">
+        <p className="text-sky-900 text-lg">
+          前提条件で「お得になるなら、専用クレジットカードの発行や特定の支払い方法の利用も検討しますか？」に「はい」と選択されたため、このページでの支払い方法の詳細な質問は省略されます。
+        </p>
 
+        <div className="flex justify-end pt-6">
+          <button
+            onClick={onNext}
+            className="px-4 py-2 rounded-full bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-300 hover:to-sky-400 text-lg font-semibold text-white shadow-md transition-all duration-200"
+          >
+            結果を見る →
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // いいえの場合は通常通り質問を表示
   return (
     <div className="w-full py-6 space-y-6">
       {questions.map((q) => {
