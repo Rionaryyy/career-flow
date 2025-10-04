@@ -1,14 +1,12 @@
-// app/components/HeroMini.tsx
 "use client";
 import { motion } from "framer-motion";
 
 export default function HeroMini() {
   return (
     <section
-      className="relative flex flex-col items-center justify-center text-center text-white min-h-[60vh] bg-cover bg-center px-6"
+      className="relative flex flex-col items-center justify-center text-center text-white h-64 sm:h-80 md:min-h-[60vh] bg-cover bg-center px-6"
       style={{
-        backgroundImage:
-          "linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('/images/tech-bg.jpg')",
+        backgroundImage: "url('/images/tech-bg.jpg')", // 一旦 gradient を外して確認
       }}
     >
       <motion.div
