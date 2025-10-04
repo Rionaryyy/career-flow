@@ -6,6 +6,7 @@ import Phase1 from "./Phase1/Phase1";
 import Phase2 from "./Phase2/Phase2";
 import Result from "./Result";
 import FeatureHighlightsFlow from "./FeatureHighlightsFlow";
+import HeroMini from "./HeroMini"; // ← 新規追加
 import { Phase1Answers, Phase2Answers, DiagnosisAnswers } from "@/types/types";
 
 export default function DiagnosisFlow() {
@@ -77,47 +78,51 @@ export default function DiagnosisFlow() {
       {/* ヘッダーの高さ分だけパディング */}
       <div className="pt-16 space-y-8">
 
-        {/* フェーズ1 */}
-        {step === "phase1" && (
-          <div className="max-w-4xl mx-auto space-y-8 px-4 sm:px-6 lg:px-8">
-            <Phase1
-              defaultValues={answers.phase1}
-              onSubmit={handlePhase1Submit}
-            />
-          </div>
-        )}
+  {/* HeroMini を追加 */}
+  <HeroMini />
 
-        {/* フェーズ2 */}
-        {step === "phase2" && (
-          <div className="w-full">
-            <Phase2
-              onSubmit={handlePhase2Submit}
-              defaultValues={answers.phase2}
-              onBack={() => {
-                setStep("phase1");
-                window.scrollTo({ top: 0, behavior: "auto" });
-              }}
-            />
-          </div>
-        )}
+  {/* フェーズ1 */}
+  {step === "phase1" && (
+    <div className="max-w-4xl mx-auto space-y-8 px-4 sm:px-6 lg:px-8">
+      <Phase1
+        defaultValues={answers.phase1}
+        onSubmit={handlePhase1Submit}
+      />
+    </div>
+  )}
 
-        {/* 結果画面 */}
-        {step === "result" && (
-          <div className="max-w-4xl mx-auto space-y-8 px-4 sm:px-6 lg:px-8">
-            <Result
-              answers={answers}
-              onRestart={() => {
-                setStep("phase1");
-                window.scrollTo({ top: 0, behavior: "auto" });
-              }}
-            />
-          </div>
-        )}
+  {/* フェーズ2 */}
+  {step === "phase2" && (
+    <div className="w-full">
+      <Phase2
+        onSubmit={handlePhase2Submit}
+        defaultValues={answers.phase2}
+        onBack={() => {
+          setStep("phase1");
+          window.scrollTo({ top: 0, behavior: "auto" });
+        }}
+      />
+    </div>
+  )}
 
-        {/* 下部セクション（全ステップ共通で表示） */}
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <FeatureHighlightsFlow />
-        </div>
+  {/* 結果画面 */}
+  {step === "result" && (
+    <div className="max-w-4xl mx-auto space-y-8 px-4 sm:px-6 lg:px-8">
+      <Result
+        answers={answers}
+        onRestart={() => {
+          setStep("phase1");
+          window.scrollTo({ top: 0, behavior: "auto" });
+        }}
+      />
+    </div>
+  )}
+
+  {/* 下部セクション（全ステップ共通で表示） */}
+  <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <FeatureHighlightsFlow />
+  </div>
+
 
       </div>
     </div>
