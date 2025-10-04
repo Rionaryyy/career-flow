@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import Header from "./layouts/Header"; // ヘッダー
+import Header from "./layouts/Header";
 import Phase1 from "./Phase1/Phase1";
 import Phase2 from "./Phase2/Phase2";
 import Result from "./Result";
 import FeatureHighlightsFlow from "./FeatureHighlightsFlow";
-import HeroMini from "./HeroMini"; // ← 新規追加
+import HeroMini from "./HeroMini";
 import { Phase1Answers, Phase2Answers, DiagnosisAnswers } from "@/types/types";
 
 export default function DiagnosisFlow() {
@@ -70,54 +70,36 @@ export default function DiagnosisFlow() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-black">
+    <div className="min-h-screen bg-white text-black w-full">
 
       {/* ヘッダー常時表示 */}
       <Header />
 
-      {/* ヘッダーの高さ分だけパディング */}
-      <div className="pt-16 space-y-8">
+      {/* メインコンテンツ */}
+      <main className="w-full pt-16 space-y-8">
 
-  {/* HeroMini を追加 */}
-  <HeroMini />
+        {/* HeroMini */}
+        <HeroMini />
 
-  {step === "phase1" && (
-  <div className="w-full space-y-8">
-    <Phase1 defaultValues={answers.phase1} onSubmit={handlePhase1Submit} />
-  </div>
-)}
+        {/* フェーズ1 */}
+        {step === "phase1" && <Phase1 defaultValues={answers.phase1} onSubmit={handlePhase1Submit} />}
 
-{step === "phase2" && (
-  <div className="w-full">
-    <Phase2
-      defaultValues={answers.phase2}
-      onSubmit={handlePhase2Submit}
-      onBack={() => {
-        setStep("phase1");
-        window.scrollTo({ top: 0, behavior: "auto" });
-      }}
-    />
-  </div>
-)}
+        {/* フェーズ2 */}
+        {step === "phase2" && (
+          <Phase2
+            defaultValues={answers.phase2}
+            onSubmit={handlePhase2Submit}
+            onBack={() => setStep("phase1")}
+          />
+        )}
 
-{step === "result" && (
-  <div className="w-full space-y-8">
-    <Result
-      answers={answers}
-      onRestart={() => {
-        setStep("phase1");
-        window.scrollTo({ top: 0, behavior: "auto" });
-      }}
-    />
-  </div>
-)}
-  {/* 下部セクション（全ステップ共通で表示） */}
-  <div className="w-full">
-    <FeatureHighlightsFlow />
-  </div>
+        {/* 結果画面 */}
+        {step === "result" && <Result answers={answers} onRestart={() => setStep("phase1")} />}
 
+        {/* 下部セクション */}
+        <FeatureHighlightsFlow />
 
-      </div>
+      </main>
     </div>
   );
 }
