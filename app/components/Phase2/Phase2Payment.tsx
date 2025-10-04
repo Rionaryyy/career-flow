@@ -84,16 +84,10 @@ export default function Phase2Payment({ answers, onChange, phase1Answers, onNext
     return (
       <div className="w-full py-6 space-y-6">
         <p className="text-sky-900 text-lg">
-          前提条件で「お得になるなら、専用クレジットカードの発行や特定の支払い方法の利用も検討しますか？」に「はい」と選択されたため、このページでの支払い方法の詳細な質問は省略されます。
+          前提条件「お得になるなら、専用クレジットカードの発行や特定の支払い方法の利用も検討しますか？」に「はい」と選択されたため、このページでの支払い方法に関する質問は省略されます。
         </p>
 
         <div className="flex justify-end pt-6">
-          <button
-            onClick={onNext}
-            className="px-4 py-2 rounded-full bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-300 hover:to-sky-400 text-lg font-semibold text-white shadow-md transition-all duration-200"
-          >
-            結果を見る →
-          </button>
         </div>
       </div>
     );

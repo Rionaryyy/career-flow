@@ -10,23 +10,30 @@ interface Props {
 
 export default function Phase2Contract({ answers, onChange }: Props) {
   const questions = [
+   {
+  id: "familyLines",
+  question: "家族割引を適用できる回線数はどのくらいですか？",
+  options: ["1回線", "2回線", "3回線", "4回線", "5回線以上","適用できない / わからない"],
+  type: "radio" as const,
+},
+
     {
-      id: "familyLines",
-      question: "1. 家族割引を適用できる回線数は？",
-      options: ["1回線","2回線","3回線以上","利用できない / わからない"],
+      id: "studentDiscount",
+      question: "学割を適用できますか？（18歳以下）",
+      options: ["Yes", "No"],
       type: "radio" as const,
     },
     {
       id: "setDiscount",
-      question: "2. 光回線とのセット割は？",
-      options: ["はい（契約中または契約予定）","いいえ / わからない"],
-      type: "radio" as const,
-    },
-    {
-      id: "infraSet",
-      question: "3. 電気・ガスなどのセット割は？",
-      options: ["はい（契約中または契約予定）","いいえ / わからない"],
-      type: "radio" as const,
+      question: "下記サービスとのセット割を適用できますか？",
+      options: [
+        "光回線の契約",
+        "電気のセット契約",
+        "ガスのセット契約",
+        "ルーター購入・レンタル",
+        "ポケットWi-Fi契約",
+      ],
+      type: "checkbox" as const,
     },
   ];
 
@@ -43,7 +50,7 @@ export default function Phase2Contract({ answers, onChange }: Props) {
           question={q.question}
           options={q.options}
           type={q.type}
-          value={answers[q.id as keyof Phase2Answers] as string | null}
+          value={answers[q.id as keyof Phase2Answers] as string | string[] | null}
           onChange={handleChange}
           answers={answers}
         />
