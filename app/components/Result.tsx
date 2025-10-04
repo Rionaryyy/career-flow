@@ -1,69 +1,58 @@
+// app/components/Result.tsx
 "use client";
 
-import React from "react";
+import { DiagnosisAnswers } from "@/types/types";
+import { useState } from "react";
 
 interface ResultProps {
-  answers: any; // 実際は DiagnosisAnswers 型に置き換え
+  answers: DiagnosisAnswers;
   onRestart: () => void;
 }
 
 export default function Result({ answers, onRestart }: ResultProps) {
-  const shareUrl = typeof window !== "undefined" ? window.location.href : "";
+  const [copied, setCopied] = useState(false);
 
-  const shareText = encodeURIComponent(
-    `私のキャリア診断結果はこちら！ #キャリア診断 ${shareUrl}`
-  );
+  // 仮に結果の要約を作る例
+  const summary = `キャリア診断結果:
+- ポイント還元重視: ${answers.phase1.includePoints ? "はい" : "いいえ"}
+- 通信品質重視: ${answers.phase1.networkQuality ? "高い" : "普通"}
+- 希望キャリア: ${answers.phase1.carrierType || "未選択"}
+`;
 
-  const handleCopy = () => {
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(shareUrl);
-      alert("URLをコピーしました！");
+  const handleShare = async () => {
+    try {
+      await navigator.clipboard.writeText(summary);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("コピーに失敗しました:", err);
     }
   };
 
   return (
-    <div className="space-y-8 w-full max-w-4xl mx-auto px-4">
-      {/* 結果内容 */}
-      <div className="p-6 bg-white rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold mb-4">診断結果</h2>
-        <p>ここに診断結果を表示</p>
+    <section className="max-w-4xl mx-auto p-4 space-y-6">
+      <h2 className="text-2xl font-bold">診断結果</h2>
+
+      <div className="bg-white p-4 rounded shadow">
+        <pre className="whitespace-pre-wrap">{summary}</pre>
       </div>
 
-      {/* 共有ボタン */}
-      <div className="flex flex-wrap gap-4">
-        <a
-          href={`https://twitter.com/intent/tweet?text=${shareText}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-        >
-          Twitterで共有
-        </a>
-        <a
-          href={`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(
-            shareUrl
-          )}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition"
-        >
-          LINEで共有
-        </a>
+      <div className="flex flex-col sm:flex-row gap-4">
         <button
-          onClick={handleCopy}
-          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition"
+          onClick={handleShare}
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
         >
-          URLをコピー
+          結果をコピー
+        </button>
+        {copied && <span className="text-green-600 mt-2 sm:mt-0">コピーしました！</span>}
+
+        <button
+          onClick={onRestart}
+          className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 transition"
+        >
+          最初からやり直す
         </button>
       </div>
-
-      {/* 再診断ボタン */}
-      <button
-        onClick={onRestart}
-        className="mt-6 px-6 py-3 bg-blue-400 text-white rounded hover:bg-blue-500 transition"
-      >
-        診断をやり直す
-      </button>
-    </div>
+    </section>
   );
 }
