@@ -120,7 +120,7 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
 
         <button
   onClick={() => onSubmit(answers)}
-  className="px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-gradient-to-r from-sky-300 to-sky-400 text-lg font-semibold text-white shadow-md transition-all duration-200"
+  className="px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-gradient-to-r from-sky-200 to-sky-300 text-base sm:text-lg font-semibold text-white shadow-sm transition-all duration-200"
 >
   次へ →
 </button>
