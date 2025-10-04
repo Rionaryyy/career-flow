@@ -13,7 +13,7 @@ export default function Phase2Subscription({ answers, onChange }: Props) {
   const handleChange = (id: string, value: string | string[]) => {
     // 「特になし」の排他制御
     if (id === "subscriptionServices" && Array.isArray(value)) {
-      if (value.includes("特になし")) value = ["特になし"];
+      if (value.includes("a特になし")) value = ["特になし"];
       else value = value.filter((v) => v !== "特になし");
     }
     onChange({ [id]: value } as Partial<Phase2Answers>);
