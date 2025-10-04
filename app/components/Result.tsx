@@ -1,84 +1,69 @@
-// components/ResultComparison.tsx
 "use client";
 
 import React from "react";
-import { DiagnosisAnswers } from "@/types/types";
 
-interface Props {
-  answers: DiagnosisAnswers;
+interface ResultProps {
+  answers: any; // 実際は DiagnosisAnswers 型に置き換え
   onRestart: () => void;
 }
 
-export default function ResultComparison({ answers, onRestart }: Props) {
-  // 仮データ：今後ユーザー回答に応じて動的に変更可能
-  const plans = [
-    {
-      name: "SIMのみプラン（最安）",
-      monthlyFee: "2,980円",
-      cashback: "-",
-      description: "端末なし、最安プラン"
-    },
-    {
-      name: "SIMのみプラン＋キャッシュバック",
-      monthlyFee: "2,980円",
-      cashback: "10,000円",
-      description: "端末なし、乗り換えCB適用"
-    },
-    {
-      name: "端末購入プラン（最安）",
-      monthlyFee: "4,500円",
-      cashback: "-",
-      description: "端末分割払いあり、最安プラン"
-    },
-    {
-      name: "端末購入プラン＋キャッシュバック",
-      monthlyFee: "4,500円",
-      cashback: "15,000円",
-      description: "端末分割払いあり、CB適用"
-    },
-  ];
+export default function Result({ answers, onRestart }: ResultProps) {
+  const shareUrl = typeof window !== "undefined" ? window.location.href : "";
+
+  const shareText = encodeURIComponent(
+    `私のキャリア診断結果はこちら！ #キャリア診断 ${shareUrl}`
+  );
+
+  const handleCopy = () => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(shareUrl);
+      alert("URLをコピーしました！");
+    }
+  };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 px-4 sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-bold text-sky-900 text-center mb-6">
-        📊 仮診断結果比較
-      </h1>
-
-      <p className="text-center text-gray-700 mb-4">
-        まだ仮データです。将来的にはあなたの回答に基づいたプランが表示されます。
-      </p>
-
-      <div className="overflow-x-auto">
-        <table className="w-full text-left border border-gray-200 rounded-lg">
-          <thead className="bg-sky-100">
-            <tr>
-              <th className="px-4 py-2 border-b">プラン名</th>
-              <th className="px-4 py-2 border-b">月額料金</th>
-              <th className="px-4 py-2 border-b">キャッシュバック</th>
-              <th className="px-4 py-2 border-b">説明</th>
-            </tr>
-          </thead>
-          <tbody>
-            {plans.map((plan, idx) => (
-              <tr key={idx} className="even:bg-gray-50">
-                <td className="px-4 py-2 border-b">{plan.name}</td>
-                <td className="px-4 py-2 border-b">{plan.monthlyFee}</td>
-                <td className="px-4 py-2 border-b">{plan.cashback}</td>
-                <td className="px-4 py-2 border-b">{plan.description}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <div className="space-y-8 w-full max-w-4xl mx-auto px-4">
+      {/* 結果内容 */}
+      <div className="p-6 bg-white rounded-lg shadow-md">
+        <h2 className="text-2xl font-bold mb-4">診断結果</h2>
+        <p>ここに診断結果を表示</p>
       </div>
 
-      <div className="flex justify-center pt-6">
-        <button
-          onClick={onRestart}
-          className="px-6 py-3 rounded-full bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-300 hover:to-sky-400 text-white font-semibold shadow-md transition-all duration-200"
+      {/* 共有ボタン */}
+      <div className="flex flex-wrap gap-4">
+        <a
+          href={`https://twitter.com/intent/tweet?text=${shareText}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
         >
-          診断をやり直す
+          Twitterで共有
+        </a>
+        <a
+          href={`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(
+            shareUrl
+          )}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition"
+        >
+          LINEで共有
+        </a>
+        <button
+          onClick={handleCopy}
+          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition"
+        >
+          URLをコピー
         </button>
       </div>
+
+      {/* 再診断ボタン */}
+      <button
+        onClick={onRestart}
+        className="mt-6 px-6 py-3 bg-blue-400 text-white rounded hover:bg-blue-500 transition"
+      >
+        診断をやり直す
+      </button>
     </div>
   );
 }
