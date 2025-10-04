@@ -10,14 +10,21 @@ interface Props {
 }
 
 export default function Phase2Subscription({ answers, onChange }: Props) {
-  const handleChange = (id: string, value: string | string[]) => {
-    // 「特になし」の排他制御
-    if (id === "subscriptionServices" && Array.isArray(value)) {
-      if (value.includes("a特になし")) value = ["特になし"];
-      else value = value.filter((v) => v !== "特になし");
+ const handleChange = (id: string, value: string | string[]) => {
+  // 「特になし」の排他制御
+  if (id === "subscriptionServices" && Array.isArray(value)) {
+    if (value.includes("特になし")) {
+      // 「特になし」を選んだら他の選択肢を解除
+      value = ["特になし"];
+    } else {
+      // 他の選択肢を選んだら「特になし」を除外
+      value = value.filter((v) => v !== "特になし");
     }
-    onChange({ [id]: value } as Partial<Phase2Answers>);
-  };
+  }
+
+  onChange({ [id]: value } as Partial<Phase2Answers>);
+};
+
 
   return (
     <div className="w-full py-6 space-y-6">
