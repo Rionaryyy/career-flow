@@ -113,9 +113,9 @@ export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props)
         </button>
 
         <button
-          onClick={handleNext}
-          className="px-4 py-2 rounded-full bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-300 hover:to-sky-400 text-lg font-semibold text-white shadow-md transition-all duration-200"
-        >
+  onClick={() => onSubmit(answers)}
+  className="px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-gradient-to-r from-sky-300 to-sky-400 text-lg font-semibold text-white shadow-md transition-all duration-200"
+>
           {step === steps.length - 1 ? "結果を見る →" : "次へ →"}
         </button>
       </div>
