@@ -12,7 +12,7 @@ export default function Phase2Call({ answers, onChange }: Props) {
   const questions = [
   {
     id: "callFrequency",
-    question: "1. ふだんの通話頻度に近いものを選んでください",
+    question: "ふだんの通話頻度に近いものを選んでください",
     options: [
       "ほとんど通話しない（LINEなどが中心）",
       "月に数回だけ短い通話をする（1〜5分程度）",
@@ -24,7 +24,7 @@ export default function Phase2Call({ answers, onChange }: Props) {
   },
   {
     id: "familyCallRatio",
-    question: "2. 通話のうち、家族との通話はどのくらいですか？",
+    question: "通話のうち、家族との通話はどのくらいですか？",
     options: [
       "ほとんど家族との通話はない",
       "半分程度が家族との通話",
@@ -34,7 +34,7 @@ export default function Phase2Call({ answers, onChange }: Props) {
   },
   {
     id: "overseasCallFrequency",
-    question: "3. 海外への通話はどのくらいしますか？",
+    question: "海外への通話はどのくらいしますか？",
     options: [
       "ほとんど通話しない",
       "月に数回だけ短い通話をする（1〜5分程度）",
@@ -46,7 +46,7 @@ export default function Phase2Call({ answers, onChange }: Props) {
   },
   {
     id: "callOptionsNeeded",
-    question: "4. 留守番電話や着信転送などのオプションは必要ですか？",
+    question: "留守番電話や着信転送などのオプションは必要ですか？",
     options: ["はい（必要）", "いいえ（不要）"],
     type: "radio" as const,
   },

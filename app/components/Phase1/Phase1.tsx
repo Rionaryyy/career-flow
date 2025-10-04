@@ -42,6 +42,15 @@ const phase1Questions = [
     ],
   },
   {
+  id: "considerCardAndPayment",
+  question: "お得になるなら、専用クレジットカードの発行や特定の支払い方法の利用も検討しますか？",
+  type: "radio",
+  options: [
+    "はい（条件次第でカード発行・支払い方法の変更もOK）",
+    "いいえ（今ある支払い方法の範囲で考えたい）",
+  ],
+  },
+  {
     id: "appCallUnlimited",
     question: "通話専用アプリでの通話は“かけ放題”としてカウントしてよいですか？",
     type: "radio",
