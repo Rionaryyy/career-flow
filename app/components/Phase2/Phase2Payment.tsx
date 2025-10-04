@@ -32,6 +32,7 @@ export default function Phase2Payment({ answers, onChange, phase1Answers }: Prop
       question:
         "通信料金の支払いに利用できるカード・銀行を選んでください（複数選択可）\n※クレジットカードまたは銀行口座を選択した場合に表示",
       options: [
+        // クレジットカード
         "dカード",
         "dカード GOLD",
         "au PAYカード",
@@ -47,6 +48,7 @@ export default function Phase2Payment({ answers, onChange, phase1Answers }: Prop
         "UQカード",
         "NUROモバイルクレジットカード",
         "その他",
+        // 銀行口座
         "みずほ銀行",
         "三井住友銀行",
         "三菱UFJ銀行",
@@ -56,6 +58,11 @@ export default function Phase2Payment({ answers, onChange, phase1Answers }: Prop
     },
   ];
 
+  // フェーズ①で「いいえ」を選んだ場合のみ表示
+  if (!phase1Answers || phase1Answers.considerCardAndPayment !== "いいえ") {
+    return null;
+  }
+
   // Q1の選択に応じてQ2の表示を切り替え
   useEffect(() => {
     const mainCardAnswer = answers["mainCard"] as string[] | string | null;
@@ -64,10 +71,7 @@ export default function Phase2Payment({ answers, onChange, phase1Answers }: Prop
       return;
     }
 
-    const selected =
-      Array.isArray(mainCardAnswer)
-        ? mainCardAnswer
-        : [mainCardAnswer];
+    const selected = Array.isArray(mainCardAnswer) ? mainCardAnswer : [mainCardAnswer];
 
     setShowCardDetail(
       selected.includes("クレジットカード") || selected.includes("銀行口座引き落とし")
@@ -77,11 +81,6 @@ export default function Phase2Payment({ answers, onChange, phase1Answers }: Prop
   const handleChange = (id: string, value: string | string[]) => {
     onChange({ [id]: value } as Partial<Phase2Answers>);
   };
-
-  // フェーズ①で「いいえ」を選んだ場合のみ表示
-  if (!phase1Answers || phase1Answers.considerCardAndPayment !== "いいえ") {
-    return null;
-  }
 
   return (
     <div className="w-full py-6 space-y-6">
