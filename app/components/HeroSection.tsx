@@ -23,7 +23,7 @@ export default function HeroSection() {
       >
         <h1 className="text-4xl md:text-5xl font-extrabold mb-6 leading-tight">
           あなたに最適な<br />
-          <span className="text-blue-400">キャリア診断</span>
+          <span className="text-blue-400">通信キャリア診断</span>
         </h1>
 
         <p className="text-base md:text-lg mb-10 text-gray-200 leading-relaxed">
