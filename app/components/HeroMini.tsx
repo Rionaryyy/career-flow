@@ -4,10 +4,10 @@ import { motion } from "framer-motion";
 export default function HeroMini() {
   return (
     <section
-      className="relative flex flex-col items-center justify-center text-center text-white h-64 sm:h-80 md:min-h-[60vh] bg-cover bg-center px-4 sm:px-6"
+      className="relative flex flex-col items-center justify-center text-center text-white h-[40vh] sm:h-[50vh] md:min-h-[60vh] bg-cover bg-center px-4 sm:px-6"
       style={{
         backgroundImage:
-          "linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('/images/tech-bg.jpg')",
+          "linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url('/images/tech-bg.jpg')",
       }}
     >
       <motion.div
