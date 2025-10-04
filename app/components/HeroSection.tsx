@@ -26,10 +26,9 @@ export default function HeroSection() {
           <span className="text-blue-400">通信キャリア診断</span>
         </h1>
 
-        <p className="text-base md:text-lg mb-10 text-gray-200 leading-relaxed">
-          通信料金 × 端末購入 × 経済圏ポイントまで踏み込んだ、<br />
-          本当の「実質コスト」を診断
-        </p>
+        <p className="text-base md:text-lg mb-10 text-gray-200 leading-relaxed break-words w-full">
+  通信料金 × 端末購入 × 経済圏ポイントまで踏み込んだ、本当の「実質コスト」を診断
+</p>
 
         <motion.button
           whileHover={{ scale: 1.05 }}
