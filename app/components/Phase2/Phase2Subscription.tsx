@@ -20,7 +20,7 @@ export default function Phase2Subscription({ answers, onChange }: Props) {
   };
 
   return (
-    <div className="w-full py-6 space-y-6">
+    <div className="w-full py-6 space-y-6 max-w-4xl mx-auto px-4 sm:px-6">
       {phase2SubscriptionQuestions.map((q) => {
         if (q.condition && !q.condition(answers)) return null;
 

@@ -41,8 +41,8 @@ export default function QuestionCard({
     type === "checkbox" ? (Array.isArray(value) ? value : []) : [];
 
   return (
-    <div className="w-full bg-white p-6 rounded-2xl border border-sky-200 shadow-md space-y-4">
-      <p className="text-xl font-semibold text-sky-900 text-center">
+    <div className="w-full bg-white p-6 sm:px-4 rounded-2xl border border-sky-200 shadow-md space-y-4">
+      <p className="text-xl font-semibold text-sky-900 text-center break-words">
         {question}
       </p>
       <div className="grid grid-cols-1 gap-3 w-full">
@@ -52,7 +52,7 @@ export default function QuestionCard({
           return (
             <label
               key={opt}
-              className={`flex items-center w-full cursor-pointer py-3 px-4 rounded-xl border transition-all duration-200 ${
+              className={`flex items-center w-full cursor-pointer py-3 px-4 rounded-xl border transition-all duration-200 break-words ${
                 checked
                   ? "bg-gradient-to-r from-sky-400 to-sky-500 text-white shadow"
                   : "bg-white border-sky-200 text-sky-900 hover:border-sky-300 hover:shadow-sm"

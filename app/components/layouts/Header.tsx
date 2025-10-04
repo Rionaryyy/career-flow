@@ -13,7 +13,9 @@ export default function Header() {
       {/* サイトタイトル（クリック不可） */}
       <div className="flex items-center space-x-2 cursor-default select-none">
         <DevicePhoneMobileIcon className="w-6 h-6 text-sky-500" />
-        <span className="text-xl font-bold text-sky-900">通信キャリア診断</span>
+        <span className="text-xl font-bold text-sky-900 truncate">
+          通信キャリア診断
+        </span>
       </div>
 
       {/* ハンバーガーメニュー */}
@@ -30,11 +32,12 @@ export default function Header() {
 
       {/* メニュー */}
       <nav
-        className={`absolute top-full right-4 w-48 bg-white shadow-lg rounded-md overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out ${
-          menuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-        }`}
+        className={`absolute top-full right-2 sm:right-4 bg-white shadow-lg rounded-md overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out
+          ${menuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}
+        `}
+        style={{ width: "max-content", minWidth: "160px", maxWidth: "90vw" }}
       >
-        <ul className="flex flex-col">
+        <ul className="flex flex-col text-sm sm:text-base">
           <li>
             <Link
               href="/"

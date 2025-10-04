@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { Phase2Answers } from "@/types/types";
 import QuestionLayout from "../layouts/QuestionLayout";
 
-// 各セクションのコンポーネント
 import Phase2Data from "./Phase2Data";
 import Phase2Call from "./Phase2Call";
 import Phase2Contract from "./Phase2Contract";
@@ -82,39 +81,34 @@ export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props)
     }
   };
 
-  const answeredCount = step + 1;
-  const totalCount = steps.length;
-
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "auto" });
   }, [step]);
 
   return (
-    <QuestionLayout answeredCount={step + 2} totalCount={9}>
-      {/* 各ステップタイトル */}
-      <h2 className="text-3xl font-bold text-sky-900 text-center mb-6">
+    <QuestionLayout answeredCount={step + 1} totalCount={steps.length}>
+      <h2 className="text-2xl sm:text-3xl font-bold text-sky-900 text-center mb-6">
         {steps[step].label}
       </h2>
 
-      {/* 各ステップコンテンツ */}
-      <div className="w-full px-0">{renderStep()}</div>
+      <div className="w-full max-w-3xl mx-auto px-2 sm:px-0">{renderStep()}</div>
 
-      {/* 下部ナビボタン */}
-      <div className="flex justify-between items-center pt-6 w-full max-w-4xl">
+      <div className="flex flex-col sm:flex-row justify-between items-center pt-6 w-full max-w-3xl mx-auto gap-4">
         <button
           onClick={handleBack}
-          className={`px-4 py-2 rounded-full ${
+          className={`px-4 py-2 rounded-full w-full sm:w-auto ${
             step === 0 && !onBack
               ? "bg-sky-100 text-sky-300 cursor-not-allowed"
               : "bg-sky-200 hover:bg-sky-300 text-sky-900 shadow-sm"
           } transition-all duration-200`}
+          disabled={step === 0 && !onBack}
         >
           ← 戻る
         </button>
 
         <button
           onClick={handleNext}
-          className="px-8 py-3 rounded-full bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-300 hover:to-sky-400 text-lg font-semibold text-white shadow-md transition-all duration-200"
+          className="px-6 py-3 rounded-full w-full sm:w-auto bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-300 hover:to-sky-400 text-lg font-semibold text-white shadow-md transition-all duration-200"
         >
           {step === steps.length - 1 ? "結果を見る →" : "次へ →"}
         </button>

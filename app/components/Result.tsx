@@ -24,7 +24,7 @@ export default function Result({ answers, onRestart }: ResultProps) {
     }
   }, []);
 
-  const summary = `📶 キャリア診断結果\n
+  const summary = `📶 キャリア診断結果
 - ポイント還元重視: ${answers.phase1.includePoints ? "はい" : "いいえ"}
 - 通信品質重視: ${answers.phase1.networkQuality ? "高い" : "普通"}
 - 希望キャリア: ${answers.phase1.carrierType || "未選択"}`;
@@ -43,14 +43,14 @@ export default function Result({ answers, onRestart }: ResultProps) {
   )}`;
 
   return (
-    <section className="max-w-3xl mx-auto p-6 text-center">
-      <h2 className="text-2xl font-bold mb-4">診断結果</h2>
+    <section className="w-full px-4 sm:px-6 md:px-8 lg:px-0 max-w-3xl mx-auto text-center space-y-6">
+      <h2 className="text-2xl sm:text-3xl font-bold">診断結果</h2>
 
-      <div className="bg-white p-6 rounded-xl shadow text-left whitespace-pre-wrap">
+      <div className="bg-white p-4 sm:p-6 rounded-xl shadow text-left whitespace-pre-wrap break-words leading-relaxed">
         {summary}
       </div>
 
-      <h3 className="text-lg font-semibold mt-8 mb-4">📤 診断結果をシェアしよう！</h3>
+      <h3 className="text-lg sm:text-xl font-semibold mt-6 mb-4">📤 診断結果をシェアしよう！</h3>
 
       <div className="flex flex-wrap justify-center gap-4">
         {/* Twitter */}
@@ -83,12 +83,12 @@ export default function Result({ answers, onRestart }: ResultProps) {
       </div>
 
       {copied && (
-        <p className="text-green-600 mt-2 text-sm">✅ Instagram用にコピーしました！</p>
+        <p className="text-green-600 mt-2 text-sm sm:text-base">✅ Instagram用にコピーしました！</p>
       )}
 
       <button
         onClick={onRestart}
-        className="mt-8 inline-flex items-center gap-2 bg-gray-300 hover:bg-gray-400 text-black px-6 py-3 rounded-full transition shadow"
+        className="mt-6 sm:mt-8 inline-flex items-center gap-2 bg-gray-300 hover:bg-gray-400 text-black px-6 py-3 rounded-full transition shadow"
       >
         <ArrowUpIcon className="w-5 h-5" />
         最初から診断する

@@ -35,7 +35,7 @@ export default function Phase2Contract({ answers, onChange }: Props) {
   };
 
   return (
-    <div className="w-full py-6 space-y-6">
+    <div className="w-full py-6 space-y-6 max-w-4xl mx-auto px-4 sm:px-6">
       {questions.map((q) => (
         <QuestionCard
           key={q.id}

@@ -31,7 +31,7 @@ export default function Phase2Payment({ answers, onChange }: Props) {
   };
 
   return (
-    <div className="w-full py-6 space-y-6">
+    <div className="w-full py-6 space-y-6 max-w-4xl mx-auto px-4 sm:px-6">
       {questions.map((q) => {
         const currentValue = answers[q.id as keyof Phase2Answers] as string | string[] | null;
 

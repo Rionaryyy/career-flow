@@ -77,20 +77,13 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
     setAnswers((prev) => ({ ...prev, [id]: value as string }));
   };
 
-  // --- 進捗カウント ---
-  const answeredCount = Object.values(answers).filter(Boolean).length;
-  const totalCount = phase1Questions.length;
-  // -------------------
-
   return (
-    <QuestionLayout answeredCount={1} totalCount={9}>
-      {/* 画面上部にタイトル */}
-      <h1 className="text-3xl font-bold text-sky-900 text-center mb-6">
+    <QuestionLayout answeredCount={1} totalCount={phase1Questions.length}>
+      <h1 className="text-2xl sm:text-3xl font-bold text-sky-900 text-center mb-6">
         基本条件
       </h1>
 
-      {/* 質問リスト */}
-      <div className="space-y-6 w-full">
+      <div className="space-y-4 sm:space-y-6 w-full max-w-3xl mx-auto">
         {phase1Questions.map((q) => (
           <QuestionCard
             key={q.id}
@@ -104,11 +97,10 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
         ))}
       </div>
 
-      {/* ナビボタン */}
-      <div className="flex justify-between items-center pt-6 w-full max-w-4xl">
+      <div className="flex flex-col sm:flex-row justify-between items-center pt-6 w-full max-w-3xl mx-auto gap-4">
         <button
           onClick={onBack}
-          className={`px-4 py-2 rounded-full ${
+          className={`px-4 py-2 rounded-full w-full sm:w-auto ${
             !onBack
               ? "bg-sky-100 text-sky-300 cursor-not-allowed"
               : "bg-sky-200 hover:bg-sky-300 text-sky-900 shadow-sm"
@@ -120,7 +112,7 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
 
         <button
           onClick={() => onSubmit(answers)}
-          className="px-8 py-3 rounded-full bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-300 hover:to-sky-400 text-lg font-semibold text-white shadow-md transition-all duration-200"
+          className="px-6 py-3 rounded-full w-full sm:w-auto bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-300 hover:to-sky-400 text-lg font-semibold text-white shadow-md transition-all duration-200"
         >
           次へ →
         </button>

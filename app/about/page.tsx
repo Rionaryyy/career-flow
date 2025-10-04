@@ -1,8 +1,8 @@
 "use client";
 
-import Header from ".././components/layouts/Header";
-import FeatureHighlightsFlow from ".././components/FeatureHighlightsFlow";
-import HeroMini from ".././components/HeroMini";
+import Header from "../components/layouts/Header";
+import FeatureHighlightsFlow from "../components/FeatureHighlightsFlow";
+import HeroMini from "../components/HeroMini";
 
 export default function AboutPage() {
   return (
@@ -12,16 +12,18 @@ export default function AboutPage() {
         {/* HeroMini */}
         <HeroMini />
 
+        {/* 概要セクション */}
         <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold mb-4">概要</h1>
-          <p className="text-gray-700 leading-relaxed mb-4">
+          <h1 className="text-3xl sm:text-4xl font-bold mb-6 text-sky-900">概要</h1>
+          <p className="text-gray-700 text-base sm:text-lg leading-relaxed mb-4">
             通信キャリア診断サービス「Career Flow」は、あなたに最適なキャリア・プランを提案します。
           </p>
-          <p className="text-gray-700 leading-relaxed">
+          <p className="text-gray-700 text-base sm:text-lg leading-relaxed">
             通信料金、端末購入、経済圏ポイントまで踏み込み、本当の「実質コスト」を診断することで、毎月の支出を最適化します。
           </p>
         </section>
 
+        {/* フッター・特徴セクション */}
         <FeatureHighlightsFlow />
       </main>
     </div>
