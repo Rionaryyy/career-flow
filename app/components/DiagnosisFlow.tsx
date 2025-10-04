@@ -81,45 +81,38 @@ export default function DiagnosisFlow() {
   {/* HeroMini を追加 */}
   <HeroMini />
 
-  {/* フェーズ1 */}
   {step === "phase1" && (
-    <div className="max-w-4xl mx-auto space-y-8 px-4 sm:px-6 lg:px-8">
-      <Phase1
-        defaultValues={answers.phase1}
-        onSubmit={handlePhase1Submit}
-      />
-    </div>
-  )}
+  <div className="w-full space-y-8">
+    <Phase1 defaultValues={answers.phase1} onSubmit={handlePhase1Submit} />
+  </div>
+)}
 
-  {/* フェーズ2 */}
-  {step === "phase2" && (
-    <div className="w-full">
-      <Phase2
-        onSubmit={handlePhase2Submit}
-        defaultValues={answers.phase2}
-        onBack={() => {
-          setStep("phase1");
-          window.scrollTo({ top: 0, behavior: "auto" });
-        }}
-      />
-    </div>
-  )}
+{step === "phase2" && (
+  <div className="w-full">
+    <Phase2
+      defaultValues={answers.phase2}
+      onSubmit={handlePhase2Submit}
+      onBack={() => {
+        setStep("phase1");
+        window.scrollTo({ top: 0, behavior: "auto" });
+      }}
+    />
+  </div>
+)}
 
-  {/* 結果画面 */}
-  {step === "result" && (
-    <div className="max-w-4xl mx-auto space-y-8 px-4 sm:px-6 lg:px-8">
-      <Result
-        answers={answers}
-        onRestart={() => {
-          setStep("phase1");
-          window.scrollTo({ top: 0, behavior: "auto" });
-        }}
-      />
-    </div>
-  )}
-
+{step === "result" && (
+  <div className="w-full space-y-8">
+    <Result
+      answers={answers}
+      onRestart={() => {
+        setStep("phase1");
+        window.scrollTo({ top: 0, behavior: "auto" });
+      }}
+    />
+  </div>
+)}
   {/* 下部セクション（全ステップ共通で表示） */}
-  <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div className="w-full">
     <FeatureHighlightsFlow />
   </div>
 
