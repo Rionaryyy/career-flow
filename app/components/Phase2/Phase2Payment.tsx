@@ -2,15 +2,17 @@
 
 import { useState, useEffect } from "react";
 import QuestionCard from "../layouts/QuestionCard";
-import { Phase2Answers } from "@/types/types";
+import { Phase2Answers, Phase1Answers } from "@/types/types";
 
 interface Props {
   answers: Phase2Answers;
   onChange: (updated: Partial<Phase2Answers>) => void;
+  phase1Answers: Phase1Answers; // フェーズ①の回答を受け取る
 }
 
-export default function Phase2Payment({ answers, onChange }: Props) {
+export default function Phase2Payment({ answers, onChange, phase1Answers }: Props) {
   const [showCardDetail, setShowCardDetail] = useState(false);
+  const [showComponent, setShowComponent] = useState(false); // 前提条件チェック用
 
   const questions = [
     {
@@ -29,7 +31,7 @@ export default function Phase2Payment({ answers, onChange }: Props) {
     {
       id: "cardDetail",
       question:
-        "利用中のカード・銀行を選んでください（複数選択可）\n※クレジットカードまたは銀行口座を選択した場合に表示",
+        "通信料金の支払いに利用できるカード・銀行を選んでください（複数選択可）\n※クレジットカードまたは銀行口座を選択した場合に表示",
       options: [
         // クレジットカード
         "dカード",
@@ -57,6 +59,13 @@ export default function Phase2Payment({ answers, onChange }: Props) {
     },
   ];
 
+  // フェーズ①の前提条件で「いいえ」を選んだ場合のみ表示
+  useEffect(() => {
+    setShowComponent(
+      phase1Answers?.considerCardAndPayment === "いいえ"
+    );
+  }, [phase1Answers]);
+
   // Q1の選択に応じてQ2の表示を切り替え
   useEffect(() => {
     const mainCardAnswer = answers["mainCard"] as string[] | string | null;
@@ -79,9 +88,12 @@ export default function Phase2Payment({ answers, onChange }: Props) {
     onChange({ [id]: value } as Partial<Phase2Answers>);
   };
 
+  // フェーズ①で「いいえ」を選んだ場合のみ表示
+  if (!showComponent) return null;
+
   return (
     <div className="w-full py-6 space-y-6">
-      {questions.map((q, index) => {
+      {questions.map((q) => {
         // Q2はshowCardDetailがtrueのときのみ表示
         if (q.id === "cardDetail" && !showCardDetail) return null;
 

@@ -2,6 +2,7 @@ export interface Phase1Answers {
   includePoints: string | null;
   networkQuality: string | null;
   carrierType: string | null;
+  considerCardAndPayment: string | null; 
   supportPreference: string | null;
   contractLockPreference: string | null;
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Phase2Answers } from "@/types/types";
+import { Phase2Answers, Phase1Answers } from "@/types/types";
 import QuestionLayout from "../layouts/QuestionLayout";
 
 // 各セクションのコンポーネント
@@ -18,9 +18,10 @@ interface Phase2Props {
   onSubmit: (answers: Phase2Answers) => void;
   defaultValues: Phase2Answers;
   onBack?: () => void;
+  phase1Answers: Phase1Answers; // ← 追加
 }
 
-export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props) {
+export default function Phase2({ onSubmit, defaultValues, onBack, phase1Answers }: Phase2Props) {
   const [answers, setAnswers] = useState<Phase2Answers>(defaultValues);
   const [step, setStep] = useState<number>(0);
 
@@ -76,14 +77,16 @@ export default function Phase2({ onSubmit, defaultValues, onBack }: Phase2Props)
       case "overseas":
         return <Phase2Overseas {...stepProps} />;
       case "payment":
-        return <Phase2Payment {...stepProps} />;
+        return (
+          <Phase2Payment
+            {...stepProps}
+            phase1Answers={phase1Answers} // ← Propsから渡す
+          />
+        );
       default:
         return null;
     }
   };
-
-  const answeredCount = step + 1;
-  const totalCount = steps.length;
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "auto" });

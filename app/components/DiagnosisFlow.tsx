@@ -16,6 +16,7 @@ const INITIAL_ANSWERS: DiagnosisAnswers = {
     carrierType: null,
     supportPreference: null,
     contractLockPreference: null,
+    considerCardAndPayment: null, // ← 追加
   },
   phase2: {
     dataUsage: null,
@@ -116,6 +117,7 @@ export default function DiagnosisFlow() {
         {step === "phase2" && (
           <Phase2
             defaultValues={answers.phase2}
+            phase1Answers={answers.phase1} // ← ここを追加
             onSubmit={handlePhase2Submit}
             onBack={() => setStep("phase1")}
           />
