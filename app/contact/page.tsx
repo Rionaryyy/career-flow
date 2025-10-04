@@ -1,33 +1,58 @@
 "use client";
 
-import FeatureHighlightsFlow from ".././components/FeatureHighlightsFlow";;
+import Header from ".././components/layouts/Header";
+import FeatureHighlightsFlow from ".././components/FeatureHighlightsFlow";
+import HeroMini from ".././components/HeroMini";
 
 export default function ContactPage() {
   return (
-    <main className="min-h-screen w-full bg-gray-50">
-      <section
-        className="relative flex flex-col items-center justify-center text-center text-white h-[50vh] bg-cover bg-center px-4 sm:px-6"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('/images/tech-bg.jpg')",
-        }}
-      >
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold">
-          お問い合わせ
-        </h1>
-        <p className="mt-4 text-base sm:text-lg md:text-xl text-gray-200 max-w-2xl">
-          サービスに関するご質問やお問い合わせはこちらから。
-        </p>
-      </section>
+    <div className="min-h-screen bg-gray-50 text-black w-full">
+      <Header />
+      <main className="w-full pt-16 space-y-12">
+        {/* HeroMini */}
+        <HeroMini />
 
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-20 py-16 text-left">
-        <p className="text-gray-800">
-          お問い合わせフォームやメールアドレスを通じて、
-          いつでもご相談いただけます。
-        </p>
-      </section>
+        <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h1 className="text-3xl font-bold mb-4">お問い合わせ</h1>
+          <p className="text-gray-700 leading-relaxed mb-4">
+            ご質問やご要望がある場合は、以下のフォームからご連絡ください。
+          </p>
+          <form className="space-y-4">
+            <div>
+              <label className="block text-gray-700 mb-1">お名前</label>
+              <input
+                type="text"
+                className="w-full border border-gray-300 rounded px-3 py-2"
+                placeholder="山田 太郎"
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700 mb-1">メールアドレス</label>
+              <input
+                type="email"
+                className="w-full border border-gray-300 rounded px-3 py-2"
+                placeholder="example@mail.com"
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700 mb-1">お問い合わせ内容</label>
+              <textarea
+                className="w-full border border-gray-300 rounded px-3 py-2"
+                rows={5}
+                placeholder="内容を入力してください"
+              />
+            </div>
+            <button
+              type="submit"
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              送信
+            </button>
+          </form>
+        </section>
 
-      <FeatureHighlightsFlow />
-    </main>
+        <FeatureHighlightsFlow />
+      </main>
+    </div>
   );
 }

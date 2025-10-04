@@ -1,33 +1,29 @@
 "use client";
 
+import Header from ".././components/layouts/Header";
 import FeatureHighlightsFlow from ".././components/FeatureHighlightsFlow";
+import HeroMini from ".././components/HeroMini";
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen w-full bg-gray-50">
-      <section
-        className="relative flex flex-col items-center justify-center text-center text-white h-[50vh] bg-cover bg-center px-4 sm:px-6"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('/images/tech-bg.jpg')",
-        }}
-      >
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold">
-          概要
-        </h1>
-        <p className="mt-4 text-base sm:text-lg md:text-xl text-gray-200 max-w-2xl">
-          あなたに最適なキャリア診断サービスの概要をご紹介します。
-        </p>
-      </section>
+    <div className="min-h-screen bg-gray-50 text-black w-full">
+      <Header />
+      <main className="w-full pt-16 space-y-12">
+        {/* HeroMini */}
+        <HeroMini />
 
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-20 py-16 text-left">
-        <p className="text-gray-800">
-          本サービスは通信料金、端末購入、経済圏ポイントまで踏み込んだ
-          最適なキャリア・プランを提案します。
-        </p>
-      </section>
+        <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h1 className="text-3xl font-bold mb-4">概要</h1>
+          <p className="text-gray-700 leading-relaxed mb-4">
+            通信キャリア診断サービス「Career Flow」は、あなたに最適なキャリア・プランを提案します。
+          </p>
+          <p className="text-gray-700 leading-relaxed">
+            通信料金、端末購入、経済圏ポイントまで踏み込み、本当の「実質コスト」を診断することで、毎月の支出を最適化します。
+          </p>
+        </section>
 
-      <FeatureHighlightsFlow />
-    </main>
+        <FeatureHighlightsFlow />
+      </main>
+    </div>
   );
 }
