@@ -5,7 +5,7 @@ import FeatureHighlights from "./components/FeatureHighlights";
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="bg-gradient-to-b from-white to-gray-50">
       {/* ヒーローセクション */}
       <HeroSection />
 
