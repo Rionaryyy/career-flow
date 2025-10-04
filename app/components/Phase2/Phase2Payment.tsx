@@ -14,7 +14,8 @@ export default function Phase2Payment({ answers, onChange, phase1Answers }: Prop
   const [showCardDetail, setShowCardDetail] = useState(false);
 
   // フェーズ①で「いいえ」を選択した場合のみ表示
-  const showComponent = phase1Answers?.considerCardAndPayment === "いいえ";
+  const showComponent = phase1Answers?.considerCardAndPayment?.toString() === "いいえ";
+
 
   const questions = [
     {
