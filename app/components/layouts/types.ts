@@ -5,4 +5,5 @@ export interface Question<T> {
   type: "checkbox" | "radio";
   options: string[];
   condition?: (answers: T) => boolean;
+  section?: string; // ← 追加
 }

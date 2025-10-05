@@ -12,7 +12,7 @@ export default function Phase2Ecosystem({ answers, onChange }: Props) {
   const questions = [
     {
       id: "shoppingList",
-      question: "1. よく利用しているショッピング経済圏は？",
+      question: "現在よく利用している、または「還元条件が良ければ今後利用してもよい」と思う日々のショッピングはどれですか？",
       options: [
         "楽天市場・楽天ブックス・楽天トラベルなど（楽天経済圏）",
         "Yahoo!ショッピング・PayPayモールなど（PayPay / ソフトバンク経済圏）",
@@ -24,7 +24,7 @@ export default function Phase2Ecosystem({ answers, onChange }: Props) {
     },
     {
       id: "shoppingMonthly",
-      question: "2. 月間利用額は？",
+      question: "現在よく利用している、または「還元条件が良ければ今後利用してもよい」と思う日々の支払い方法はどれですか？",
       options: ["〜5,000円", "5,000〜10,000円", "10,000〜30,000円", "30,000〜50,000円", "50,000円以上", "まだわからない"],
       type: "radio" as const,
       condition: (ans: Phase2Answers) =>
