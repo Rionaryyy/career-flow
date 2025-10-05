@@ -10,42 +10,56 @@ interface Props {
 }
 
 export default function Phase2Subscription({ answers, onChange }: Props) {
- const handleChange = (id: string, value: string | string[]) => {
-  // 「特になし」の排他制御
-  if (id === "subscriptionServices" && Array.isArray(value)) {
-    if (value.includes("特になし")) {
-      // 「特になし」を選んだら他の選択肢を解除
+  const handleChange = (id: string, value: string | string[]) => {
+    // 「特になし」の排他制御
+    if (Array.isArray(value) && value.includes("特になし")) {
       value = ["特になし"];
-    } else {
-      // 他の選択肢を選んだら「特になし」を除外
+    } else if (Array.isArray(value)) {
       value = value.filter((v) => v !== "特になし");
     }
-  }
 
-  onChange({ [id]: value } as Partial<Phase2Answers>);
-};
+    onChange({ [id]: value } as Partial<Phase2Answers>);
+  };
 
+  // ジャンルごとに質問をまとめて表示
+  const groupedQuestions = phase2SubscriptionQuestions.reduce<Record<string, typeof phase2SubscriptionQuestions>>(
+    (acc, q) => {
+      const section = q.section || "その他";
+      if (!acc[section]) acc[section] = [];
+      acc[section].push(q);
+      return acc;
+    },
+    {}
+  );
 
   return (
-    <div className="w-full py-6 space-y-6">
-      {phase2SubscriptionQuestions.map((q) => {
-        if (q.condition && !q.condition(answers)) return null;
+    <div className="w-full py-6 space-y-8">
+      {Object.entries(groupedQuestions).map(([section, questions]) => (
+        <div key={section} className="space-y-6">
+          {/* セクションタイトル */}
+          {section && <h3 className="text-lg font-semibold">{section}</h3>}
 
-        const currentValue = answers[q.id as keyof Phase2Answers] as string | string[] | null;
+          {/* セクション内の質問 */}
+          {questions.map((q) => {
+            if (q.condition && !q.condition(answers)) return null;
 
-        return (
-          <QuestionCard
-            key={q.id}
-            id={q.id}
-            question={q.question}
-            options={q.options}
-            type={q.type}
-            value={currentValue}
-            onChange={handleChange}
-            answers={answers}
-          />
-        );
-      })}
+            const currentValue = answers[q.id as keyof Phase2Answers] as string | string[] | null;
+
+            return (
+              <QuestionCard
+                key={q.id}
+                id={q.id}
+                question={q.question}
+                options={q.options}
+                type={q.type}
+                value={currentValue}
+                onChange={handleChange}
+                answers={answers}
+              />
+            );
+          })}
+        </div>
+      ))}
     </div>
   );
 }
