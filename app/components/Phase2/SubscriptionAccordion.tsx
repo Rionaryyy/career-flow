@@ -40,6 +40,15 @@ export default function SubscriptionAccordion({ answers, onChange }: Props) {
     {}
   );
 
+  // どのジャンルで選択があるかチェックする関数
+  const hasAnySubscriptionSelected = (ans: Phase2Answers) =>
+    (Array.isArray(ans.videoSubscriptions) && ans.videoSubscriptions.length > 0) ||
+    (Array.isArray(ans.musicSubscriptions) && ans.musicSubscriptions.length > 0) ||
+    (Array.isArray(ans.bookSubscriptions) && ans.bookSubscriptions.length > 0) ||
+    (Array.isArray(ans.gameSubscriptions) && ans.gameSubscriptions.length > 0) ||
+    (Array.isArray(ans.cloudSubscriptions) && ans.cloudSubscriptions.length > 0) ||
+    (Array.isArray(ans.otherSubscriptions) && ans.otherSubscriptions.length > 0);
+
   return (
     <div className="w-full space-y-4">
       {Object.entries(groupedQuestions).map(([section, questions]) => {
@@ -83,6 +92,23 @@ export default function SubscriptionAccordion({ answers, onChange }: Props) {
                     />
                   );
                 })}
+
+                {/* サブスク割引質問を条件付きで追加 */}
+                {["動画配信サービス", "音楽配信サービス", "書籍・マンガ・雑誌", "ゲーム・アニメ", "クラウド・ストレージ・オフィス", "その他のサービス"].includes(section) && (
+                  <QuestionCard
+                    id="subscriptionMonthly"
+                    question="契約している（予定の）サブスクはキャリアセットでの割引を希望しますか？"
+                    options={[
+                      "はい（割引対象のキャリア・プランがあれば優先したい）",
+                      "いいえ（サブスクは別で契約する予定）",
+                    ]}
+                    type="radio"
+                    value={answers.subscriptionMonthly}
+                    onChange={handleChange}
+                    condition={hasAnySubscriptionSelected}
+                    answers={answers}
+                  />
+                )}
               </div>
             )}
           </div>
