@@ -10,17 +10,20 @@ interface Props {
 }
 
 export default function Phase2Subscription({ answers, onChange }: Props) {
-  const handleChange = (id: string, value: string | string[]) => {
-    // 「特になし」の排他制御
-    if (Array.isArray(value) && value.includes("特になし")) {
+ const handleChange = (id: string, value: string | string[]) => {
+  if (Array.isArray(value)) {
+    if (value.includes("特になし")) {
+      // この質問内で「特になし」を選んだ場合のみ置き換え
       value = ["特になし"];
-    } else if (Array.isArray(value)) {
+    } else {
+      // この質問内で他の選択肢を選んだ場合、「特になし」を除外
       value = value.filter((v) => v !== "特になし");
     }
+  }
 
-    onChange({ [id]: value } as Partial<Phase2Answers>);
-  };
-
+  // 更新は該当する質問の回答のみ
+  onChange({ [id]: value } as Partial<Phase2Answers>);
+};
   // ジャンルごとに質問をまとめて表示
   const groupedQuestions = phase2SubscriptionQuestions.reduce<Record<string, typeof phase2SubscriptionQuestions>>(
     (acc, q) => {
