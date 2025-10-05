@@ -5,7 +5,7 @@ import { Question } from "../layouts/types";
 export const phase2SubscriptionQuestions: Question<Phase2Answers>[] = [
   {
     section: "動画配信サービス",
-    id: "subscriptionServices",
+    id: "videoSubscriptions",
     question: "契約中または契約予定の動画サービスを選択（複数可）",
     type: "checkbox",
     options: [
@@ -24,7 +24,7 @@ export const phase2SubscriptionQuestions: Question<Phase2Answers>[] = [
   },
   {
     section: "音楽配信サービス",
-    id: "subscriptionServices",
+    id: "musicSubscriptions",
     question: "契約中または契約予定の音楽サービスを選択（複数可）",
     type: "checkbox",
     options: [
@@ -40,7 +40,7 @@ export const phase2SubscriptionQuestions: Question<Phase2Answers>[] = [
   },
   {
     section: "書籍・マンガ・雑誌",
-    id: "subscriptionServices",
+    id: "bookSubscriptions",
     question: "契約中または契約予定の書籍・雑誌サービスを選択（複数可）",
     type: "checkbox",
     options: [
@@ -54,7 +54,7 @@ export const phase2SubscriptionQuestions: Question<Phase2Answers>[] = [
   },
   {
     section: "ゲーム・アニメ",
-    id: "subscriptionServices",
+    id: "gameSubscriptions",
     question: "契約中または契約予定のゲーム・アニメサービスを選択（複数可）",
     type: "checkbox",
     options: [
@@ -67,7 +67,7 @@ export const phase2SubscriptionQuestions: Question<Phase2Answers>[] = [
   },
   {
     section: "クラウド・ストレージ・オフィス",
-    id: "subscriptionServices",
+    id: "cloudSubscriptions",
     question: "契約中または契約予定のクラウド・ストレージ・オフィスサービスを選択（複数可）",
     type: "checkbox",
     options: [
@@ -79,7 +79,7 @@ export const phase2SubscriptionQuestions: Question<Phase2Answers>[] = [
   },
   {
     section: "その他のサービス",
-    id: "subscriptionServices",
+    id: "otherSubscriptions",
     question: "契約中または契約予定のその他サービスを選択（複数可）",
     type: "checkbox",
     options: [
@@ -98,8 +98,15 @@ export const phase2SubscriptionQuestions: Question<Phase2Answers>[] = [
       "いいえ（サブスクは別で契約する予定）",
     ],
     condition: (ans: Phase2Answers) => {
-      const selected = ans.subscriptionServices;
-      return Array.isArray(selected) && selected.length > 0 && !selected.includes("特になし");
+      const allSelected = [
+        ans.videoSubscriptions,
+        ans.musicSubscriptions,
+        ans.bookSubscriptions,
+        ans.gameSubscriptions,
+        ans.cloudSubscriptions,
+        ans.otherSubscriptions,
+      ].flatMap((v) => (Array.isArray(v) ? v : []));
+      return allSelected.length > 0 && !allSelected.includes("特になし");
     },
   },
 ];

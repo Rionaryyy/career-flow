@@ -43,14 +43,14 @@ const INITIAL_ANSWERS: DiagnosisAnswers = {
     paymentMonthly: null,     // Q9-2 月額
 
     // サブスク
-    subs: [],
-    subsDiscountPreference: null,
-    usingServices: [],
-    monthlySubscriptionCost: null,
-    subscriptions: [],
-    subscriptionServices: [],
-    subscriptionMonthly: null,
-
+    videoSubscriptions: null,
+  musicSubscriptions: null,
+  bookSubscriptions: null,
+  gameSubscriptions: null,
+  cloudSubscriptions: null,
+  otherSubscriptions: null,
+  subscriptionMonthly: null,
+  
     // 端末・購入形態
     buyingDevice: null,
     devicePurchaseMethods: [],

@@ -32,12 +32,13 @@ export interface Phase2Answers {
   paymentMonthly: string | null;       // 月間利用額
 
   // ⑤ サブスク
-  subs: string[] | null;
-  subsDiscountPreference: string | null;
-  usingServices: string[] | null;
-  monthlySubscriptionCost: string | null;
-  subscriptions: string[] | null;
-  subscriptionServices: string[] | null;
+  videoSubscriptions: string[] | null;
+  musicSubscriptions: string[] | null;
+  bookSubscriptions: string[] | null;
+  gameSubscriptions: string[] | null;
+  cloudSubscriptions: string[] | null;
+  otherSubscriptions: string[] | null;
+
   subscriptionMonthly: string | null;
 
   // ⑥ 端末・購入形態
