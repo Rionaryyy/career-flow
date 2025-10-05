@@ -25,32 +25,26 @@ export interface Phase2Answers {
   setDiscount: string | null;
   infraSet: string | null;
 
-  // ④ 経済圏・ポイント
-  ecosystem: string | null;
-  ecosystemMonthly: string | null;
-
-  // ✅ 追加（Phase2Ecosystem用）
-  usingEcosystem: string | null;
-  monthlyUsage: string | null;
+  // ④ 経済圏・ポイント（ショッピング利用と支払い方法に分割）
+  shoppingList: string[] | null;       // 複数選択可
+  shoppingMonthly: string | null;      // 月間利用額
+  paymentList: string[] | null;        // 複数選択可
+  paymentMonthly: string | null;       // 月間利用額
 
   // ⑤ サブスク
   subs: string[] | null;
   subsDiscountPreference: string | null;
-
-  // ✅ 追加（Phase2Subscription用）
   usingServices: string[] | null;
   monthlySubscriptionCost: string | null;
-
-  // ✅ 追加（Phase2Subscription.tsxで使う）
   subscriptions: string[] | null;
-  subscriptionServices: string[] | null;      // ← 追加
-  subscriptionMonthly: string | null;         // ← 追加
+  subscriptionServices: string[] | null;
+  subscriptionMonthly: string | null;
 
   // ⑥ 端末・購入形態
-  buyingDevice: string | null;                // ← 追加
-  devicePurchaseMethods: string[] | null;     // ← 追加
-  devicePreference?: string | null;           // ← 追加
-  oldDevicePlan?: string | null;              // ← 追加
+  buyingDevice: string | null;
+  devicePurchaseMethods: string[] | null;
+  devicePreference?: string | null;
+  oldDevicePlan?: string | null;
 
   // ⑦ 海外利用・特殊ニーズ
   overseasUse: string | null;
@@ -58,10 +52,9 @@ export interface Phase2Answers {
   dualSim: string | null;
   specialUses: string[] | null;
 
-  // ⑧ 支払い方法
-  paymentMethods: string[] | null;
-  mainCard?: string | null;                   // ← 追加
-  paymentTiming?: string | null;              // ← 追加
+  // ⑧ 支払い方法（ここは月額込みで統合済み）
+  mainCard?: string | null;
+  paymentTiming?: string | null;
 }
 
 export interface DiagnosisAnswers {
