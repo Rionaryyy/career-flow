@@ -9,7 +9,7 @@ interface QuestionCardProps {
   options: string[];
   type: "radio" | "checkbox";
   value?: string | string[] | null;
-  onChange: (id: string, value: string | string[]) => void;
+  onChange: (id: keyof Phase2Answers, value: string | string[]) => void;
   condition?: (answers: Phase2Answers) => boolean;
   answers?: Phase2Answers;
 }
@@ -27,13 +27,16 @@ export default function QuestionCard({
   if (condition && answers && !condition(answers)) return null;
 
   const handleSelect = (option: string) => {
-    if (type === "radio") onChange(id, option);
-    else if (type === "checkbox") {
+    if (type === "radio") {
+      // ラジオの場合は単一選択なので選んだ値そのまま渡す
+      onChange(id as keyof Phase2Answers, option);
+    } else if (type === "checkbox") {
+      // チェックボックスの場合は配列操作
       const prev = Array.isArray(value) ? value : [];
       const updated = prev.includes(option)
         ? prev.filter((o) => o !== option)
         : [...prev, option];
-      onChange(id, updated);
+      onChange(id as keyof Phase2Answers, updated);
     }
   };
 
