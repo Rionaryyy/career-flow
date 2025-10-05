@@ -19,7 +19,6 @@ export default function SubscriptionAccordion({ answers, onChange }: Props) {
   };
 
   const handleChange = (id: keyof Phase2Answers, value: string | string[]) => {
-    // 「特になし」の排他制御
     if (Array.isArray(value) && value.includes("特になし")) {
       value = ["特になし"];
     } else if (Array.isArray(value)) {
@@ -29,11 +28,11 @@ export default function SubscriptionAccordion({ answers, onChange }: Props) {
     onChange({ [id]: value });
   };
 
-  // ジャンルごとに質問をまとめる（その他は accordion に含めない）
+  // Accordion 用の質問グループ（その他は除外）
   const groupedQuestions = phase2SubscriptionQuestions.reduce<Record<string, typeof phase2SubscriptionQuestions>>(
     (acc, q) => {
       const section = q.section || "その他";
-      if (section === "その他") return acc; // ← その他は削除
+      if (section === "その他") return acc;
       if (!acc[section]) acc[section] = [];
       acc[section].push(q);
       return acc;
@@ -41,7 +40,6 @@ export default function SubscriptionAccordion({ answers, onChange }: Props) {
     {}
   );
 
-  // どのジャンルで選択があるかチェックする関数
   const hasAnySubscriptionSelected = (ans: Phase2Answers) =>
     (Array.isArray(ans.videoSubscriptions) && ans.videoSubscriptions.length > 0) ||
     (Array.isArray(ans.musicSubscriptions) && ans.musicSubscriptions.length > 0) ||
@@ -52,7 +50,6 @@ export default function SubscriptionAccordion({ answers, onChange }: Props) {
 
   return (
     <div className="w-full space-y-4">
-      {/* Accordion */}
       {Object.entries(groupedQuestions).map(([section, questions]) => {
         const hasSelected = questions.some(
           (q) =>
@@ -67,9 +64,19 @@ export default function SubscriptionAccordion({ answers, onChange }: Props) {
             {/* セクションタイトル */}
             <button
               onClick={() => toggleSection(section)}
-              className="w-full text-left p-4 bg-sky-100 font-semibold text-sky-900 hover:bg-sky-200"
+              className="w-full flex justify-between items-center p-4 bg-sky-100 font-semibold text-sky-900 hover:bg-sky-200"
             >
-              {section}
+              {/* タイトル */}
+              <span>{section}</span>
+
+              {/* 独立アイコン */}
+              <span
+                className={`ml-2 text-sky-900 text-lg transform transition-transform duration-200 ${
+                  isOpen ? "rotate-180" : "rotate-0"
+                }`}
+              >
+                ▼
+              </span>
             </button>
 
             {/* セクション内の質問 */}
