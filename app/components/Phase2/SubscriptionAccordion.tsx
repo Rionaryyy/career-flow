@@ -29,10 +29,11 @@ export default function SubscriptionAccordion({ answers, onChange }: Props) {
     onChange({ [id]: value });
   };
 
-  // ジャンルごとに質問をまとめる
+  // ジャンルごとに質問をまとめる（その他は accordion に含めない）
   const groupedQuestions = phase2SubscriptionQuestions.reduce<Record<string, typeof phase2SubscriptionQuestions>>(
     (acc, q) => {
       const section = q.section || "その他";
+      if (section === "その他") return acc; // ← その他は削除
       if (!acc[section]) acc[section] = [];
       acc[section].push(q);
       return acc;
@@ -98,21 +99,21 @@ export default function SubscriptionAccordion({ answers, onChange }: Props) {
         );
       })}
 
-      {/* サブスク割引質問（独立表示） */}
-      <QuestionCard
-        id="subscriptionMonthly"
-        question="契約している（予定の）サブスクはキャリアセットでの割引を希望しますか？"
-        options={[
-          "はい（割引対象のキャリア・プランがあれば優先したい）",
-          "いいえ（サブスクは別で契約する予定）",
-        ]}
-        type="radio"
-        value={answers.subscriptionMonthly}
-        onChange={handleChange}
-        condition={hasAnySubscriptionSelected}
-        answers={answers}
-      />
+      {/* サブスク割引質問（独立表示、サブスク選択時のみ） */}
+      {hasAnySubscriptionSelected(answers) && (
+        <QuestionCard
+          id="subscriptionMonthly"
+          question="契約している（予定の）サブスクはキャリアセットでの割引を希望しますか？"
+          options={[
+            "はい（割引対象のキャリア・プランがあれば優先したい）",
+            "いいえ（サブスクは別で契約する予定）",
+          ]}
+          type="radio"
+          value={answers.subscriptionMonthly}
+          onChange={handleChange}
+          answers={answers}
+        />
+      )}
     </div>
   );
 }
-
