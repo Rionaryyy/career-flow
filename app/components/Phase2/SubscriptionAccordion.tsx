@@ -115,3 +115,4 @@ export default function SubscriptionAccordion({ answers, onChange }: Props) {
     </div>
   );
 }
+
