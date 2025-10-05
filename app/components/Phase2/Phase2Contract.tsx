@@ -20,7 +20,7 @@ export default function Phase2Contract({ answers, onChange }: Props) {
     {
       id: "studentDiscount",
       question: "学割を適用できますか？（18歳以下）",
-      options: ["Yes", "No"],
+      options: ["はい", "いいえ"],
       type: "radio" as const,
     },
     {
