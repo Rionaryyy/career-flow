@@ -51,8 +51,8 @@ export default function SubscriptionAccordion({ answers, onChange }: Props) {
 
   return (
     <div className="w-full space-y-4">
+      {/* Accordion */}
       {Object.entries(groupedQuestions).map(([section, questions]) => {
-        // そのジャンルで選択中のサービスがあれば最初から展開
         const hasSelected = questions.some(
           (q) =>
             Array.isArray(answers[q.id as keyof Phase2Answers]) &&
@@ -92,28 +92,26 @@ export default function SubscriptionAccordion({ answers, onChange }: Props) {
                     />
                   );
                 })}
-
-                {/* サブスク割引質問を条件付きで追加 */}
-                {["動画配信サービス", "音楽配信サービス", "書籍・マンガ・雑誌", "ゲーム・アニメ", "クラウド・ストレージ・オフィス", "その他のサービス"].includes(section) && (
-                  <QuestionCard
-                    id="subscriptionMonthly"
-                    question="契約している（予定の）サブスクはキャリアセットでの割引を希望しますか？"
-                    options={[
-                      "はい（割引対象のキャリア・プランがあれば優先したい）",
-                      "いいえ（サブスクは別で契約する予定）",
-                    ]}
-                    type="radio"
-                    value={answers.subscriptionMonthly}
-                    onChange={handleChange}
-                    condition={hasAnySubscriptionSelected}
-                    answers={answers}
-                  />
-                )}
               </div>
             )}
           </div>
         );
       })}
+
+      {/* サブスク割引質問（独立表示） */}
+      <QuestionCard
+        id="subscriptionMonthly"
+        question="契約している（予定の）サブスクはキャリアセットでの割引を希望しますか？"
+        options={[
+          "はい（割引対象のキャリア・プランがあれば優先したい）",
+          "いいえ（サブスクは別で契約する予定）",
+        ]}
+        type="radio"
+        value={answers.subscriptionMonthly}
+        onChange={handleChange}
+        condition={hasAnySubscriptionSelected}
+        answers={answers}
+      />
     </div>
   );
 }
