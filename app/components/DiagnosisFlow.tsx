@@ -16,24 +16,33 @@ const INITIAL_ANSWERS: DiagnosisAnswers = {
     carrierType: null,
     supportPreference: null,
     contractLockPreference: null,
-    considerCardAndPayment: null, // ← 追加
+    considerCardAndPayment: null,
   },
   phase2: {
+    // データ通信ニーズ
     dataUsage: null,
     speedLimitImportance: null,
     tetheringNeeded: null,
     tetheringUsage: null,
+
+    // 通話
     callFrequency: null,
     callPriority: null,
     callOptionsNeeded: null,
     callPurpose: null,
+
+    // 契約条件・割引
     familyLines: null,
     setDiscount: null,
     infraSet: null,
-    ecosystem: null,
-    ecosystemMonthly: null,
-    usingEcosystem: null,
-    monthlyUsage: null,
+
+    // 経済圏・ポイント
+    shoppingList: null,       // Q8 ショッピング利用ベース
+    shoppingMonthly: null,    // Q8-2 月額
+    paymentList: null,        // Q9 支払い方法ベース
+    paymentMonthly: null,     // Q9-2 月額
+
+    // サブスク
     subs: [],
     subsDiscountPreference: null,
     usingServices: [],
@@ -41,15 +50,20 @@ const INITIAL_ANSWERS: DiagnosisAnswers = {
     subscriptions: [],
     subscriptionServices: [],
     subscriptionMonthly: null,
+
+    // 端末・購入形態
     buyingDevice: null,
     devicePurchaseMethods: [],
     devicePreference: null,
     oldDevicePlan: null,
+
+    // 海外利用・特殊ニーズ
     overseasUse: null,
     overseasPreference: null,
     dualSim: null,
     specialUses: [],
-    paymentMethods: [],
+
+    // 支払い方法（カード等の追加情報）
     mainCard: null,
     paymentTiming: null,
   },
