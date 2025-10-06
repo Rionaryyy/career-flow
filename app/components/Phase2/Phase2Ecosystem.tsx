@@ -24,7 +24,7 @@ export default function Phase2Ecosystem({ answers, onChange }: Props) {
     },
     {
       id: "shoppingMonthly",
-      question: "現在よく利用している、または「還元条件が良ければ今後利用してもよい」と思う日々の支払い方法はどれですか？",
+      question: "月あたりの想定利用額は？",
       options: ["〜5,000円", "5,000〜10,000円", "10,000〜30,000円", "30,000〜50,000円", "50,000円以上", "まだわからない"],
       type: "radio" as const,
       condition: (ans: Phase2Answers) =>
@@ -32,7 +32,7 @@ export default function Phase2Ecosystem({ answers, onChange }: Props) {
     },
     {
       id: "paymentList",
-      question: "3. よく利用している支払い方法は？",
+      question: "3現在よく利用している、または「還元条件が良ければ今後利用してもよい」と思う日々の支払い方法はどれですか？. よく利用している支払い方法は？",
       options: [
         "楽天Pay / 楽天カード（楽天経済圏）",
         "d払い / dカード（dポイント経済圏）",
@@ -45,7 +45,7 @@ export default function Phase2Ecosystem({ answers, onChange }: Props) {
     },
     {
       id: "paymentMonthly",
-      question: "4. 月間利用額は？",
+      question: "月間利用月あたりの想定利用額は？",
       options: ["〜5,000円", "5,000〜10,000円", "10,000〜30,000円", "30,000〜50,000円", "50,000円以上", "まだわからない"],
       type: "radio" as const,
       condition: (ans: Phase2Answers) =>

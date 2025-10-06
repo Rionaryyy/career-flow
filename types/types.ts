@@ -42,10 +42,12 @@ export interface Phase2Answers {
   subscriptionMonthly: string | null;
 
   // ⑥ 端末・購入形態
-  buyingDevice: string | null;
-  devicePurchaseMethods: string[] | null;
-  devicePreference?: string | null;
-  oldDevicePlan?: string | null;
+  // ⑥ 端末・購入形態
+devicePreference?: string | null;      // 「端末購入する/しない」
+devicePurchaseMethods?: string[] | null; // 端末購入方法（複数選択）
+deviceModel?: string | null;           // 選んだ端末モデル
+deviceStorage?: string | null;         // 選んだ容量
+    
 
   // ⑦ 海外利用・特殊ニーズ
   overseasUse: string | null;

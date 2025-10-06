@@ -30,7 +30,7 @@ export default function Phase2({ onSubmit, defaultValues, onBack, phase1Answers 
     { id: "call", label: "通話" },
     { id: "contract", label: "契約条件・割引" },
     { id: "ecosystem", label: "経済圏・ポイント" },
-    { id: "subscription", label: "サブスク" },
+    { id: "subscription", label: "サブスクリプションサービス" },
     { id: "device", label: "端末・購入形態" },
     { id: "overseas", label: "海外利用・特殊ニーズ" },
     { id: "payment", label: "支払い方法" },
