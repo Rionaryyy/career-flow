@@ -48,7 +48,7 @@ devicePurchaseMethods?: string[] | null; // 端末購入方法（複数選択）
 deviceModel?: string | null;           // 選んだ端末モデル
 deviceStorage?: string | null;        // 選んだ容量
 buyingDevice: string | null;    
-
+ oldDevicePlan: string | null;
   // ⑦ 海外利用・特殊ニーズ
   overseasUse: string | null;
   overseasPreference: string | null;
