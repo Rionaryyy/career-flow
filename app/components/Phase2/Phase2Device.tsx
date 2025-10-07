@@ -10,15 +10,21 @@ interface Props {
 
 export default function Phase2Device({ answers, onChange }: Props) {
   const deviceOptions = [
-    { label: "iPhone 17", id: "iphone17", storage: ["256GB", "512GB"] },
-    { label: "iPhone 17 Pro", id: "iphone17Pro", storage: ["256GB", "512GB", "1TB"] },
-    { label: "iPhone 17 Pro Max", id: "iphone17ProMax", storage: ["256GB", "512GB", "1TB", "2TB"] },
-    { label: "iPhone 17 Air", id: "iphone17Air", storage: ["256GB", "512GB", "1TB"] },
-    { label: "Pixel 10", id: "pixel10", storage: ["128GB", "256GB"] },
-    { label: "Pixel 10 Pro", id: "pixel10Pro", storage: ["128GB", "256GB", "512GB", "1TB"] },
-    { label: "Pixel 10 Pro XL", id: "pixel10ProXL", storage: ["128GB", "256GB", "512GB", "1TB"] },
-    { label: "Pixel 10 Pro Fold", id: "pixel10ProFold", storage: ["256GB", "512GB", "1TB"] },
-  ];
+  { label: "iPhone 17", id: "iphone17", storage: ["256GB", "512GB"] },
+  { label: "iPhone 17 Pro", id: "iphone17Pro", storage: ["256GB", "512GB", "1TB"] },
+  { label: "iPhone 17 Pro Max", id: "iphone17ProMax", storage: ["256GB", "512GB", "1TB", "2TB"] },
+  { label: "iPhone 17 Air", id: "iphone17Air", storage: ["256GB", "512GB", "1TB"] },
+  { label: "Pixel 10", id: "pixel10", storage: ["128GB", "256GB"] },
+  { label: "Pixel 10 Pro", id: "pixel10Pro", storage: ["128GB", "256GB", "512GB", "1TB"] },
+  { label: "Pixel 10 Pro XL", id: "pixel10ProXL", storage: ["128GB", "256GB", "512GB", "1TB"] },
+  { label: "Pixel 10 Pro Fold", id: "pixel10ProFold", storage: ["256GB", "512GB", "1TB"] },
+  { label: "Xperia 1 VI", id: "xperia1VI", storage: ["256GB", "512GB"] },
+  { label: "Galaxy S25", id: "galaxyS25", storage: ["128GB", "256GB", "512GB", "1TB"] },
+  { label: "Galaxy S25+", id: "galaxyS25Plus", storage: ["256GB", "512GB"] },
+  { label: "Galaxy S25 Ultra", id: "galaxyS25Ultra", storage: ["256GB", "512GB", "1TB"] },
+  { label: "Galaxy S25 Edge", id: "galaxyS25Edge", storage: ["256GB", "512GB"] },
+  { label: "Galaxy S25 FE", id: "galaxyS25FE", storage: ["128GB", "256GB", "512GB"] },
+];
 
   const questions = [
     {
