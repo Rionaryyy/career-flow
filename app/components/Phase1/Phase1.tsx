@@ -60,16 +60,6 @@ const phase1Questions = [
     ],
   },
   {
-    id: "contractLockPreference",
-    question: "契約期間の縛りや解約金について、どの程度気にしますか？",
-    type: "radio",
-    options: [
-      "絶対に嫌（縛りなしが前提）",
-      "できれば避けたいが内容次第",
-      "気にしない（条件次第でOK）",
-    ],
-  },
-  {
     id: "supportPreference",
     question: "契約・サポートはオンライン完結で問題ありませんか？",
     type: "radio",
@@ -122,20 +112,10 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
         ))}
       </div>
 
-      {/* ナビボタン */}
-      <div className="flex justify-between items-center pt-6 w-full max-w-4xl">
-        <button
-          onClick={onBack}
-          className={`px-4 py-2 rounded-full ${
-            !onBack
-              ? "bg-sky-100 text-sky-300 cursor-not-allowed"
-              : "bg-sky-200 hover:bg-sky-300 text-sky-900 shadow-sm"
-          } transition-all duration-200`}
-          disabled={!onBack}
-        >
-          ← 戻る
-        </button>
+     <div className="flex justify-end pt-6 w-full max-w-4xl">
+    
 
+        {/* 次へボタン（既存デザイン） */}
         <button
           onClick={() => onSubmit(answers)}
           className="px-4 py-2 rounded-full bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-300 hover:to-sky-400 text-lg font-semibold text-white shadow-md transition-all duration-200"

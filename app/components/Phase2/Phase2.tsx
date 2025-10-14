@@ -69,7 +69,7 @@ export default function Phase2({ onSubmit, defaultValues, onBack, phase1Answers 
       case "contract":
         return <Phase2Contract {...stepProps} />;
       case "ecosystem":
-        return <Phase2Ecosystem {...stepProps} />;
+         return <Phase2Ecosystem {...stepProps} phase1Answers={phase1Answers} />; // ✅ 修正！return <Phase2Ecosystem {...stepProps} />;
       case "subscription":
         return <Phase2Subscription {...stepProps} />;
       case "device":
@@ -104,24 +104,30 @@ export default function Phase2({ onSubmit, defaultValues, onBack, phase1Answers 
 
       {/* 下部ナビボタン */}
       <div className="flex justify-between items-center pt-6 w-full max-w-4xl">
-        <button
-          onClick={handleBack}
-          className={`px-4 py-2 rounded-full ${
-            step === 0 && !onBack
-              ? "bg-sky-100 text-sky-300 cursor-not-allowed"
-              : "bg-sky-200 hover:bg-sky-300 text-sky-900 shadow-sm"
-          } transition-all duration-200`}
-        >
-          ← 戻る
-        </button>
+ {/* 戻るボタン（淡め & 文字は白） */}
+<button
+  onClick={handleBack}
+  className={`px-4 py-2 rounded-full text-lg font-semibold shadow-md transition-all duration-200
+    ${
+      step === 0 && !onBack
+        ? "bg-sky-100 text-sky-300 cursor-not-allowed shadow-none"
+        : "bg-gradient-to-r from-sky-200 to-sky-300 hover:from-sky-100 hover:to-sky-200 text-white"
+    }
+  `}
+>
+  ← 戻る
+</button>
 
-        <button
-          onClick={handleNext}
-          className="px-4 py-2 rounded-full bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-300 hover:to-sky-400 text-lg font-semibold text-white shadow-md transition-all duration-200"
-        >
-          {step === steps.length - 1 ? "結果を見る →" : "次へ →"}
-        </button>
-      </div>
+
+  {/* 次へボタン（少し濃いめ） */}
+  <button
+    onClick={handleNext}
+    className="px-4 py-2 rounded-full bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-300 hover:to-sky-400 text-lg font-semibold text-white shadow-md transition-all duration-200"
+  >
+    {step === steps.length - 1 ? "結果を見る →" : "次へ →"}
+  </button>
+</div>
+
     </QuestionLayout>
   );
 }

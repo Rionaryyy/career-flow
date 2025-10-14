@@ -15,8 +15,11 @@ export default function Phase2Payment({ answers, onChange, phase1Answers, onNext
   const [showCardDetail, setShowCardDetail] = useState(false);
 
   // フェーズ①で「いいえ」を選択した場合のみ質問を表示
-  const showQuestions = phase1Answers?.considerCardAndPayment?.toString().startsWith("いいえ");
-  const showExplanationOnly = !showQuestions;
+  // フェーズ①で「いいえ」を選択した場合のみ質問を表示
+// 未選択(undefined) の場合は質問を表示するように修正
+const answerStr = phase1Answers?.considerCardAndPayment?.toString() ?? "";
+const showQuestions = answerStr.startsWith("いいえ") || answerStr === ""; // ← 修正点！
+const showExplanationOnly = !showQuestions;
 
   const questions = [
     {

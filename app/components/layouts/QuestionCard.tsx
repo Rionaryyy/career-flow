@@ -7,7 +7,7 @@ interface QuestionCardProps {
   id: string;
   question: string;
   options: string[];
-  type: "radio" | "checkbox"| "tabs";
+  type: "radio" | "checkbox";
   value?: string | string[] | null;
   onChange: (id: keyof Phase2Answers, value: string | string[]) => void;
   condition?: (answers: Phase2Answers) => boolean;
@@ -61,18 +61,13 @@ export default function QuestionCard({
                   : "bg-white border-sky-200 text-sky-900 hover:border-sky-300 hover:shadow-sm"
               }`}
             >
-             <input
-  type={type}
-  name={id} // ここをユニーク化した方が安全
-  value={opt}
-  checked={checked}
-  onChange={() => handleSelect(opt)}
-  className="accent-sky-500 mr-3"
-/>
-
-
-
-
+              <input
+                type={type}
+                value={opt}
+                checked={checked}
+                onChange={() => handleSelect(opt)}
+                className="accent-sky-500 mr-3"
+              />
               <span>{opt}</span>
             </label>
           );
