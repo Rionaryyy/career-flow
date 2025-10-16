@@ -43,7 +43,7 @@ export default function Phase2Ecosystem({ answers, onChange, phase1Answers, onNe
     },
     {
       id: "shoppingMonthly",
-      question: "月当たりの想定利用額は？",
+      question: "月あたりの想定利用額は？",
       options: [
         "〜5,000円",
         "5,000〜10,000円",
@@ -72,7 +72,7 @@ export default function Phase2Ecosystem({ answers, onChange, phase1Answers, onNe
     },
     {
       id: "paymentMonthly",
-      question: "月当たりの想定利用額は？",
+      question: "月あたりの想定利用額は？",
       options: [
         "〜5,000円",
         "5,000〜10,000円",

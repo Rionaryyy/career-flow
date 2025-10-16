@@ -2,7 +2,6 @@
 "use client";
 
 import React, { useState } from "react";
-import QuestionCard from "../layouts/QuestionCard";
 import { Phase2Answers } from "@/types/types";
 import { phase2SubscriptionQuestions } from "./Phase2SubscriptionQuestions";
 
@@ -18,58 +17,52 @@ export default function SubscriptionAccordion({ answers, onChange }: Props) {
     setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
   };
 
-  const handleChange = (id: keyof Phase2Answers, value: string | string[]) => {
-    if (Array.isArray(value) && value.includes("特になし")) {
-      value = ["特になし"];
-    } else if (Array.isArray(value)) {
-      value = value.filter((v) => v !== "特になし");
+  const handleToggleOption = (
+    id: keyof Phase2Answers,
+    option: string,
+    multiple: boolean
+  ) => {
+    const prev = Array.isArray(answers[id]) ? answers[id] : [];
+    let updated: string[];
+    if (multiple) {
+      updated = prev.includes(option)
+        ? prev.filter((o) => o !== option)
+        : [...prev, option];
+    } else {
+      updated = [option];
     }
-
-    onChange({ [id]: value });
+    onChange({ [id]: updated });
   };
 
-  // Accordion 用の質問グループ（その他は除外）
-  const groupedQuestions = phase2SubscriptionQuestions.reduce<Record<string, typeof phase2SubscriptionQuestions>>(
-    (acc, q) => {
-      const section = q.section || "その他";
-      if (section === "その他") return acc;
-      if (!acc[section]) acc[section] = [];
-      acc[section].push(q);
-      return acc;
-    },
-    {}
-  );
+  // Accordion に表示する質問だけをフィルター
+  const groupedQuestions = phase2SubscriptionQuestions.reduce<
+    Record<string, typeof phase2SubscriptionQuestions>
+  >((acc, q) => {
+    // 追加質問 subscriptionMonthly は Accordion に表示しない
+    if (q.id === "subscriptionMonthly") return acc;
 
-  const hasAnySubscriptionSelected = (ans: Phase2Answers) =>
-    (Array.isArray(ans.videoSubscriptions) && ans.videoSubscriptions.length > 0) ||
-    (Array.isArray(ans.musicSubscriptions) && ans.musicSubscriptions.length > 0) ||
-    (Array.isArray(ans.bookSubscriptions) && ans.bookSubscriptions.length > 0) ||
-    (Array.isArray(ans.gameSubscriptions) && ans.gameSubscriptions.length > 0) ||
-    (Array.isArray(ans.cloudSubscriptions) && ans.cloudSubscriptions.length > 0) ||
-    (Array.isArray(ans.otherSubscriptions) && ans.otherSubscriptions.length > 0);
+    const section = q.section || "その他";
+    if (!acc[section]) acc[section] = [];
+    acc[section].push(q);
+    return acc;
+  }, {});
 
   return (
     <div className="w-full space-y-4">
       {Object.entries(groupedQuestions).map(([section, questions]) => {
-        const hasSelected = questions.some(
-          (q) =>
-            Array.isArray(answers[q.id as keyof Phase2Answers]) &&
-            (answers[q.id as keyof Phase2Answers] as string[]).length > 0
-        );
-
-        const isOpen = openSections[section] ?? hasSelected;
+        const isOpen = openSections[section] ?? false;
 
         return (
-          <div key={section} className="border border-sky-200 rounded-2xl shadow-sm overflow-hidden">
+          <div
+            key={section}
+            className="border border-sky-200 rounded-2xl overflow-hidden"
+          >
             {/* セクションタイトル */}
             <button
               onClick={() => toggleSection(section)}
-              className="w-full flex justify-between items-center p-4 bg-sky-100 font-semibold text-sky-900 hover:bg-sky-200"
+              className="w-full flex justify-between items-center p-4 font-semibold text-sky-900 hover:bg-sky-50"
             >
-              {/* タイトル */}
               <span>{section}</span>
-
-              {/* 独立アイコン */}
               <span
                 className={`ml-2 text-sky-900 text-lg transform transition-transform duration-200 ${
                   isOpen ? "rotate-180" : "rotate-0"
@@ -79,25 +72,40 @@ export default function SubscriptionAccordion({ answers, onChange }: Props) {
               </span>
             </button>
 
-            {/* セクション内の質問 */}
             {isOpen && (
-              <div className="p-4 space-y-4">
+              <div className="p-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 {questions.map((q) => {
                   if (q.condition && !q.condition(answers)) return null;
 
-                  const currentValue = answers[q.id as keyof Phase2Answers] as string[] | string | null;
+                  const selected = Array.isArray(answers[q.id as keyof Phase2Answers])
+                    ? (answers[q.id as keyof Phase2Answers] as string[])
+                    : [];
 
                   return (
-                    <QuestionCard
-                      key={q.id}
-                      id={q.id as keyof Phase2Answers}
-                      question={q.question}
-                      options={q.options}
-                      type={q.type}
-                      value={currentValue}
-                      onChange={handleChange}
-                      answers={answers}
-                    />
+                    <React.Fragment key={q.id}>
+                      {q.options.map((opt) => {
+                        const checked = selected.includes(opt);
+                        return (
+                          <div
+                            key={opt}
+                            onClick={() =>
+                              handleToggleOption(
+                                q.id as keyof Phase2Answers,
+                                opt,
+                                true
+                              )
+                            }
+                            className={`flex items-center justify-center cursor-pointer h-14 rounded-xl border text-sm font-medium transition-all duration-200 select-none ${
+                              checked
+                                ? "bg-gradient-to-r from-sky-400 to-sky-500 text-white shadow"
+                                : "bg-white border-sky-200 text-sky-900 hover:border-sky-300 hover:shadow-sm"
+                            }`}
+                          >
+                            {opt}
+                          </div>
+                        );
+                      })}
+                    </React.Fragment>
                   );
                 })}
               </div>
@@ -105,22 +113,6 @@ export default function SubscriptionAccordion({ answers, onChange }: Props) {
           </div>
         );
       })}
-
-      {/* サブスク割引質問（独立表示、サブスク選択時のみ） */}
-      {hasAnySubscriptionSelected(answers) && (
-        <QuestionCard
-          id="subscriptionMonthly"
-          question="契約している（予定の）サブスクはキャリアセットでの割引を希望しますか？"
-          options={[
-            "はい（割引対象のキャリア・プランがあれば優先したい）",
-            "いいえ（サブスクは別で契約する予定）",
-          ]}
-          type="radio"
-          value={answers.subscriptionMonthly}
-          onChange={handleChange}
-          answers={answers}
-        />
-      )}
     </div>
   );
 }

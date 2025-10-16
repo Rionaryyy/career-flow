@@ -30,6 +30,8 @@ export interface Phase2Answers {
   infraSet: string | null;
 　familyLinesDetail?: string;
 　fiberUsage?: string;
+ ageGroup?: string;          // ← 追加
+  studentDiscount?: string;   // ← 追加
 fiberType?: string;
 fiberSpeed?: string;
 routerStatus?: string;
@@ -38,7 +40,9 @@ pocketWifiCapacity?: string;
 routerCapacity?: string;  // 希望データ容量（例: 〜20GB, 〜50GB, 100GB以上, 無制限, こだわらない）
   routerSpeed?: string;     // 希望通信速度（例: 最大1Gbps, 最大2Gbps, 最大4Gbps, こだわらない）
 pocketWifiSpeed?: string; 
-
+  childUnder12Plan?: string; // ← これを追加
+  target?: "main" | "child_under12"; // 回線タグ
+  
   // ④ 経済圏・ポイント（ショッピング利用と支払い方法に分割）
   shoppingList: string[] | null;       // 複数選択可
   shoppingMonthly: string | null;      // 月間利用額

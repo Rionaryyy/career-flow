@@ -19,7 +19,6 @@ export const phase2SubscriptionQuestions: Question<Phase2Answers>[] = [
       "FOD Premium",
       "ABEMA プレミアム",
       "DMM TV / DMMプレミアム",
-      "特になし",
     ],
   },
   {
@@ -35,7 +34,6 @@ export const phase2SubscriptionQuestions: Question<Phase2Answers>[] = [
       "YouTube Music Premium",
       "AWA",
       "Rakuten Music",
-      "特になし",
     ],
   },
   {
@@ -49,7 +47,6 @@ export const phase2SubscriptionQuestions: Question<Phase2Answers>[] = [
       "楽天マガジン",
       "LINEマンガ",
       "BookLive!",
-      "特になし",
     ],
   },
   {
@@ -62,7 +59,6 @@ export const phase2SubscriptionQuestions: Question<Phase2Answers>[] = [
       "PlayStation Plus",
       "dアニメストア",
       "Rakuten TV",
-      "特になし",
     ],
   },
   {
@@ -74,7 +70,6 @@ export const phase2SubscriptionQuestions: Question<Phase2Answers>[] = [
       "Google One",
       "Microsoft 365",
       "iCloud",
-      "特になし",
     ],
   },
   {
@@ -86,15 +81,14 @@ export const phase2SubscriptionQuestions: Question<Phase2Answers>[] = [
       "Adobe Creative Cloud",
       "Evernote Premium",
       "Dropbox Plus",
-      "特になし",
     ],
   },
   {
     id: "subscriptionMonthly",
-    question: "契約している（予定の）サブスクはキャリアセットでの割引を希望しますか？",
+    question: "選択したサブスクリプションに対して、キャリアセット割引を希望しますか？",
     type: "radio",
     options: [
-      "はい（割引対象のキャリア・プランがあれば優先したい）",
+      "はい（割引対象のキャリア・プランがあれば適用したい）",
       "いいえ（サブスクは別で契約する予定）",
     ],
     condition: (ans: Phase2Answers) => {
@@ -106,7 +100,8 @@ export const phase2SubscriptionQuestions: Question<Phase2Answers>[] = [
         ans.cloudSubscriptions,
         ans.otherSubscriptions,
       ].flatMap((v) => (Array.isArray(v) ? v : []));
-      return allSelected.length > 0 && !allSelected.includes("特になし");
+      // 「特になし」がないので単純に1つでも選択されていれば表示
+      return allSelected.length > 0;
     },
   },
 ];

@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import QuestionCard from "../layouts/QuestionCard";
 import { Phase2Answers } from "@/types/types";
+import { deviceList } from "./phase2DeviceList";
 
 interface Props {
   answers: Phase2Answers;
@@ -9,124 +11,179 @@ interface Props {
 }
 
 export default function Phase2Device({ answers, onChange }: Props) {
-  const deviceOptions = [
-  { label: "iPhone 17", id: "iphone17", storage: ["256GB", "512GB"] },
-  { label: "iPhone 17 Pro", id: "iphone17Pro", storage: ["256GB", "512GB", "1TB"] },
-  { label: "iPhone 17 Pro Max", id: "iphone17ProMax", storage: ["256GB", "512GB", "1TB", "2TB"] },
-  { label: "iPhone 17 Air", id: "iphone17Air", storage: ["256GB", "512GB", "1TB"] },
-  { label: "Pixel 10", id: "pixel10", storage: ["128GB", "256GB"] },
-  { label: "Pixel 10 Pro", id: "pixel10Pro", storage: ["128GB", "256GB", "512GB", "1TB"] },
-  { label: "Pixel 10 Pro XL", id: "pixel10ProXL", storage: ["128GB", "256GB", "512GB", "1TB"] },
-  { label: "Pixel 10 Pro Fold", id: "pixel10ProFold", storage: ["256GB", "512GB", "1TB"] },
-  { label: "Xperia 1 VI", id: "xperia1VI", storage: ["256GB", "512GB"] },
-  { label: "Galaxy S25", id: "galaxyS25", storage: ["128GB", "256GB", "512GB", "1TB"] },
-  { label: "Galaxy S25+", id: "galaxyS25Plus", storage: ["256GB", "512GB"] },
-  { label: "Galaxy S25 Ultra", id: "galaxyS25Ultra", storage: ["256GB", "512GB", "1TB"] },
-  { label: "Galaxy S25 Edge", id: "galaxyS25Edge", storage: ["256GB", "512GB"] },
-  { label: "Galaxy S25 FE", id: "galaxyS25FE", storage: ["128GB", "256GB", "512GB"] },
-];
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
 
-  const questions = [
-    {
-      id: "devicePreference",
-      question: "1. 新しい端末も一緒に購入する予定ですか？",
-      options: ["はい（端末も一緒に購入する）", "いいえ（SIMのみ契約する予定）"],
-      type: "radio" as const,
-    },
-    {
-      id: "devicePurchaseMethods",
-      question: "2. 端末の購入方法",
-      options: [
-        "Appleなど正規ストア・家電量販店で本体のみ購入したい",
-        "キャリアで端末を購入したい（通常購入）",
-        "キャリアで端末を購入したい（返却・交換プログラムを利用する）",
-        "どれが最もお得か分からないので、すべてのパターンを比較したい",
-      ],
-      type: "radio" as const, // ラジオに変更
-      condition: (ans: Phase2Answers) =>
-        ans.devicePreference === "はい（端末も一緒に購入する）",
-    },
-    {
-      id: "deviceModel",
-      question: "3. 購入したい端末を選択してください",
-      options: [...deviceOptions.map((d) => d.label), "その他"],
-      type: "radio" as const,
-      condition: (ans: Phase2Answers) => {
-        if (ans.devicePreference !== "はい（端末も一緒に購入する）") return false;
-        if (!ans.devicePurchaseMethods || ans.devicePurchaseMethods.length === 0) return false;
+  const toggleSection = (series: string) => {
+    setOpenSections((prev) => ({ ...prev, [series]: !prev[series] }));
+  };
 
-        const onlyRegular = (ans.devicePurchaseMethods as string[]).every(
-          (m) => m === "Appleなど正規ストア・家電量販店で本体のみ購入したい"
-        );
-        return !onlyRegular;
-      },
-    },
-    {
-      id: "deviceStorage",
-      question: "4. 選んだ端末のストレージ容量を選択してください",
-      options: [] as string[],
-      type: "radio" as const,
-      condition: (ans: Phase2Answers) =>
+  const handleDeviceChange = (model: string) => {
+    onChange({ deviceModel: model, deviceStorage: null });
+  };
+
+  const handleStorageChange = (storage: string) => {
+    onChange({ deviceStorage: storage });
+  };
+
+  const devicePreferenceQuestion = {
+    id: "devicePreference",
+    question: "新しい端末も一緒に購入する予定ですか？",
+    options: ["はい（端末も一緒に購入する）", "いいえ（SIMのみ契約する予定）"],
+    type: "radio" as const,
+  };
+
+  const devicePurchaseMethodsQuestion = {
+    id: "devicePurchaseMethods",
+    question: "端末の購入方法",
+    options: [
+      "Appleなど正規ストア・家電量販店で本体のみ購入したい",
+      "キャリアで端末を購入したい（通常購入）",
+      "キャリアで端末を購入したい（返却・交換プログラムを利用する）",
+      "どれが最もお得か分からないので、すべてのパターンを比較したい",
+    ],
+    type: "radio" as const,
+    condition: (ans: Phase2Answers) => ans.devicePreference === "はい（端末も一緒に購入する）",
+  };
+
+  const deviceModelQuestion = {
+    id: "deviceModel",
+    question: "購入したい端末を選択してください",
+    type: "custom" as const,
+    condition: (ans: Phase2Answers) => {
+      return (
         ans.devicePreference === "はい（端末も一緒に購入する）" &&
-        ans.deviceModel != null &&
-        ans.deviceModel !== "その他",
+        ans.devicePurchaseMethods &&
+        ans.devicePurchaseMethods.length > 0 &&
+        ans.devicePurchaseMethods[0] !== "Appleなど正規ストア・家電量販店で本体のみ購入したい"
+      );
     },
-  ];
+  };
 
-  const handleChange = (id: string, value: string | string[]) => {
-    if (id === "devicePurchaseMethods") {
-      // ラジオとして単一値を内部的には配列で保持
-      onChange({
-        devicePurchaseMethods: [value as string],
-        deviceModel: null,
-        deviceStorage: null,
-      } as Partial<Phase2Answers>);
-      return;
-    }
-
-    if (id === "deviceModel") {
-      const selectedDevice = deviceOptions.find((d) => d.label === value);
-      if (selectedDevice) {
-        onChange({
-          deviceModel: value,
-          deviceStorage: null,
-        } as Partial<Phase2Answers>);
-        return;
-      }
-    }
-
-    onChange({ [id]: value } as Partial<Phase2Answers>);
+  const deviceStorageQuestion = {
+    id: "deviceStorage",
+    question: "選んだ端末のストレージ容量を選択してください",
+    type: "radio" as const,
+    condition: (ans: Phase2Answers) =>
+      ans.deviceModel != null && ans.deviceModel !== "その他",
   };
 
   return (
-    <div className="w-full py-6 space-y-6">
-      {questions.map((q) => {
-        if (q.condition && !q.condition(answers)) return null;
+    <div className="w-full space-y-6 py-6">
+      {/* 1. 端末購入の有無 */}
+      <QuestionCard
+        id={devicePreferenceQuestion.id}
+        question={devicePreferenceQuestion.question}
+        options={devicePreferenceQuestion.options}
+        type={devicePreferenceQuestion.type}
+        value={answers.devicePreference ?? null}
+        onChange={(id, value) => onChange({ [id]: value })}
+        answers={answers}
+      />
 
-        let options = q.options;
-        if (q.id === "deviceStorage" && answers.deviceModel) {
-          const selectedDevice = deviceOptions.find((d) => d.label === answers.deviceModel);
-          if (selectedDevice) options = selectedDevice.storage;
-        }
+      {/* 2. 端末購入方法 */}
+      {devicePurchaseMethodsQuestion.condition?.(answers) && (
+        <QuestionCard
+          id={devicePurchaseMethodsQuestion.id}
+          question={devicePurchaseMethodsQuestion.question}
+          options={devicePurchaseMethodsQuestion.options}
+          type={devicePurchaseMethodsQuestion.type}
+          value={answers.devicePurchaseMethods?.[0] ?? null}
+          onChange={(id, value) =>
+            onChange({ [id]: [value as string], deviceModel: null, deviceStorage: null })
+          }
+          answers={answers}
+        />
+      )}
 
-        const currentValue =
-          q.id === "devicePurchaseMethods"
-            ? answers.devicePurchaseMethods?.[0] ?? null
-            : (answers[q.id as keyof Phase2Answers] as string | null);
+      {/* 3. 端末モデル選択 (サブスク風アコーディオン UI) */}
+      {deviceModelQuestion.condition?.(answers) && (
+        <QuestionCard
+          id={deviceModelQuestion.id}
+          question={deviceModelQuestion.question}
+          type={deviceModelQuestion.type}
+          value={answers.deviceModel ?? null}
+          onChange={(id, value) => handleDeviceChange(value as string)}
+          answers={answers}
+          options={[]} // 型を満たすために空配列
+        >
+          <div className="mt-3 space-y-3">
+            {deviceList.map((series) => {
+              const isOpen = openSections[series.series] ?? false;
+              return (
+                <div
+                  key={series.series}
+                  className="border border-sky-200 rounded-2xl overflow-hidden"
+                >
+                  {/* シリーズタイトル */}
+                  <button
+                    onClick={() => toggleSection(series.series)}
+                    className="w-full flex justify-between items-center p-4 font-semibold text-sky-900 hover:bg-sky-50"
+                  >
+                    <span>{series.series}</span>
+                    <span
+                      className={`ml-2 text-sky-900 text-lg transform transition-transform duration-200 ${
+                        isOpen ? "rotate-180" : "rotate-0"
+                      }`}
+                    >
+                      ▼
+                    </span>
+                  </button>
 
-        return (
-          <QuestionCard
-            key={q.id}
-            id={q.id}
-            question={q.question}
-            options={options}
-            type={q.type}
-            value={currentValue}
-            onChange={handleChange}
-            answers={answers}
-          />
-        );
-      })}
+                  {/* モデル一覧 */}
+                  {isOpen && (
+                    <div className="p-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                      {series.models.map((model) => (
+                        <div
+                          key={model.label}
+                          className={`cursor-pointer h-12 flex items-center justify-center rounded-lg border text-sm font-medium transition-all duration-200 select-none ${
+                            answers.deviceModel === model.label
+                              ? "bg-gradient-to-r from-sky-400 to-sky-500 text-white shadow"
+                              : "bg-white border-sky-200 text-sky-900 hover:border-sky-300 hover:shadow-sm"
+                          }`}
+                          onClick={() => handleDeviceChange(model.label)}
+                        >
+                          {model.label}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+
+            {/* その他（タブ外） */}
+            <div className="mt-2">
+              <div
+                className={`cursor-pointer h-12 flex items-center justify-start rounded-lg border text-sm font-medium transition-all duration-200 select-none px-4 ${
+                  answers.deviceModel === "その他"
+                    ? "bg-gradient-to-r from-sky-400 to-sky-500 text-white shadow"
+                    : "bg-white border-sky-200 text-sky-900 hover:border-sky-300 hover:shadow-sm"
+                }`}
+                onClick={() => handleDeviceChange("その他")}
+              >
+                その他
+              </div>
+            </div>
+          </div>
+        </QuestionCard>
+      )}
+
+      {/* 4. ストレージ選択 */}
+      {deviceStorageQuestion.condition?.(answers) && (
+        <QuestionCard
+          id={deviceStorageQuestion.id}
+          question={deviceStorageQuestion.question}
+          options={
+            deviceList
+              .flatMap((s) => s.models)
+              .find((m) => m.label === answers.deviceModel)?.storage ?? []
+          }
+          type={deviceStorageQuestion.type}
+          value={answers.deviceStorage ?? null}
+          onChange={(id, value) => handleStorageChange(value as string)}
+          answers={answers}
+        />
+      )}
     </div>
   );
 }

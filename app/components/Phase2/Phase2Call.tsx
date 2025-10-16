@@ -12,12 +12,12 @@ export default function Phase2Call({ answers, onChange }: Props) {
   const questions = [
   {
     id: "callFrequency",
-    question: "ふだんの通話頻度に近いものを選んでください",
+    question: "普段の通話頻度に近いものを選んでください",
     options: [
       "ほとんど通話しない（LINEなどが中心）",
       "月に数回だけ短い通話をする（1〜5分程度）",
       "毎週何度か短い通話をする（5分以内が多い）",
-      "月に数回〜十数回、10〜20分程度の通話をする",
+      "月に5〜15回程度、1回あたり10〜20分程度の通話をする",
       "毎日のように長時間の通話をする（20分以上・仕事など）"
     ],
     type: "radio" as const,
@@ -39,7 +39,7 @@ export default function Phase2Call({ answers, onChange }: Props) {
       "ほとんど通話しない",
       "月に数回だけ短い通話をする（1〜5分程度）",
       "毎週何度か短い通話をする（5分以内が多い）",
-      "月に数回〜十数回、10〜20分程度の通話をする",
+      "月に5〜15回程度、1回あたり10〜20分程度の通話をする",
       "毎日のように長時間の通話をする（20分以上・仕事など）"
     ],
     type: "radio" as const,

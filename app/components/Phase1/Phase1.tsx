@@ -52,7 +52,7 @@ const phase1Questions = [
   },
   {
     id: "appCallUnlimited",
-    question: "通話専用アプリでの通話は“かけ放題”としてカウントしてよいですか？",
+    question: "キャリアの通話アプリ（例：楽天リンクなど）を使った通話も、“かけ放題”に含めてよいですか？",
     type: "radio",
     options: [
       "はい（アプリ経由ならかけ放題として扱う）",

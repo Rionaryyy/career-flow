@@ -25,7 +25,7 @@ export default function Phase2Data({ answers, onChange }: Props) {
   {
     id: "tetheringNeeded",
     question: "3. テザリング機能は必要ですか？",
-    options: ["はい", "いいえ"],
+    options: ["はい（必要）","いいえ（不要）"],
     type: "radio" as const,
   },
   {
