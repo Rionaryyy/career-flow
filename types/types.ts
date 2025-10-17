@@ -8,6 +8,9 @@ export interface Phase1Answers {
   considerPointInActualCost?: string| null; // "はい" | "いいえ"
   supportPreference: string | null;
   contractLockPreference: string | null;
+    compareAxis?: string;   // 料金比較の基準（「月額」 or 「実質月額」）
+  comparePeriod?: string; // 比較期間（12 / 24 / 36ヶ月）
+
 
 }
 
