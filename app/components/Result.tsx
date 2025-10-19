@@ -1,98 +1,111 @@
 "use client";
 
+import { useMemo } from "react";
 import { DiagnosisAnswers } from "@/types/types";
-import { useState, useEffect } from "react";
-import {
-  TwitterIcon,
-  MessageCircleIcon,
-  InstagramIcon,
-  ArrowUpIcon,
-} from "lucide-react";
+import { Plan } from "@/types/planTypes";
+import { filterPlansByPhase1 } from "@/utils/filters/phase1FilterLogic";
+import { filterPlansByPhase2 } from "@/utils/filters/phase2FilterLogic";
+import { allPlans } from "@/data/plans";
+import { calculatePlanCost } from "@/utils/logic/priceLogic"; // 🟩 追加
 
-interface ResultProps {
+interface Props {
   answers: DiagnosisAnswers;
+  filteredPlans: any[];
   onRestart: () => void;
 }
 
-export default function Result({ answers, onRestart }: ResultProps) {
-  const [copied, setCopied] = useState(false);
-  const [currentUrl, setCurrentUrl] = useState("");
+export default function Result({ answers, onRestart }: Props) {
+  const all: Plan[] = allPlans;
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setCurrentUrl(window.location.href);
-    }
-  }, []);
+  const rankedResults = useMemo(() => {
+    // 🟦 フィルター処理（フェーズ①＆②）
+    let result = filterPlansByPhase1(answers.phase1, all);
+    result = filterPlansByPhase2(answers.phase2, result);
 
-  const summary = `📶 キャリア診断結果\n
-- ポイント還元重視: ${answers.phase1.includePoints ? "はい" : "いいえ"}
-- 通信品質重視: ${answers.phase1.networkQuality ? "高い" : "普通"}
-- 希望キャリア: ${answers.phase1.carrierType || "未選択"}`;
+    // 🟦 各プランの実質月額を算出
+    const withCosts = result.map(plan => {
+      const cost = calculatePlanCost(plan, answers);
+      return {
+        ...plan,
+        breakdown: cost,
+        totalMonthly: cost.total,
+      };
+    });
 
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(summary);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const twitterLink = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-    summary
-  )}&url=${encodeURIComponent(currentUrl)}`;
-  const lineLink = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(
-    currentUrl
-  )}`;
+    // 🟦 実質月額でソート
+    return withCosts.sort((a, b) => a.totalMonthly - b.totalMonthly);
+  }, [answers, all]);
 
   return (
-    <section className="max-w-3xl mx-auto p-6 text-center">
-      <h2 className="text-2xl font-bold mb-4">診断結果</h2>
+    <div className="w-full py-10 px-6 max-w-4xl mx-auto">
+      <h1 className="text-3xl font-bold text-sky-900 text-center mb-6">診断結果</h1>
 
-      <div className="bg-white p-6 rounded-xl shadow text-left whitespace-pre-wrap">
-        {summary}
-      </div>
+      {/* 🧩 Debug: Phase2の回答確認 */}
+      <pre className="text-xs bg-gray-100 text-gray-700 p-3 rounded mb-4 overflow-x-auto">
+        {JSON.stringify(answers.phase2, null, 2)}
+      </pre>
 
-      <h3 className="text-lg font-semibold mt-8 mb-4">📤 診断結果をシェアしよう！</h3>
+      {rankedResults.length === 0 ? (
+        <p className="text-center text-gray-600">
+          条件に一致するプランが見つかりませんでした。
+        </p>
+      ) : (
+        <div className="space-y-6">
+          {rankedResults.map((plan: any, index: number) => (
+            <div
+              key={plan.planId ?? index}
+              className="p-5 rounded-2xl border border-sky-200 bg-white shadow-sm"
+            >
+              {/* 🟦 プラン情報 */}
+              <h2 className="text-xl font-semibold text-sky-800">
+                {index + 1}. {plan.planName}
+              </h2>
+              <p className="text-gray-500 text-sm">{plan.carrier}</p>
 
-      <div className="flex flex-wrap justify-center gap-4">
-        {/* Twitter */}
-        <a
-          href={twitterLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-14 h-14 flex items-center justify-center rounded-full bg-blue-400 text-white hover:bg-blue-500 transition transform hover:scale-110 shadow"
-        >
-          <TwitterIcon className="w-6 h-6" />
-        </a>
+              {/* 🟦 実質月額 */}
+              <p className="text-2xl font-bold mt-2">
+                ¥{plan.totalMonthly.toLocaleString()}
+                <span className="text-sm text-gray-500 ml-1">/月（税込・概算）</span>
+              </p>
 
-        {/* LINE */}
-        <a
-          href={lineLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-14 h-14 flex items-center justify-center rounded-full bg-green-500 text-white hover:bg-green-600 transition transform hover:scale-110 shadow"
-        >
-          <MessageCircleIcon className="w-6 h-6" />
-        </a>
-
-        {/* Instagram（コピー用） */}
-        <button
-          onClick={handleCopy}
-          className="w-14 h-14 flex items-center justify-center rounded-full bg-pink-500 text-white hover:bg-pink-600 transition transform hover:scale-110 shadow"
-        >
-          <InstagramIcon className="w-6 h-6" />
-        </button>
-      </div>
-
-      {copied && (
-        <p className="text-green-600 mt-2 text-sm">✅ Instagram用にコピーしました！</p>
+              {/* 🟦 内訳 */}
+              <div className="mt-3 text-sm text-gray-700 space-y-0.5">
+                <p>基本料金：¥{plan.breakdown.baseFee}</p>
+                {plan.breakdown.familyDiscount > 0 && (
+                  <p>家族割：−¥{plan.breakdown.familyDiscount}</p>
+                )}
+                {plan.breakdown.studentDiscount > 0 && (
+                  <p>学割：−¥{plan.breakdown.studentDiscount}</p>
+                )}
+                {plan.breakdown.economyDiscount > 0 && (
+                  <p>経済圏割：−¥{plan.breakdown.economyDiscount}</p>
+                )}
+                {plan.breakdown.deviceDiscount > 0 && (
+                  <p>端末割引：−¥{Math.round(plan.breakdown.deviceDiscount)}</p>
+                )}
+                {plan.breakdown.cashback > 0 && (
+                  <p>キャッシュバック換算：−¥{Math.round(plan.breakdown.cashback)}</p>
+                )}
+                {plan.breakdown.initialFeeMonthly > 0 && (
+                  <p>初期費用（月平均）：＋¥{Math.round(plan.breakdown.initialFeeMonthly)}</p>
+                )}
+                {plan.breakdown.tetheringFee > 0 && (
+                  <p>テザリング利用料：＋¥{plan.breakdown.tetheringFee}</p>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
       )}
 
-      <button
-        onClick={onRestart}
-        className="mt-8 inline-flex items-center gap-2 bg-gray-300 hover:bg-gray-400 text-black px-6 py-3 rounded-full transition shadow"
-      >
-        <ArrowUpIcon className="w-5 h-5" />
-        最初から診断する
-      </button>
-    </section>
+      <div className="flex justify-center mt-8">
+        <button
+          onClick={onRestart}
+          className="px-6 py-3 rounded-full bg-gradient-to-r from-sky-400 to-sky-500 text-white font-semibold shadow-md hover:from-sky-300 hover:to-sky-400 transition-all"
+        >
+          もう一度診断する
+        </button>
+      </div>
+    </div>
   );
 }
