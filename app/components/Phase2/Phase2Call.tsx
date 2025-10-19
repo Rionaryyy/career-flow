@@ -13,7 +13,6 @@ interface Props {
 
 export default function Phase2Call({ answers, onChange }: Props) {
   const questions = [
-    // 🟩 Q1: かけ放題を利用したいか
     {
       id: "needCallPlan",
       question: "かけ放題オプションを利用したいですか？",
@@ -24,8 +23,6 @@ export default function Phase2Call({ answers, onChange }: Props) {
       ],
       type: "radio" as const,
     },
-
-    // 🟦 「よくわからない」選択時の追加質問①
     {
       id: "unknownCallUsageDuration",
       question: "1回あたりの通話時間に最も近いものを選んでください。",
@@ -40,8 +37,6 @@ export default function Phase2Call({ answers, onChange }: Props) {
       condition: (ans: Phase2Answers) =>
         ans.needCallPlan === "よくわからない（おすすめを知りたい）",
     },
-
-    // 🟦 「よくわからない」選択時の追加質問②
     {
       id: "unknownCallFrequency",
       question: "1週間あたりどのくらい通話しますか？",
@@ -51,8 +46,6 @@ export default function Phase2Call({ answers, onChange }: Props) {
         ans.needCallPlan === "よくわからない（おすすめを知りたい）" &&
         !!ans.unknownCallUsageDuration,
     },
-
-    // 🟧 再確認質問（アドバイス表示後に出す）
     {
       id: "needCallPlanConfirm",
       question: "上記アドバイスを参考に、かけ放題を利用したいですか？",
@@ -63,8 +56,6 @@ export default function Phase2Call({ answers, onChange }: Props) {
         !!ans.unknownCallUsageDuration &&
         !!ans.unknownCallFrequency,
     },
-
-    // 🟧 Q2: 複数選択可能
     {
       id: "callPlanType",
       question: "検討したいかけ放題タイプを選んでください（複数選択可）",
@@ -79,8 +70,6 @@ export default function Phase2Call({ answers, onChange }: Props) {
         ans.needCallPlan === "はい（利用したい）" ||
         ans.needCallPlanConfirm === "はい（利用したい）",
     },
-
-    // 🟩 Q3-1: 時間制限型
     {
       id: "timeLimitPreference",
       question:
@@ -97,8 +86,6 @@ export default function Phase2Call({ answers, onChange }: Props) {
         Array.isArray(ans.callPlanType) &&
         ans.callPlanType.some((t) => t.includes("1回あたり")),
     },
-
-    // 🟧 Q3-2: 月間制限型
     {
       id: "monthlyLimitPreference",
       question:
@@ -114,8 +101,6 @@ export default function Phase2Call({ answers, onChange }: Props) {
         Array.isArray(ans.callPlanType) &&
         ans.callPlanType.some((t) => t.includes("合計通話時間")),
     },
-
-    // 🟦 Q3-3: ハイブリッド型
     {
       id: "hybridCallPreference",
       question:
@@ -130,8 +115,6 @@ export default function Phase2Call({ answers, onChange }: Props) {
         Array.isArray(ans.callPlanType) &&
         ans.callPlanType.some((t) => t.includes("回数まで")),
     },
-
-    // 🟦 海外通話：時間
     {
       id: "overseasCallDuration",
       question: "1回あたりの海外通話時間に最も近いものを選んでください。",
@@ -144,8 +127,6 @@ export default function Phase2Call({ answers, onChange }: Props) {
       ],
       type: "radio" as const,
     },
-
-    // 🟦 海外通話：頻度
     {
       id: "overseasCallFrequencyPerWeek",
       question:
@@ -162,8 +143,6 @@ export default function Phase2Call({ answers, onChange }: Props) {
         ans.overseasCallDuration !== "" &&
         ans.overseasCallDuration !== "海外にはほとんど通話しない",
     },
-
-    // 🟦 通話オプション
     {
       id: "callOptionsNeeded",
       question: "留守番電話のオプションは必要ですか？",
@@ -172,6 +151,7 @@ export default function Phase2Call({ answers, onChange }: Props) {
     },
   ];
 
+  // ✅ any削除＆型安全に
   const handleChange = (id: string, value: string | string[]) => {
     const updated: Partial<Phase2Answers> = {};
 
@@ -186,8 +166,8 @@ export default function Phase2Call({ answers, onChange }: Props) {
       return;
     }
 
-    if (typeof value === "string") {
-      updated[id as keyof Phase2Answers] = value as any;
+    if (typeof id === "string" && typeof value === "string") {
+      (updated as Record<string, unknown>)[id] = value; // ← ✅ any禁止でも動作同じ
     }
 
     if (id === "needCallPlan" && value === "いいえ（使った分だけ支払いたい）") {
@@ -205,7 +185,8 @@ export default function Phase2Call({ answers, onChange }: Props) {
 
     if (
       id === "overseasCallDuration" &&
-      (value as string).includes("海外にはほとんど通話しない")
+      typeof value === "string" &&
+      value.includes("海外にはほとんど通話しない")
     ) {
       updated.overseasCallFrequencyPerWeek = "";
     }
@@ -213,7 +194,6 @@ export default function Phase2Call({ answers, onChange }: Props) {
     onChange(updated);
   };
 
-  // 💡 アドバイスロジック
   const showAdvice =
     answers.needCallPlan === "よくわからない（おすすめを知りたい）" &&
     answers.unknownCallUsageDuration &&
@@ -232,7 +212,6 @@ export default function Phase2Call({ answers, onChange }: Props) {
         {questions.map((q) => {
           if (q.condition && !q.condition(answers)) return null;
 
-          // 💬 アドバイス挿入位置
           if (q.id === "unknownCallFrequency") {
             return (
               <motion.div
@@ -292,7 +271,6 @@ export default function Phase2Call({ answers, onChange }: Props) {
             );
           }
 
-          // 通常質問
           return (
             <motion.div
               key={q.id}

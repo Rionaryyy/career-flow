@@ -8,13 +8,11 @@ import Result from "./Result";
 import FeatureHighlightsFlow from "./FeatureHighlightsFlow";
 import HeroMini from "./HeroMini";
 import { Phase1Answers, Phase2Answers, DiagnosisAnswers } from "@/types/types";
-
-// 🟩 フィルターロジックをインポート
 import { filterPlansByPhase1 } from "@/utils/filters/phase1FilterLogic";
-
-// 🟩 全プランデータをインポート
 import { allPlans } from "@/data/plans";
+import { Plan } from "@/types/planTypes"; // ✅ 型を明示
 
+// 🟦 初期値
 const INITIAL_ANSWERS: DiagnosisAnswers = {
   phase1: {
     includePoints: null,
@@ -73,15 +71,15 @@ export default function DiagnosisFlow() {
   const [step, setStep] = useState<"phase1" | "phase2" | "result">("phase1");
   const [answers, setAnswers] = useState<DiagnosisAnswers>(INITIAL_ANSWERS);
 
-  // 🟩 フィルター結果を保持する state
-  const [filteredPlans, setFilteredPlans] = useState<any[]>([]);
+  // ✅ Plan 型で管理（any禁止）
+  const [filteredPlans, setFilteredPlans] = useState<Plan[]>([]);
 
-  // ✅ 保存済みデータを読み込み
+  // ✅ 保存データ読み込み
   useEffect(() => {
     const saved = localStorage.getItem("diagnosisAnswers");
     if (saved) {
       try {
-        const parsed = JSON.parse(saved);
+        const parsed = JSON.parse(saved) as DiagnosisAnswers; // ✅ 型指定
         setAnswers(parsed);
         console.log("💾 保存された回答を復元しました");
       } catch (e) {
@@ -90,38 +88,41 @@ export default function DiagnosisFlow() {
     }
   }, []);
 
-  // ✅ 回答が更新されるたびにローカルストレージへ保存
+  // ✅ 回答が変わるたびに保存
   useEffect(() => {
     localStorage.setItem("diagnosisAnswers", JSON.stringify(answers));
   }, [answers]);
 
-  // ✅ フェーズ1回答送信
+  // ✅ フェーズ1送信
   const handlePhase1Submit = (phase1Answers: Phase1Answers) => {
-    setAnswers((prev) => ({ ...prev, phase1: phase1Answers }));
+    setAnswers((prev) => {
+      const updated: DiagnosisAnswers = { ...prev, phase1: phase1Answers };
+      return JSON.parse(JSON.stringify(updated)) as DiagnosisAnswers; // ✅ 型を保持
+    });
 
-    // 🟩 フィルター処理を実行
     const phase1Results = filterPlansByPhase1(phase1Answers, allPlans);
-
     console.log("📊 フィルター結果:", phase1Results);
 
-    // 🟩 保存
     setFilteredPlans(phase1Results);
-
     setStep("phase2");
     window.scrollTo({ top: 0, behavior: "auto" });
   };
 
-  // ✅ フェーズ2回答送信
+  // ✅ フェーズ2送信
   const handlePhase2Submit = (phase2Answers: Phase2Answers) => {
-    setAnswers((prev) => ({ ...prev, phase2: phase2Answers }));
+    setAnswers((prev) => {
+      const updated: DiagnosisAnswers = { ...prev, phase2: phase2Answers };
+      return JSON.parse(JSON.stringify(updated)) as DiagnosisAnswers;
+    });
     setStep("result");
     window.scrollTo({ top: 0, behavior: "auto" });
   };
 
-  // ✅ 回答リセット機能
+  // ✅ リセット
   const resetAnswers = () => {
     localStorage.removeItem("diagnosisAnswers");
-    setAnswers(INITIAL_ANSWERS);
+    setAnswers(JSON.parse(JSON.stringify(INITIAL_ANSWERS)) as DiagnosisAnswers);
+    setFilteredPlans([]);
     setStep("phase1");
   };
 
@@ -147,7 +148,7 @@ export default function DiagnosisFlow() {
         {step === "result" && (
           <Result
             answers={answers}
-            filteredPlans={filteredPlans} // 🟩 ← ここも忘れずに渡す
+            filteredPlans={filteredPlans}
             onRestart={resetAnswers}
           />
         )}

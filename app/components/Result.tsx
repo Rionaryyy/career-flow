@@ -6,24 +6,24 @@ import { Plan } from "@/types/planTypes";
 import { filterPlansByPhase1 } from "@/utils/filters/phase1FilterLogic";
 import { filterPlansByPhase2 } from "@/utils/filters/phase2FilterLogic";
 import { allPlans } from "@/data/plans";
-import { calculatePlanCost } from "@/utils/logic/priceLogic"; // 🟩 追加
+import { calculatePlanCost } from "@/utils/logic/priceLogic";
 
 interface Props {
   answers: DiagnosisAnswers;
-  filteredPlans: any[];
+  filteredPlans: Plan[]; // ✅ any[] → Plan[] に修正
   onRestart: () => void;
 }
 
-export default function Result({ answers, onRestart }: Props) {
+export default function Result({ answers, filteredPlans, onRestart }: Props) {
   const all: Plan[] = allPlans;
 
+  // 🟦 フィルター＆コスト算出
   const rankedResults = useMemo(() => {
-    // 🟦 フィルター処理（フェーズ①＆②）
     let result = filterPlansByPhase1(answers.phase1, all);
     result = filterPlansByPhase2(answers.phase2, result);
 
-    // 🟦 各プランの実質月額を算出
-    const withCosts = result.map(plan => {
+    // 🧩 各プランの実質月額を算出
+    const withCosts = result.map((plan: Plan) => {
       const cost = calculatePlanCost(plan, answers);
       return {
         ...plan,
@@ -32,7 +32,7 @@ export default function Result({ answers, onRestart }: Props) {
       };
     });
 
-    // 🟦 実質月額でソート
+    // 🧩 実質月額でソート
     return withCosts.sort((a, b) => a.totalMonthly - b.totalMonthly);
   }, [answers, all]);
 
@@ -40,7 +40,7 @@ export default function Result({ answers, onRestart }: Props) {
     <div className="w-full py-10 px-6 max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold text-sky-900 text-center mb-6">診断結果</h1>
 
-      {/* 🧩 Debug: Phase2の回答確認 */}
+      {/* 🧩 デバッグ出力（Phase2回答） */}
       <pre className="text-xs bg-gray-100 text-gray-700 p-3 rounded mb-4 overflow-x-auto">
         {JSON.stringify(answers.phase2, null, 2)}
       </pre>
@@ -51,7 +51,7 @@ export default function Result({ answers, onRestart }: Props) {
         </p>
       ) : (
         <div className="space-y-6">
-          {rankedResults.map((plan: any, index: number) => (
+          {rankedResults.map((plan: Plan & { breakdown: any; totalMonthly: number }, index: number) => (
             <div
               key={plan.planId ?? index}
               className="p-5 rounded-2xl border border-sky-200 bg-white shadow-sm"
@@ -98,6 +98,7 @@ export default function Result({ answers, onRestart }: Props) {
         </div>
       )}
 
+      {/* 🟦 リスタートボタン */}
       <div className="flex justify-center mt-8">
         <button
           onClick={onRestart}
