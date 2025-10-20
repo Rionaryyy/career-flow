@@ -14,7 +14,13 @@ export default function Phase2Contract({ answers, onChange }: Props) {
     {
       id: "familyLines",
       question: "家族割引を適用できる回線数はいくつですか？",
-      options: ["1回線", "2回線", "3回線", "4回線以上", "適用できない / わからない"],
+      options: [
+        "1回線(本人＋家族1人)",
+        "2回線(本人＋家族2人)",
+        "3回線(本人＋家族3人)",
+        "4回線以上",
+        "適用できない/わからない",
+      ],
       type: "radio" as const,
     },
     {
