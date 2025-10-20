@@ -107,6 +107,26 @@ if (answers.callPlanType && answers.callPlanType.length > 0) {
 
   filtered = filtered.filter(plan => {
     let match = false;
+// 🟦 海外通話かけ放題フィルター（キャリア選択後に適用）
+if (
+  answers.needInternationalCallUnlimited === "はい" &&
+  Array.isArray(answers.internationalCallCarrier) &&
+  answers.internationalCallCarrier.length > 0
+) {
+  const selectedCarriers = answers.internationalCallCarrier;
+
+  filtered = filtered.filter(plan => {
+    if (selectedCarriers.some(carrier => carrier.includes("楽天モバイル"))) {
+      return plan.carrier?.toLowerCase().includes("rakuten");
+    }
+    if (selectedCarriers.some(carrier => carrier.includes("au"))) {
+      return plan.carrier?.toLowerCase().includes("au");
+    }
+    return false;
+  });
+}
+
+
 
     // 🕐 時間制限型
     if (selectedTypes.includes("1回あたり")) {

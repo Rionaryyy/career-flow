@@ -143,6 +143,29 @@ export default function Phase2Call({ answers, onChange }: Props) {
         ans.overseasCallDuration !== "" &&
         ans.overseasCallDuration !== "海外にはほとんど通話しない",
     },
+
+    // 🌍 海外通話かけ放題 追加
+    {
+      id: "needInternationalCallUnlimited",
+      question: "海外へのかけ放題オプションは必要ですか？",
+      options: ["はい", "いいえ"],
+      type: "radio" as const,
+    },
+    {
+      id: "internationalCallCarrier",
+      question:
+  "⚠️ 現在、海外通話かけ放題に対応しているのは以下のキャリアのみです。希望するものを選択してください（複数選択可）\n\n※ここで選択したキャリアのみ、以降のプラン比較に反映されます。",
+
+      options: [
+        "楽天モバイル（国際通話かけ放題：¥980/月・65カ国対象）",
+        "au（国際通話定額：月900分・23カ国対象）",
+      ],
+      type: "checkbox" as const,
+      condition: (ans: Phase2Answers) =>
+        ans.needInternationalCallUnlimited === "はい",
+    },
+    // 🌍 ここまで追加
+
     {
       id: "callOptionsNeeded",
       question: "留守番電話のオプションは必要ですか？",
@@ -151,23 +174,32 @@ export default function Phase2Call({ answers, onChange }: Props) {
     },
   ];
 
-  // ✅ any削除＆型安全に
+  // ✅ checkbox対応・型警告対策済み handleChange
   const handleChange = (id: string, value: string | string[]) => {
     const updated: Partial<Phase2Answers> = {};
 
-    if (id === "callPlanType") {
-      updated.callPlanType = Array.isArray(value) ? value : [value];
-      if (!(value as string[]).length) {
-        updated.timeLimitPreference = "";
-        updated.monthlyLimitPreference = "";
-        updated.hybridCallPreference = "";
-      }
+    // ✅ checkbox（複数選択）対応
+    if (Array.isArray(value)) {
+      (updated as Record<string, unknown>)[id] = value as unknown;
       onChange(updated);
       return;
     }
 
+    if (id === "callPlanType") {
+  updated.callPlanType = Array.isArray(value) ? value : [value];
+  const isEmptyArray = Array.isArray(value) && value.length === 0;
+
+  if (isEmptyArray) {
+    updated.timeLimitPreference = "";
+    updated.monthlyLimitPreference = "";
+    updated.hybridCallPreference = "";
+  }
+
+  onChange(updated);
+  return;
+}
     if (typeof id === "string" && typeof value === "string") {
-      (updated as Record<string, unknown>)[id] = value; // ← ✅ any禁止でも動作同じ
+      (updated as Record<string, unknown>)[id] = value as unknown;
     }
 
     if (id === "needCallPlan" && value === "いいえ（使った分だけ支払いたい）") {

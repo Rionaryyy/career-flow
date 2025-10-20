@@ -32,7 +32,8 @@ export interface Plan {
   callCountLimit?: number | null; // 月内通話回数上限
   callPerCallLimit?: number | null; // 1通話あたりの上限（ハイブリッド型）
   callIncluded?: boolean; // 基本料金にかけ放題が含まれるか
-
+  supportsInternationalUnlimitedCalls?: boolean; // 海外通話かけ放題に対応しているか
+  
   // === Phase2: 割引・家族系 ===
   supportsChildPlan: boolean;
   familyLines?: number; // 家族割人数または割引額
