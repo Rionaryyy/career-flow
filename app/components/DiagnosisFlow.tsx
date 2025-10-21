@@ -62,7 +62,7 @@ const INITIAL_ANSWERS: DiagnosisAnswers = {
     dualSim: null,
     specialUses: [],
 
-    mainCard: null,
+    mainCard: [], // ← ✅ 修正ここ
     paymentTiming: null,
   },
 };
