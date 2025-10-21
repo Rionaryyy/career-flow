@@ -3,6 +3,7 @@ export interface Phase1Answers {
   networkQuality: string | null;
   carrierType: string | null;
   considerCardAndPayment?: string | null;
+  
 
   // 新規追加：ポイント還元も実質料金に含めるか
   considerPointInActualCost?: string | null; // "はい" | "いいえ"
@@ -99,10 +100,10 @@ internationalCallCarrier?: string[];
   monthlyData?: string | null;           // 〜50MB/日 など
   monthlyCall?: string | null;           // 5〜30分/週 など
   localSimPurchase?: string | null;      // 現地SIMを自分で購入できるか（はい/いいえ）
-
+  overseasSupport?: "はい" | "いいえ";
 
   // ⑧ 支払い方法
-  mainCard?: string | null;
+  mainCard?: string[]; // ✅ 修正：配列型に変更
   paymentTiming?: string | null;
 
    studentDiscount_Under18?: string | null; // 18歳以下の学割

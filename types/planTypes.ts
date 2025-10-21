@@ -23,7 +23,7 @@ export interface Plan {
   tetheringMaxGB?: number | typeof Infinity;
   tetheringFee?: number; // テザリング利用料（円）
 
-  // === Phase2: 通話関連（新規追加）===
+  // === Phase2: 通話関連 ===
   hasVoicemail: boolean; // 留守番電話対応
   callOption?: boolean; // かけ放題オプション有無
   callType?: "time" | "monthly" | "hybrid" | "unlimited" | null; // プラン種別
@@ -32,13 +32,13 @@ export interface Plan {
   callCountLimit?: number | null; // 月内通話回数上限
   callPerCallLimit?: number | null; // 1通話あたりの上限（ハイブリッド型）
   callIncluded?: boolean; // 基本料金にかけ放題が含まれるか
-  supportsInternationalUnlimitedCalls?: boolean; // 海外通話かけ放題に対応しているか
-  
+  supportsInternationalUnlimitedCalls?: boolean; // 海外通話かけ放題に対応
+
   // === Phase2: 割引・家族系 ===
   supportsChildPlan: boolean;
-  familyLines?: number; // 家族割人数または割引額
-  studentDiscount_Under22?: boolean; // 学割（22歳以下）
-  studentDiscount_Under18?: boolean; // 学割（18歳以下）
+  familyLines?: number;
+  studentDiscount_Under22?: boolean;
+  studentDiscount_Under18?: boolean;
 
   // === Phase2: 端末関連 ===
   simOnlyAvailable: boolean;
@@ -46,8 +46,8 @@ export interface Plan {
   supportsReturnProgram: boolean;
   availableDevices?: string[];
 
-  // === Phase2: 海外利用 ===
-  supportsOverseasUse: boolean;
+  // === Phase2: 海外利用（フィルタ対応済） ===
+  overseasSupport: boolean; // ← フィルタで使用するメイン項目
   supportsDualSim: boolean;
   allowsLocalSimCombination: boolean;
   supportsGlobalRoaming: boolean;
@@ -61,7 +61,7 @@ export interface Plan {
   supportsPayPayEconomy?: boolean;
 
   // === 料金・割引関連 ===
-  deviceDiscountAmount?: number; // 端末割引額
-  cashbackAmount?: number; // キャッシュバック額
-  initialFee?: number; // 初期費用（円）
+  deviceDiscountAmount?: number;
+  cashbackAmount?: number;
+  initialFee?: number;
 }

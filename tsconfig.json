@@ -13,14 +13,28 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "plugins": [
-      { "name": "next" }
-    ],
+
+    "plugins": [{ "name": "next" }],
+
+    // ✅ パスエイリアス設定
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]   // ← ここを修正！
+      "@/*": ["./*"]
     }
   },
+
+  // ✅ ts-node でも @/ エイリアスを使えるように追加！
+  "ts-node": {
+    "compilerOptions": {
+      "module": "CommonJS",
+      "moduleResolution": "node",
+      "baseUrl": ".",
+      "paths": {
+        "@/*": ["./*"]
+      }
+    }
+  },
+
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }
