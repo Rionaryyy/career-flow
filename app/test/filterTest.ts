@@ -5,17 +5,20 @@ import { filterPlansByPhase2 } from "../../utils/filters/phase2FilterLogic";
 import { Phase1Answers, Phase2Answers } from "../../types/types";
 
 // 共通出力関数
-function printResult(title: string, step1: any[], step2: any[]) {
+import { Plan } from "../../types/planTypes";
+
+function printResult(title: string, step1: Plan[], step2: Plan[]) {
   const status = step2.length > 0 ? "✅" : "⚠️";
   console.log(`\n${status} ${title}`);
   console.log(`  Phase1残り: ${step1.length}件`);
   console.log(`  Phase2残り: ${step2.length}件`);
   if (step2.length > 0) {
-    step2.forEach((p) => console.log(`   - ${p.carrier} (${p.planName})`));
+    step2.forEach(p => console.log(`   - ${p.carrier} (${p.planName})`));
   } else {
     console.log("   → 該当プランなし");
   }
 }
+
 
 // テストケース実行
 function runTestCase(title: string, phase1: Phase1Answers, phase2: Partial<Phase2Answers>) {
