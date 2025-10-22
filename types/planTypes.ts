@@ -5,6 +5,13 @@ export type PlanType = "大手" | "サブブランド" | "格安SIM";
 export type NetworkQuality = "低" | "中" | "高";
 export type AvailableMethod = "online" | "store" | "both";
 
+// 🟦 通話オプション定義
+export interface CallOption {
+  id: string;
+  name: string;
+  fee: number;
+}
+
 export interface Plan {
   // === Phase1: 基本属性 ===
   planId: string;
@@ -13,32 +20,56 @@ export interface Plan {
   planType: PlanType;
   baseMonthlyFee: number;
   networkQuality: NetworkQuality;
-  requiresAppCall: boolean; // 例: 楽天リンク必須など
+  requiresAppCall: boolean;
   availableMethod: AvailableMethod;
 
   // === Phase2: データ関連 ===
-  maxDataGB: number; // 無制限は Infinity 推奨
-  speedLimitMbps: number; // 制限時や混雑時の目安
+  maxDataGB: number;
+  speedLimitMbps: number;
   tetheringAvailable: boolean;
   tetheringMaxGB?: number | typeof Infinity;
-  tetheringFee?: number; // テザリング利用料（円）
+  tetheringFee?: number;
 
   // === Phase2: 通話関連 ===
-  hasVoicemail: boolean; // 留守番電話対応
-  callOption?: boolean; // かけ放題オプション有無
-  callType?: "time" | "monthly" | "hybrid" | "unlimited" | null; // プラン種別
-  callTimeLimit?: number | null; // 1回あたり通話上限（分）
-  callMonthlyLimit?: number | null; // 月内合計上限（分）
-  callCountLimit?: number | null; // 月内通話回数上限
-  callPerCallLimit?: number | null; // 1通話あたりの上限（ハイブリッド型）
-  callIncluded?: boolean; // 基本料金にかけ放題が含まれるか
-  supportsInternationalUnlimitedCalls?: boolean; // 海外通話かけ放題に対応
+  hasVoicemail: boolean;
+  callOption?: boolean;
+  callType?: "time" | "monthly" | "hybrid" | "unlimited" | null;
+  callTimeLimit?: number | null;
+  callMonthlyLimit?: number | null;
+  callCountLimit?: number | null;
+  callPerCallLimit?: number | null;
+  callIncluded?: boolean;
+  supportsInternationalUnlimitedCalls?: boolean;
+  callOptions?: CallOption[];
 
   // === Phase2: 割引・家族系 ===
   supportsChildPlan: boolean;
   familyLines?: number;
-  studentDiscount_Under22?: boolean;
-  studentDiscount_Under18?: boolean;
+
+  // === 割引・特典フラグ ===
+  supportsFamilyDiscount?: boolean; // 家族割対応
+  supportsStudentDiscount?: boolean; // 学割対応
+  supportsAgeDiscount?: boolean;     // 🆕 年齢割対応
+
+  // === 家族割詳細 ===
+  familyDiscountRules?: { lines: number; discount: number }[];
+  familyDiscountCap?: number;
+
+  // === 年齢別割引ルール（キャリアごと設定） ===
+  ageDiscountRules?: {
+    ageGroup: "18歳以下" | "25歳以下" | "30歳以下" | "60歳以上";
+    discount: number;
+  }[];
+
+  // 🟩 学割ルール（キャリア／年齢範囲別設定）
+  studentDiscountRules?: {
+    minAge?: number;    // 例: 15
+    maxAge?: number;    // 例: 22
+    discount: number;   // 例: 440
+  }[];
+
+  // 🟩 併用可否ルール（例: ["exclusive_student_age"]）
+  discountCombinationRules?: string[];
 
   // === Phase2: 端末関連 ===
   simOnlyAvailable: boolean;
@@ -46,15 +77,15 @@ export interface Plan {
   supportsReturnProgram: boolean;
   availableDevices?: string[];
 
-  // === Phase2: 海外利用（フィルタ対応済） ===
-  overseasSupport: boolean; // ← フィルタで使用するメイン項目
+  // === Phase2: 海外利用 ===
+  overseasSupport: boolean;
   supportsDualSim: boolean;
   allowsLocalSimCombination: boolean;
   supportsGlobalRoaming: boolean;
   supportedRegions?: string[];
 
   // === Phase2: 支払い方法 / 経済圏 ===
-  supportedPaymentMethods: string[]; // ["クレジットカード","口座振替",...]
+  supportedPaymentMethods: string[];
   supportsRakutenEconomy?: boolean;
   supportsDEconomy?: boolean;
   supportsAuEconomy?: boolean;

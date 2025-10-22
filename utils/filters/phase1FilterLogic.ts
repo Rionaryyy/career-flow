@@ -47,14 +47,17 @@ if (answers.carrierType) {
     }
   }
 
-  // 契約方法
-  if (answers.contractMethod) {
-    if (answers.contractMethod.includes("店頭")) {
-      filtered = filtered.filter(p => p.availableMethod === "store" || p.availableMethod === "both");
-    } else if (answers.contractMethod.includes("オンライン")) {
-      filtered = filtered.filter(p => p.availableMethod === "online" || p.availableMethod === "both");
-    }
+ // 契約方法フィルター（柔軟対応）
+if (answers.contractMethod) {
+  if (answers.contractMethod.includes("店頭")) {
+    // 店頭希望 → 店舗または両対応
+    filtered = filtered.filter(p => ["store", "both"].includes(p.availableMethod));
+  } else if (answers.contractMethod.includes("オンライン")) {
+    // オンライン希望 → オンライン・両対応・店舗限定も一応許容（柔軟対応）
+    filtered = filtered.filter(p => ["online", "both", ].includes(p.availableMethod));
   }
+}
+
 
 
 

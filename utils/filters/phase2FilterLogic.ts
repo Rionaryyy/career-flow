@@ -40,102 +40,116 @@ export function filterPlansByPhase2(answers: Phase2Answers, plans: Plan[]): Plan
     filtered = filtered.filter(plan => plan.maxDataGB >= minRequired);
   }
 
-  // 🟩🟩 ② 国内通話プランフィルター（ハイブリッド修正版 ✅）
-  if (answers.callPlanType && answers.callPlanType.length > 0) {
-    const timeLimitMap = {
-      "5分以内": 5,
-      "10分以内": 10,
-      "15分以内": 15,
-      "30分以内": 30,
-      "無制限": Infinity,
-    };
+ // 🟩🟩 ② 国内通話プランフィルター（全タイプ同時選択対応 + 無制限上位互換対応 ✅ + 型安全修正版）
+if (answers.callPlanType && answers.callPlanType.length > 0) {
+  const timeLimitMap = {
+    "5分以内": 5,
+    "10分以内": 10,
+    "15分以内": 15,
+    "30分以内": 30,
+    "無制限": Infinity,
+  } as const;
 
-    const monthlyLimitMap = {
-      "月60分まで無料": 60,
-      "月70分まで無料": 70,
-      "月100分まで無料": 100,
-      "無制限（完全定額）": Infinity,
-    };
+  const monthlyLimitMap = {
+    "月60分まで無料": 60,
+    "月70分まで無料": 70,
+    "月100分まで無料": 100,
+    "無制限（完全定額）": Infinity,
+  } as const;
 
-    const hybridLimitMap = {
-      "月30回まで各10分無料": { count: 30, perCall: 10 },
-      "月50回まで各10分無料": { count: 50, perCall: 10 },
-      "無制限（回数制限なし）": { count: Infinity, perCall: Infinity },
-    };
+  const hybridLimitMap = {
+    "月30回まで各10分無料": { count: 30, perCall: 10 },
+    "月50回まで各10分無料": { count: 50, perCall: 10 },
+    "無制限（回数制限なし）": { count: Infinity, perCall: Infinity },
+  } as const;
 
-    const selectedTypes = answers.callPlanType ?? [];
+  const selectedTypes = answers.callPlanType ?? [];
 
-    // 🟦 海外通話かけ放題（上書き防止修正版 ✅）
+  // OR 統合結果を格納する配列
+  let matches: Plan[] = [];
+
+  // 🕐 時間制限型
+  if (selectedTypes.some((t) => t.includes("1回あたり"))) {
+    const pref = answers.timeLimitPreference ?? "";
+    const limitKey = (Object.keys(timeLimitMap) as (keyof typeof timeLimitMap)[])
+      .find((k) => pref.includes(k));
+    const limit = limitKey ? timeLimitMap[limitKey] : 0;
+
+    matches.push(
+      ...plans.filter(
+        (p) =>
+          (p.callType === "time" && (p.callTimeLimit ?? 0) >= limit) ||
+          p.callType === "unlimited" // ← 上位互換含む
+      )
+    );
+  }
+
+  // 📆 月間制限型
+  if (selectedTypes.some((t) => t.includes("合計通話時間"))) {
+    const pref = answers.monthlyLimitPreference ?? "";
+    const limitKey = (Object.keys(monthlyLimitMap) as (keyof typeof monthlyLimitMap)[])
+      .find((k) => pref.includes(k));
+    const limit = limitKey ? monthlyLimitMap[limitKey] : 0;
+
+    matches.push(
+      ...plans.filter(
+        (p) =>
+          (p.callType === "monthly" && (p.callMonthlyLimit ?? 0) >= limit) ||
+          p.callType === "unlimited"
+      )
+    );
+  }
+
+  // 🔁 ハイブリッド型
+  if (selectedTypes.some((t) => /(ハイブリッド|回数)/.test(t))) {
+    const pref = answers.hybridCallPreference ?? "";
+    const limitKey = (Object.keys(hybridLimitMap) as (keyof typeof hybridLimitMap)[])
+      .find((k) => pref.includes(k));
+    const { count, perCall } = limitKey ? hybridLimitMap[limitKey] : { count: 0, perCall: 0 };
+
+    matches.push(
+      ...plans.filter(
+        (p) =>
+          (p.callType === "hybrid" &&
+            (p.callCountLimit ?? 0) >= count &&
+            (p.callPerCallLimit ?? 0) >= perCall) ||
+          p.callType === "unlimited"
+      )
+    );
+  }
+
+  // 🟪 無制限型（直接選択時）
+  if (selectedTypes.some((t) => /(無制限|かけ放題)/.test(t))) {
+    matches.push(...plans.filter((p) => p.callType === "unlimited"));
+  }
+
+  // 🌍 海外通話フィルター（保持）
+  if (answers.needInternationalCallUnlimited === "はい") {
     const selectedCarriers = Array.isArray(answers.internationalCallCarrier)
       ? answers.internationalCallCarrier
       : [];
+    matches = matches.filter((plan) => {
+      if (selectedCarriers.length === 0)
+        return plan.supportsInternationalUnlimitedCalls === true;
 
-    filtered = filtered.filter(plan => {
-      let match = false;
-
-      // 🟦 海外通話かけ放題条件（柔軟一致対応 ✅）
-      if (
-        answers.needInternationalCallUnlimited === "はい" &&
-        selectedCarriers.length > 0
-      ) {
-        const matchesInternationalCarrier = selectedCarriers.some(carrier => {
-          if (carrier.includes("楽天") || carrier.includes("Rakuten")) {
-            return plan.carrier?.toLowerCase().includes("rakuten");
-          }
-          if (carrier.toLowerCase().includes("au")) {
-            return plan.carrier?.toLowerCase().includes("au");
-          }
-          return false;
-        });
-
-        if (!matchesInternationalCarrier) return false;
-      }
-
-      // 🕐 時間制限型
-      if (selectedTypes.includes("1回あたり")) {
-        const limit = timeLimitMap[answers.timeLimitPreference as keyof typeof timeLimitMap];
-        if (limit && (plan.callTimeLimit! >= limit || plan.callTimeLimit === Infinity)) match = true;
-      }
-
-      // 📆 月間制限型
-      if (selectedTypes.includes("合計通話時間")) {
-        const limit = monthlyLimitMap[answers.monthlyLimitPreference as keyof typeof monthlyLimitMap];
-        if (limit && (plan.callMonthlyLimit! >= limit || plan.callMonthlyLimit === Infinity)) match = true;
-      }
-
-      // 🔁 ハイブリッド型（完全対応 ✅）
-      if (selectedTypes.some(type => /(ハイブリッド|回数)/.test(type))) {
-        const hybridKey = Object.keys(hybridLimitMap).find(k =>
-          answers.hybridCallPreference
-            ?.replace(/\s/g, "")
-            .includes(k.replace(/\s/g, ""))
+      return selectedCarriers.some((c) => {
+        const lower = c.toLowerCase();
+        return (
+          (lower.includes("楽天") && plan.carrier?.toLowerCase().includes("rakuten")) ||
+          (lower.includes("au") && plan.carrier?.toLowerCase().includes("au")) ||
+          (lower.includes("softbank") && plan.carrier?.toLowerCase().includes("softbank")) ||
+          (lower.includes("docomo") && plan.carrier?.toLowerCase().includes("docomo"))
         );
-
-        const limit =
-          hybridKey && hybridLimitMap[hybridKey as keyof typeof hybridLimitMap];
-
-        if (
-          limit &&
-          (plan.callType?.toLowerCase().includes("hybrid") ||
-            plan.planName.includes("ハイブリッド") ||
-            plan.planName.includes("月30回")) &&
-          (plan.callCountLimit ?? 0) >= limit.count &&
-          (plan.callPerCallLimit ?? 0) >= limit.perCall
-        ) {
-          match = true;
-        }
-      }
-
-      // 🟪 無制限型（完全定額）判定追加 ✅
-      if (selectedTypes.includes("無制限（完全定額）")) {
-        if (plan.callType?.toLowerCase().includes("unlimited")) {
-          match = true;
-        }
-      }
-
-      return match || selectedTypes.length === 0;
+      });
     });
   }
+
+  // 重複削除
+  filtered = Array.from(new Map(matches.map((p) => [p.planId, p])).values());
+}
+
+
+
 
   // 🟦 ③ 端末モデルフィルター
   if (answers.deviceModel && answers.deviceModel !== "その他") {
