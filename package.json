@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",                     
-    "build": "TURBOPACK=0 next build",     
+    "dev": "next dev",
+    "build": "cross-env TURBOPACK=0 next build",
     "start": "next start",
     "lint": "eslint"
   },
@@ -27,14 +27,16 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@tailwindcss/postcss": "^4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.13",
+    "cross-env": "^7.0.3",
     "@types/node": "^20",
     "@types/papaparse": "^5.3.16",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.5.3",
-    "tailwindcss": "^4",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   }
