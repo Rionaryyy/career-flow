@@ -1,4 +1,3 @@
-// data/plans.ts
 import { Plan } from "@/types/planTypes";
 
 export const allPlans: Plan[] = [
@@ -17,6 +16,11 @@ export const allPlans: Plan[] = [
     speedLimitMbps: 1,
     tetheringAvailable: true,
 
+    // ✅ テザリング設定
+    tetheringNeeded: true,
+    tetheringUsage: 30, // 〜30GB程度まで利用可能
+    tetheringFee: 0, // 無料
+
     hasVoicemail: true,
     callOption: true,
     callType: "time",
@@ -32,7 +36,6 @@ export const allPlans: Plan[] = [
       { id: "10min", name: "10分かけ放題", fee: 880 },
     ],
 
-    // 家族割
     supportsFamilyDiscount: true,
     familyDiscountRules: [
       { lines: 2, discount: 550 },
@@ -40,11 +43,10 @@ export const allPlans: Plan[] = [
     ],
     familyDiscountCap: 1100,
 
-    // 学割・年齢割
     supportsStudentDiscount: true,
     supportsAgeDiscount: true,
     studentDiscountRules: [
-      { minAge: 15, maxAge: 22, discount: 600 }, // docomo U22割
+      { minAge: 15, maxAge: 22, discount: 600 },
       { minAge: 23, maxAge: 25, discount: 400 },
     ],
     ageDiscountRules: [
@@ -93,6 +95,11 @@ export const allPlans: Plan[] = [
     speedLimitMbps: 1,
     tetheringAvailable: true,
 
+    // ✅ テザリング設定
+    tetheringNeeded: true,
+    tetheringUsage: 60,
+    tetheringFee: 220, // 🧩 有料プラン（加算テスト用）
+
     hasVoicemail: false,
     callOption: true,
     callType: "monthly",
@@ -115,7 +122,7 @@ export const allPlans: Plan[] = [
     supportsStudentDiscount: true,
     supportsAgeDiscount: true,
     studentDiscountRules: [
-      { minAge: 15, maxAge: 22, discount: 1100 }, // ソフトバンク 学割
+      { minAge: 15, maxAge: 22, discount: 1100 },
       { minAge: 23, maxAge: 25, discount: 800 },
     ],
     ageDiscountRules: [
@@ -157,6 +164,11 @@ export const allPlans: Plan[] = [
     maxDataGB: 20,
     speedLimitMbps: 1,
     tetheringAvailable: true,
+
+    // ✅ テザリング設定
+    tetheringNeeded: true,
+    tetheringUsage: 60,
+    tetheringFee: 330, // 🧩 有料プラン（加算テスト用）
 
     hasVoicemail: true,
     callOption: true,
@@ -222,6 +234,11 @@ export const allPlans: Plan[] = [
     speedLimitMbps: 3,
     tetheringAvailable: true,
 
+    // ✅ テザリング設定
+    tetheringNeeded: true,
+    tetheringUsage: 999,
+    tetheringFee: 0, // 無料
+
     hasVoicemail: true,
     callOption: false,
     callType: "unlimited",
@@ -239,7 +256,7 @@ export const allPlans: Plan[] = [
     supportsStudentDiscount: true,
     supportsAgeDiscount: true,
     studentDiscountRules: [
-      { minAge: 15, maxAge: 22, discount: 440 }, // 楽天最強青春プログラム
+      { minAge: 15, maxAge: 22, discount: 440 },
       { minAge: 23, maxAge: 25, discount: 300 },
     ],
     ageDiscountRules: [

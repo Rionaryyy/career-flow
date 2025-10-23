@@ -8,9 +8,6 @@ import { filterPlansByPhase2 } from "@/utils/filters/phase2FilterLogic";
 import { allPlans } from "@/data/plans";
 import { calculatePlanCost } from "../../utils/logic/calcEffectivePrice";
 
-console.log("📦 [client] allPlans count:", allPlans?.length);
-console.log("🪪 [client] first plan:", allPlans?.[0]?.planName);
-
 interface PlanWithCost extends Plan {
   breakdown: {
     baseFee: number;
@@ -39,7 +36,6 @@ export default function Result({ answers, onRestart }: Props) {
     console.log("🟦 Phase1 Answers:", answers.phase1);
     console.log("🟩 Phase2 Answers:", answers.phase2);
 
-    // ✅ 1. Phase1・Phase2の条件が空なら全プラン通過
     let result: Plan[] = [...allPlans];
 
     if (answers.phase1 && Object.values(answers.phase1).some(v => v)) {
@@ -49,9 +45,6 @@ export default function Result({ answers, onRestart }: Props) {
       result = filterPlansByPhase2(answers.phase2, result);
     }
 
-    console.log("✅ After Filtering:", result.map(p => p.planName));
-
-    // ✅ 2. 各プランの料金計算
     const withCosts: PlanWithCost[] = result.map(plan => {
       const cost = calculatePlanCost(plan, answers);
       return {
@@ -72,19 +65,18 @@ export default function Result({ answers, onRestart }: Props) {
       };
     });
 
-    console.log("📊 Final Results Count:", withCosts.length);
     console.groupEnd();
-
     return withCosts.sort((a, b) => a.totalMonthly - b.totalMonthly);
   }, [answers.phase1, answers.phase2]);
 
-  // === 以下はUI部分は変更不要 ===
+  // === UI部分 ===
   return (
     <div className="w-full py-10 px-6 max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold text-sky-900 text-center mb-6">
         診断結果
       </h1>
 
+      {/* === Phase1 / Phase2 データ === */}
       <pre className="text-xs bg-gray-100 text-gray-700 p-3 rounded mb-4 overflow-x-auto">
         {JSON.stringify(answers.phase1 ?? {}, null, 2)}
       </pre>
@@ -93,14 +85,9 @@ export default function Result({ answers, onRestart }: Props) {
       </pre>
 
       {rankedResults.length === 0 ? (
-        <>
-          <p className="text-center text-gray-600">
-            条件に一致するプランが見つかりませんでした。
-          </p>
-          <p className="text-center text-xs text-gray-400 mt-2">
-            ※ 条件が厳しすぎるか、回答データが未反映の可能性があります。
-          </p>
-        </>
+        <p className="text-center text-gray-600">
+          条件に一致するプランが見つかりませんでした。
+        </p>
       ) : (
         <div className="space-y-6">
           {rankedResults.map((plan, index) => (
@@ -108,16 +95,50 @@ export default function Result({ answers, onRestart }: Props) {
               key={plan.planId ?? index}
               className="p-5 rounded-2xl border border-sky-200 bg-white shadow-sm"
             >
+              {/* === プラン情報 === */}
               <h2 className="text-xl font-semibold text-sky-800">
                 {index + 1}. {plan.planName}
               </h2>
               <p className="text-gray-500 text-sm">{plan.carrier}</p>
+
+              {/* 💰 総額 */}
               <p className="text-2xl font-bold mt-2">
                 ¥{plan.totalMonthly.toLocaleString()}
                 <span className="text-sm text-gray-500 ml-1">
                   /月（税込・概算）
                 </span>
               </p>
+
+              {/* 📊 料金内訳 */}
+              <div className="mt-4 text-sm text-gray-700">
+                <p>・基本料金: ¥{plan.breakdown.baseFee}</p>
+                <p>・通話オプション: +¥{plan.breakdown.callOptionFee}</p>
+                <p>・家族割引: -¥{plan.breakdown.familyDiscount}</p>
+                <p>・学割: -¥{plan.breakdown.studentDiscount}</p>
+                <p>・年齢割: -¥{plan.breakdown.ageDiscount}</p>
+                <p>・経済圏割: -¥{plan.breakdown.economyDiscount}</p>
+                <p>・端末割引: -¥{plan.breakdown.deviceDiscount}</p>
+                <p>・キャッシュバック(換算): -¥{plan.breakdown.cashback}</p>
+                <p>・初期費用(月換算): +¥{plan.breakdown.initialFeeMonthly}</p>
+                <p className="mt-1 text-sky-700 font-medium">
+                  ・テザリング料: +¥{plan.breakdown.tetheringFee}
+                </p>
+              </div>
+
+              {/* 🧠 デバッグ情報 */}
+              {process.env.NODE_ENV === "development" && (
+                <div className="mt-4 border-t border-dashed border-gray-300 pt-2 text-xs text-gray-500">
+                  <p>🧩 planId: {plan.planId}</p>
+                  <p>📞 callType: {plan.callType ?? "なし"}</p>
+                  <p>📶 networkQuality: {plan.networkQuality}</p>
+                  <p>🌐 tetheringUsage: {plan.tetheringUsage ?? "未設定"}GB</p>
+                  <p>💸 tetheringFee: {plan.tetheringFee ?? 0}円</p>
+                  {plan.supportsFamilyDiscount && <p>👪 家族割対応: ✅</p>}
+                  {plan.supportsStudentDiscount && <p>🎓 学割対応: ✅</p>}
+                  {plan.supportsRakutenEconomy && <p>🛒 楽天経済圏対応: ✅</p>}
+                  {plan.supportsDualSim && <p>📱 デュアルSIM対応: ✅</p>}
+                </div>
+              )}
             </div>
           ))}
         </div>

@@ -23,12 +23,13 @@ export interface Plan {
   requiresAppCall: boolean;
   availableMethod: AvailableMethod;
 
-  // === Phase2: データ関連 ===
+// === Phase2: データ・テザリング ===
   maxDataGB: number;
   speedLimitMbps: number;
+  tetheringNeeded?: boolean; // テザリング必要かどうか
   tetheringAvailable: boolean;
-  tetheringMaxGB?: number | typeof Infinity;
-  tetheringFee?: number;
+  tetheringUsage: number; // null禁止にして常に保持
+  tetheringFee: number;
 
   // === Phase2: 通話関連 ===
   hasVoicemail: boolean;
@@ -49,7 +50,7 @@ export interface Plan {
   // === 割引・特典フラグ ===
   supportsFamilyDiscount?: boolean; // 家族割対応
   supportsStudentDiscount?: boolean; // 学割対応
-  supportsAgeDiscount?: boolean;     // 🆕 年齢割対応
+  supportsAgeDiscount?: boolean;     // 年齢割対応
 
   // === 家族割詳細 ===
   familyDiscountRules?: { lines: number; discount: number }[];
@@ -61,14 +62,14 @@ export interface Plan {
     discount: number;
   }[];
 
-  // 🟩 学割ルール（キャリア／年齢範囲別設定）
+  // === 学割ルール（キャリア／年齢範囲別設定） ===
   studentDiscountRules?: {
-    minAge?: number;    // 例: 15
-    maxAge?: number;    // 例: 22
-    discount: number;   // 例: 440
+    minAge?: number;
+    maxAge?: number;
+    discount: number;
   }[];
 
-  // 🟩 併用可否ルール（例: ["exclusive_student_age"]）
+  // === 併用可否ルール（例: ["exclusive_student_age"]）
   discountCombinationRules?: string[];
 
   // === Phase2: 端末関連 ===
