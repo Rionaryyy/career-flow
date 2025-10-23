@@ -1,9 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    turbo: false, // 🚫 Turbopackを完全に無効化
-  },
-  reactStrictMode: true,
+  // experimental: { turbo: true } ←これを削除
 };
 
 export default nextConfig;
