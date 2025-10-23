@@ -1,40 +1,61 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    /* === 出力ターゲットとモジュール === */
+    "target": "ES2020",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    /* === 型解析 === */
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
+    "forceConsistentCasingInFileNames": true,
     "noEmit": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    /* === JSX関連 === */
+    "jsx": "preserve", // ← ★ ここが一番重要！
     "incremental": true,
-
-    "plugins": [{ "name": "next" }],
-
-    // ✅ パスエイリアス設定
+    /* === Next.js plugin === */
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    /* === パスエイリアス設定 === */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
-    }
+      "@/*": [
+        "./*"
+      ]
+    },
+    "esModuleInterop": true
   },
-
-  // ✅ ts-node でも @/ エイリアスを使えるように追加！
+  /* === ts-node 対応設定 === */
   "ts-node": {
     "compilerOptions": {
       "module": "CommonJS",
       "moduleResolution": "node",
       "baseUrl": ".",
       "paths": {
-        "@/*": ["./*"]
+        "@/*": [
+          "./*"
+        ]
       }
     }
   },
-
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  /* === 対象ファイル === */
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

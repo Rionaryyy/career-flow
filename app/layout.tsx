@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Roboto_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-geist-sans", // 変数名はそのままでOK
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const robotoMono = Roboto_Mono({
+  variable: "--font-geist-mono", // 同様に維持
   subsets: ["latin"],
 });
 
@@ -23,10 +23,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // ✅ Next.js App Routerでは <html>, <body> は直接JSXでOK（import禁止）
     <html lang="ja">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-gray-900`}
+        className={`${inter.variable} ${robotoMono.variable} antialiased bg-white text-gray-900`}
         suppressHydrationWarning
       >
         {children}
