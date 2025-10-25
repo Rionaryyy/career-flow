@@ -1,5 +1,3 @@
-// types/planTypes.ts
-
 // === Phase1 共通タイプ定義 ===
 export type PlanType = "大手" | "サブブランド" | "格安SIM";
 export type NetworkQuality = "低" | "中" | "高";
@@ -12,6 +10,11 @@ export interface CallOption {
   fee: number;
 }
 
+/**
+ * ===================================================
+ * 📱 モバイルプラン定義（診断・比較対象）
+ * ===================================================
+ */
 export interface Plan {
   // === Phase1: 基本属性 ===
   planId: string;
@@ -23,15 +26,15 @@ export interface Plan {
   requiresAppCall: boolean;
   availableMethod: AvailableMethod;
 
-// === Phase2: データ・テザリング ===
+  // === Phase2: データ・テザリング ===
   maxDataGB: number;
   speedLimitMbps: number;
-  tetheringNeeded?: boolean; // テザリング必要かどうか
+  tetheringNeeded?: boolean;
   tetheringAvailable: boolean;
-  tetheringUsage: number; // null禁止にして常に保持
+  tetheringUsage: number;
   tetheringFee: number;
 
-  // === Phase2: 通話関連 ===
+  // === 通話関連 ===
   hasVoicemail: boolean;
   callOption?: boolean;
   callType?: "time" | "monthly" | "hybrid" | "unlimited" | null;
@@ -43,57 +46,94 @@ export interface Plan {
   supportsInternationalUnlimitedCalls?: boolean;
   callOptions?: CallOption[];
 
-  // === Phase2: 割引・家族系 ===
+  // === 割引・家族系 ===
   supportsChildPlan: boolean;
   familyLines?: number;
-
-  // === 割引・特典フラグ ===
-  supportsFamilyDiscount?: boolean; // 家族割対応
-  supportsStudentDiscount?: boolean; // 学割対応
-  supportsAgeDiscount?: boolean;     // 年齢割対応
-
-  // === 家族割詳細 ===
+  supportsFamilyDiscount?: boolean;
+  supportsStudentDiscount?: boolean;
+  supportsAgeDiscount?: boolean;
   familyDiscountRules?: { lines: number; discount: number }[];
   familyDiscountCap?: number;
-
-  // === 年齢別割引ルール（キャリアごと設定） ===
-  ageDiscountRules?: {
-    ageGroup: "18歳以下" | "25歳以下" | "30歳以下" | "60歳以上";
-    discount: number;
-  }[];
-
-  // === 学割ルール（キャリア／年齢範囲別設定） ===
-  studentDiscountRules?: {
-    minAge?: number;
-    maxAge?: number;
-    discount: number;
-  }[];
-
-  // === 併用可否ルール（例: ["exclusive_student_age"]）
+  ageDiscountRules?: { ageGroup: "18歳以下" | "25歳以下" | "30歳以下" | "60歳以上"; discount: number }[];
+  studentDiscountRules?: { minAge?: number; maxAge?: number; discount: number }[];
   discountCombinationRules?: string[];
 
-  // === Phase2: 端末関連 ===
+  // === 端末関連 ===
   simOnlyAvailable: boolean;
   deviceSalesAvailable: boolean;
   supportsReturnProgram: boolean;
   availableDevices?: string[];
 
-  // === Phase2: 海外利用 ===
+  // === 海外利用 ===
   overseasSupport: boolean;
   supportsDualSim: boolean;
   allowsLocalSimCombination: boolean;
   supportsGlobalRoaming: boolean;
   supportedRegions?: string[];
 
-  // === Phase2: 支払い方法 / 経済圏 ===
+  // === 支払い方法 / 経済圏 ===
   supportedPaymentMethods: string[];
   supportsRakutenEconomy?: boolean;
   supportsDEconomy?: boolean;
   supportsAuEconomy?: boolean;
   supportsPayPayEconomy?: boolean;
 
-  // === 料金・割引関連 ===
+  // === 料金関連 ===
   deviceDiscountAmount?: number;
   cashbackAmount?: number;
   initialFee?: number;
+
+  // === 🟩 セット割適用後フィールド（可変） ===
+  setDiscountApplied?: boolean;      // 割引適用済みフラグ
+  setDiscountAmount?: number;        // 割引額（円）
+  setCategory?: "光回線" | "ルーター" | "ポケットWi-Fi"; // 適用元カテゴリ
+}
+
+/**
+ * ===================================================
+ * 💡 セット割データベース定義（光回線・Wi-Fi・ルーター等）
+ * ===================================================
+ */
+export interface SetDiscountPlan {
+  planId: string;
+  carrier: string;
+  planName: string;
+  setCategory: "光回線" | "ルーター" | "ポケットWi-Fi";
+  fiberType?: "戸建て" | "集合住宅（マンション・アパートなど）";
+  fiberSpeed?: string;
+  setBaseFee: number;
+
+  // ルーター専用
+  routerCapacity?: string;
+  routerSpeed?: string;
+
+  // 🟩 ポケットWi-Fi関連
+  pocketWifiCapacity?: string | null;
+  pocketWifiSpeed?: string | null;
+
+  setDiscountAmount: number;
+}
+
+/**
+ * ===================================================
+ * 💰 料金計算ブレークダウン（Resultで使用）
+ * ===================================================
+ */
+export interface PlanCostBreakdown {
+  baseFee: number;
+  callOptionFee: number;
+  familyDiscount: number;
+  studentDiscount: number;
+  ageDiscount: number;
+  economyDiscount: number;
+  deviceDiscount: number;
+  cashback: number;
+  initialFeeMonthly: number;
+  tetheringFee: number;
+  total: number;
+
+  // 🏠 セット割（新規追加）
+  fiberDiscount?: number;
+  routerDiscount?: number;
+  pocketWifiDiscount?: number;
 }

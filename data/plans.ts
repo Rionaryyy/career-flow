@@ -1,7 +1,12 @@
 import { Plan } from "@/types/planTypes";
 
+/**
+ * ===================================================
+ * 📱 モバイルプラン一覧（診断・比較対象）
+ * ===================================================
+ */
 export const allPlans: Plan[] = [
-  // === 🕐 1. ドコモ 5分かけ放題 ===
+  // === 🕐 ドコモ 5分かけ放題 ===
   {
     planId: "time_5min",
     carrier: "docomo",
@@ -11,16 +16,12 @@ export const allPlans: Plan[] = [
     networkQuality: "高",
     requiresAppCall: false,
     availableMethod: "online",
-
-    maxDataGB: 10,
+    maxDataGB: 30,
     speedLimitMbps: 1,
     tetheringAvailable: true,
-
-    // ✅ テザリング設定
     tetheringNeeded: true,
-    tetheringUsage: 30, // 〜30GB程度まで利用可能
-    tetheringFee: 0, // 無料
-
+    tetheringUsage: 30,
+    tetheringFee: 0,
     hasVoicemail: true,
     callOption: true,
     callType: "time",
@@ -29,20 +30,17 @@ export const allPlans: Plan[] = [
     callCountLimit: null,
     callPerCallLimit: null,
     callIncluded: false,
-
     callOptions: [
       { id: "none", name: "なし", fee: 0 },
       { id: "5min", name: "5分かけ放題", fee: 550 },
       { id: "10min", name: "10分かけ放題", fee: 880 },
     ],
-
     supportsFamilyDiscount: true,
     familyDiscountRules: [
       { lines: 2, discount: 550 },
       { lines: 3, discount: 1100 },
     ],
     familyDiscountCap: 1100,
-
     supportsStudentDiscount: true,
     supportsAgeDiscount: true,
     studentDiscountRules: [
@@ -56,31 +54,27 @@ export const allPlans: Plan[] = [
       { ageGroup: "60歳以上", discount: 200 },
     ],
     discountCombinationRules: ["exclusive_student_age"],
-
     supportsDEconomy: true,
-    supportsRakutenEconomy: false,
-    supportsAuEconomy: false,
-    supportsPayPayEconomy: false,
-
     supportsInternationalUnlimitedCalls: false,
     supportsChildPlan: true,
     simOnlyAvailable: true,
     deviceSalesAvailable: true,
     supportsReturnProgram: false,
-
     deviceDiscountAmount: 300,
     cashbackAmount: 1200,
-
     overseasSupport: true,
     supportsDualSim: true,
     allowsLocalSimCombination: true,
     supportsGlobalRoaming: true,
     supportedRegions: ["日本", "アメリカ"],
-
     supportedPaymentMethods: ["クレジットカード", "口座振替"],
+
+    // ✅ セット割情報（初期値）
+    setDiscountApplied: false,
+    setDiscountAmount: 0,
   },
 
-  // === 📆 2. ソフトバンク 月60分無料 ===
+  // === 📆 ソフトバンク 月60分無料 ===
   {
     planId: "monthly_60min",
     carrier: "softbank",
@@ -90,16 +84,12 @@ export const allPlans: Plan[] = [
     networkQuality: "中",
     requiresAppCall: false,
     availableMethod: "online",
-
     maxDataGB: 20,
     speedLimitMbps: 1,
     tetheringAvailable: true,
-
-    // ✅ テザリング設定
     tetheringNeeded: true,
     tetheringUsage: 60,
-    tetheringFee: 220, // 🧩 有料プラン（加算テスト用）
-
+    tetheringFee: 220,
     hasVoicemail: false,
     callOption: true,
     callType: "monthly",
@@ -110,7 +100,6 @@ export const allPlans: Plan[] = [
       { id: "monthly30", name: "月30分無料", fee: 550 },
       { id: "monthly60", name: "月60分無料", fee: 770 },
     ],
-
     supportsFamilyDiscount: true,
     familyDiscountRules: [
       { lines: 2, discount: 550 },
@@ -118,7 +107,6 @@ export const allPlans: Plan[] = [
       { lines: 4, discount: 1320 },
     ],
     familyDiscountCap: 1320,
-
     supportsStudentDiscount: true,
     supportsAgeDiscount: true,
     studentDiscountRules: [
@@ -132,25 +120,26 @@ export const allPlans: Plan[] = [
       { ageGroup: "60歳以上", discount: 200 },
     ],
     discountCombinationRules: ["exclusive_student_age"],
-
     supportsPayPayEconomy: true,
-
     deviceDiscountAmount: 500,
     cashbackAmount: 1200,
     supportsReturnProgram: true,
-
     overseasSupport: true,
     supportsDualSim: true,
     allowsLocalSimCombination: true,
     supportsGlobalRoaming: true,
     supportedRegions: ["日本", "アジア"],
     supportedPaymentMethods: ["クレジットカード", "口座振替"],
-    supportsChildPlan: false,
     simOnlyAvailable: true,
     deviceSalesAvailable: true,
+    supportsChildPlan: false,
+
+    // ✅ セット割情報（初期値）
+    setDiscountApplied: false,
+    setDiscountAmount: 0,
   },
 
-  // === 🔁 3. au ハイブリッド（30回×10分） ===
+  // === 🔁 au ハイブリッド（30回×10分） ===
   {
     planId: "hybrid_30x10",
     carrier: "au",
@@ -160,16 +149,12 @@ export const allPlans: Plan[] = [
     networkQuality: "高",
     requiresAppCall: false,
     availableMethod: "both",
-
     maxDataGB: 20,
     speedLimitMbps: 1,
     tetheringAvailable: true,
-
-    // ✅ テザリング設定
     tetheringNeeded: true,
     tetheringUsage: 60,
-    tetheringFee: 330, // 🧩 有料プラン（加算テスト用）
-
+    tetheringFee: 330,
     hasVoicemail: true,
     callOption: true,
     callType: "hybrid",
@@ -180,14 +165,12 @@ export const allPlans: Plan[] = [
       { id: "none", name: "なし", fee: 0 },
       { id: "hybrid_30x10", name: "月30回・各10分無料", fee: 880 },
     ],
-
     supportsFamilyDiscount: true,
     familyDiscountRules: [
       { lines: 2, discount: 550 },
       { lines: 3, discount: 1100 },
     ],
     familyDiscountCap: 1100,
-
     supportsStudentDiscount: true,
     supportsAgeDiscount: true,
     studentDiscountRules: [
@@ -201,25 +184,26 @@ export const allPlans: Plan[] = [
       { ageGroup: "60歳以上", discount: 250 },
     ],
     discountCombinationRules: ["exclusive_student_age"],
-
     supportsAuEconomy: true,
     deviceDiscountAmount: 400,
     cashbackAmount: 2400,
-
     supportsReturnProgram: true,
-    supportsChildPlan: true,
     simOnlyAvailable: true,
     deviceSalesAvailable: true,
-
     overseasSupport: true,
     supportsDualSim: true,
     allowsLocalSimCombination: true,
     supportsGlobalRoaming: true,
     supportedRegions: ["日本", "ヨーロッパ"],
     supportedPaymentMethods: ["クレジットカード"],
+    supportsChildPlan: false,
+
+    // ✅ セット割情報（初期値）
+    setDiscountApplied: false,
+    setDiscountAmount: 0,
   },
 
-  // === 🌐 4. 楽天 無制限かけ放題 ===
+  // === 🌐 楽天 無制限かけ放題 ===
   {
     planId: "unlimited_call",
     carrier: "rakuten",
@@ -229,22 +213,17 @@ export const allPlans: Plan[] = [
     networkQuality: "高",
     requiresAppCall: true,
     availableMethod: "online",
-
     maxDataGB: 999,
     speedLimitMbps: 3,
     tetheringAvailable: true,
-
-    // ✅ テザリング設定
     tetheringNeeded: true,
     tetheringUsage: 999,
-    tetheringFee: 0, // 無料
-
+    tetheringFee: 0,
     hasVoicemail: true,
     callOption: false,
     callType: "unlimited",
     callIncluded: true,
     callOptions: [{ id: "unlimited", name: "無制限かけ放題", fee: 0 }],
-
     supportsFamilyDiscount: true,
     familyDiscountRules: [
       { lines: 2, discount: 200 },
@@ -252,7 +231,6 @@ export const allPlans: Plan[] = [
       { lines: 4, discount: 600 },
     ],
     familyDiscountCap: 600,
-
     supportsStudentDiscount: true,
     supportsAgeDiscount: true,
     studentDiscountRules: [
@@ -266,21 +244,22 @@ export const allPlans: Plan[] = [
       { ageGroup: "60歳以上", discount: 150 },
     ],
     discountCombinationRules: ["exclusive_student_age"],
-
     supportsRakutenEconomy: true,
     deviceDiscountAmount: 500,
     cashbackAmount: 2400,
-
-    supportsChildPlan: true,
     simOnlyAvailable: true,
     deviceSalesAvailable: true,
     supportsReturnProgram: false,
-
     overseasSupport: true,
     supportsDualSim: true,
     allowsLocalSimCombination: true,
     supportsGlobalRoaming: true,
     supportedRegions: ["日本", "アメリカ", "韓国"],
     supportedPaymentMethods: ["クレジットカード", "楽天ポイント払い"],
+    supportsChildPlan: false,
+
+    // ✅ セット割情報（初期値）
+    setDiscountApplied: false,
+    setDiscountAmount: 0,
   },
 ];

@@ -1,5 +1,8 @@
 import { Phase2Answers } from "@/types/types";
 import { Plan } from "@/types/planTypes";
+import { filterByInternetSet } from "./filterByInternetSet";
+import { fiberDiscountPlans as setDiscountPlans } from "../../data/setDiscounts/fiberDiscountPlans";
+
 
 export function filterPlansByPhase2(answers: Phase2Answers, plans: Plan[]): Plan[] {
   let filtered = [...plans];
@@ -216,6 +219,103 @@ if (selectedTypes.some((t) => /(無制限|かけ放題)/.test(t))) {
       )
     );
   }
+
+
+
+// 🟧 ⑦ セット割フィルター（光回線＋ルーター＋ポケットWi-Fi対応版）
+if (typeof answers.setDiscount === "string") {
+  const isFiber = answers.setDiscount.includes("光回線の契約");
+  const isRouter = answers.setDiscount.includes("ルーター購入・レンタル");
+  const isPocket = answers.setDiscount.includes("ポケットWi-Fi契約"); // ✅ 新規追加
+
+  let matchedFiberPlans: any[] = [];
+  let matchedRouterPlans: any[] = [];
+  let matchedPocketPlans: any[] = []; // ✅ 新規追加
+
+  // 🟩 光回線
+  if (isFiber) {
+    matchedFiberPlans = filterByInternetSet(answers, setDiscountPlans);
+    console.log("🟩 光回線フィルター結果:", matchedFiberPlans);
+  }
+
+  // 📶 ルーター
+  if (isRouter) {
+    try {
+      const { filterByRouterSet } = require("./filterByRouterSet");
+      const { routerDiscountPlans } = require("../../data/setDiscounts/routerDiscountPlans");
+      matchedRouterPlans = filterByRouterSet(answers, routerDiscountPlans);
+      console.log("📶 ルーターフィルター結果:", matchedRouterPlans);
+    } catch {
+      console.warn("⚠️ ルーターフィルター未定義。routerDiscountPlansが存在しません。");
+    }
+  }
+
+  // 📡 ポケットWi-Fi
+  if (isPocket) {
+    try {
+      const { filterByPocketWifiSet } = require("./filterByPocketWifiSet");
+      const { pocketWifiDiscountPlans } = require("../../data/setDiscounts/pocketWifiDiscountPlans");
+      matchedPocketPlans = filterByPocketWifiSet(answers, pocketWifiDiscountPlans);
+      console.log("📡 ポケットWi-Fiフィルター結果:", matchedPocketPlans);
+    } catch {
+      console.warn("⚠️ ポケットWi-Fiフィルター未定義。pocketWifiDiscountPlansが存在しません。");
+    }
+  }
+
+  // 🧩 キャリア表記ゆれ補正
+  const normalizeCarrier = (name: string) => {
+    const lower = name.toLowerCase();
+    if (lower.includes("docomo") || name.includes("ドコモ")) return "docomo";
+    if (lower.includes("softbank") || name.includes("ソフトバンク")) return "softbank";
+    if (lower.includes("rakuten") || name.includes("楽天")) return "rakuten";
+    if (lower.includes("au")) return "au";
+    return lower;
+  };
+
+  // 🧮 光 + ルーター + ポケットWi-Fi 割引合算（キャリア一致ベース）
+  filtered = filtered.map((plan) => {
+    const planCarrier = normalizeCarrier(plan.carrier);
+
+    const fiberMatch = matchedFiberPlans.find(
+      (p) => normalizeCarrier(p.carrier) === planCarrier
+    );
+    const routerMatch = matchedRouterPlans.find(
+      (p) => normalizeCarrier(p.carrier) === planCarrier
+    );
+    const pocketMatch = matchedPocketPlans.find(
+      (p) => normalizeCarrier(p.carrier) === planCarrier
+    );
+
+    const fiberDiscount = fiberMatch?.setDiscountAmount ?? 0;
+    const routerDiscount = routerMatch?.setDiscountAmount ?? 0;
+    const pocketDiscount = pocketMatch?.setDiscountAmount ?? 0;
+    const totalDiscount = fiberDiscount + routerDiscount + pocketDiscount;
+
+    if (totalDiscount > 0) {
+      return {
+        ...plan,
+        setDiscountApplied: true,
+        setDiscountAmount: totalDiscount,
+        baseMonthlyFee: plan.baseMonthlyFee - totalDiscount,
+      };
+    }
+
+    return {
+      ...plan,
+      setDiscountApplied: false,
+      setDiscountAmount: 0,
+    };
+  });
+
+  const discountCount = filtered.filter((p) => p.setDiscountApplied).length;
+  console.log(
+    `🟩 セット割適用: ${discountCount} 件（光:${isFiber ? "✓" : "×"} / ルーター:${isRouter ? "✓" : "×"} / ポケットWi-Fi:${isPocket ? "✓" : "×"}）`
+  );
+}
+
+
+
+
 
   return filtered;
 }

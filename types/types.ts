@@ -23,8 +23,8 @@ export interface Phase2Answers {
   // ① データ通信ニーズ
   dataUsage: string | null;
   speedLimitImportance: string | null;
-  tetheringNeeded: string | null;
-  tetheringUsage: string | null;
+  tetheringNeeded?: boolean | null;
+tetheringUsage?: string | null;
 
   // ② 通話（国内・海外）
   callDuration?: string | null;                  // ← 国内・1回あたりの通話時間

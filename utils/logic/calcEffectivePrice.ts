@@ -1,5 +1,9 @@
-import { Plan } from "@/types/planTypes";
-import { DiagnosisAnswers } from "@/types/types";
+import { Plan } from "../../types/planTypes";
+import { DiagnosisAnswers } from "../../types/types";
+import { fiberDiscountPlans } from "../../data/setDiscounts/fiberDiscountPlans";
+import { routerDiscountPlans } from "../../data/setDiscounts/routerDiscountPlans";
+import { pocketWifiDiscountPlans } from "../../data/setDiscounts/pocketWifiDiscountPlans";
+
 
 export interface PlanCostBreakdown {
   baseFee: number;
@@ -13,51 +17,51 @@ export interface PlanCostBreakdown {
   initialFeeMonthly: number;
   tetheringFee: number;
   total: number;
+  // 🏠 セット割フィールドを追加
+  fiberDiscount?: number;
+  routerDiscount?: number;
+  pocketWifiDiscount?: number;
 }
 
 export function calculatePlanCost(plan: Plan, answers: DiagnosisAnswers): PlanCostBreakdown {
   const base = plan.baseMonthlyFee ?? 0;
 
- // === 通話オプション料金（上位互換を含む）===
-let callOptionFee = 0;
-if (plan.callOptions?.length) {
-  const callOptionMap: Record<string, string> = {
-    "5分以内": "5min",
-    "10分以内": "10min",
-    "月30分まで無料": "monthly30",
-    "月60分まで無料": "monthly60",
-    "月30回まで各10分無料": "hybrid_30x10",
-    "無制限（完全定額）": "unlimited",
-  };
+  // === 通話オプション料金（上位互換を含む）===
+  let callOptionFee = 0;
+  if (plan.callOptions?.length) {
+    const callOptionMap: Record<string, string> = {
+      "5分以内": "5min",
+      "10分以内": "10min",
+      "月30分まで無料": "monthly30",
+      "月60分まで無料": "monthly60",
+      "月30回まで各10分無料": "hybrid_30x10",
+      "無制限（完全定額）": "unlimited",
+    };
 
-  const allTexts = [
-    answers.phase2?.timeLimitPreference,
-    answers.phase2?.monthlyLimitPreference,
-    answers.phase2?.hybridCallPreference,
-    ...(answers.phase2?.callPlanType ?? []),
-  ].filter(Boolean);
+    const allTexts = [
+      answers.phase2?.timeLimitPreference,
+      answers.phase2?.monthlyLimitPreference,
+      answers.phase2?.hybridCallPreference,
+      ...(answers.phase2?.callPlanType ?? []),
+    ].filter(Boolean);
 
-  // 全条件をマッチ or 上位互換として抽出
-  const matchedIds = Object.entries(callOptionMap)
-    .filter(([key]) => allTexts.some((t) => t?.includes(key)))
-    .map(([, id]) => id);
+    const matchedIds = Object.entries(callOptionMap)
+      .filter(([key]) => allTexts.some((t) => t?.includes(key)))
+      .map(([, id]) => id);
 
-  // 上位互換含めてフィルタリング
-  const validOptions = plan.callOptions.filter((opt) => {
-    if (matchedIds.includes(opt.id)) return true;
-    if (matchedIds.includes("5min") && ["10min", "monthly30", "monthly60", "unlimited"].includes(opt.id)) return true;
-    if (matchedIds.includes("monthly30") && ["monthly60", "unlimited"].includes(opt.id)) return true;
-    if (matchedIds.includes("hybrid_30x10") && ["unlimited"].includes(opt.id)) return true;
-    return false;
-  });
+    const validOptions = plan.callOptions.filter((opt) => {
+      if (matchedIds.includes(opt.id)) return true;
+      if (matchedIds.includes("5min") && ["10min", "monthly30", "monthly60", "unlimited"].includes(opt.id)) return true;
+      if (matchedIds.includes("monthly30") && ["monthly60", "unlimited"].includes(opt.id)) return true;
+      if (matchedIds.includes("hybrid_30x10") && ["unlimited"].includes(opt.id)) return true;
+      return false;
+    });
 
-  // 最安料金採用
-  const cheapestOption = validOptions.sort((a, b) => a.fee - b.fee)[0];
-  callOptionFee = cheapestOption?.fee ?? 0;
-}
+    const cheapestOption = validOptions.sort((a, b) => a.fee - b.fee)[0];
+    callOptionFee = cheapestOption?.fee ?? 0;
+  }
 
-
-  // === ② 家族割 ===
+  // === 家族割 ===
   let familyDiscount = 0;
   if (plan.supportsFamilyDiscount && answers.phase2?.familyLines) {
     const lineCount = parseInt(answers.phase2.familyLines.replace(/\D/g, ""), 10) || 1;
@@ -69,13 +73,12 @@ if (plan.callOptions?.length) {
     }
   }
 
-  // === ③ 学割・年齢割 ===
+  // === 学割・年齢割 ===
   let studentDiscount = 0;
   let ageDiscount = 0;
   const hasStudent = answers.phase2?.studentDiscount === "はい";
   const ageGroup = answers.phase2?.ageGroup;
 
-  // 🟩 学割
   if (hasStudent && plan.supportsStudentDiscount && plan.studentDiscountRules) {
     const matched = plan.studentDiscountRules.find((r) => {
       const min = r.minAge ?? 0;
@@ -86,7 +89,6 @@ if (plan.callOptions?.length) {
     if (matched) studentDiscount = matched.discount;
   }
 
-  // 🟦 年齢割
   if (plan.supportsAgeDiscount && plan.ageDiscountRules && ageGroup) {
     const normalizedInput = ageGroup.replace(/\s/g, "").replace(/[Ａ-Ｚａ-ｚ０-９]/g, (s) =>
       String.fromCharCode(s.charCodeAt(0) - 0xfee0)
@@ -104,11 +106,9 @@ if (plan.callOptions?.length) {
         numericInput === numericRule
       );
     });
-
     if (matched) ageDiscount = matched.discount;
   }
 
-  // 🎯 exclusive_student_age
   if (plan.discountCombinationRules?.includes("exclusive_student_age")) {
     if (studentDiscount > 0 && ageDiscount > 0) {
       if (studentDiscount >= ageDiscount) ageDiscount = 0;
@@ -116,7 +116,7 @@ if (plan.callOptions?.length) {
     }
   }
 
-  // === ④ 経済圏割 ===
+  // === 経済圏割 ===
   let economyDiscount = 0;
   const card = answers.phase2?.mainCard?.join("") ?? "";
   const shopping = answers.phase2?.shoppingList?.join("") ?? "";
@@ -125,35 +125,108 @@ if (plan.callOptions?.length) {
   if ((card + shopping).includes("au") && plan.supportsAuEconomy) economyDiscount = 200;
   if ((card + shopping).includes("PayPay") && plan.supportsPayPayEconomy) economyDiscount = 200;
 
-  // === ⑤ 端末割引 ===
+  // === 端末割引 ===
   let deviceDiscount = 0;
   if (answers.phase2?.buyingDevice?.includes("端末購入")) {
     deviceDiscount = plan.deviceDiscountAmount ?? 500;
   }
 
-  // === ⑥ キャッシュバック ===
+  // === キャッシュバック ===
   let cashback = plan.cashbackAmount ? plan.cashbackAmount / 12 : 0;
 
-  // === ⑦ その他費用 ===
+  // === 初期費用 ===
   const initialFeeMonthly = plan.initialFee ? plan.initialFee / 24 : 0;
 
-  // === ⑧ テザリング費用（DBに登録あり + true の場合のみ加算） ===
-let tetheringFee = 0;
-
-// 「はい（必要）」などの回答を含む場合のみ対象
-const wantsTethering =
-  typeof answers.phase2?.tetheringNeeded === "string" &&
-  answers.phase2.tetheringNeeded.includes("はい");
-
-if (wantsTethering && plan.tetheringAvailable) {
-  // データベースに数値が設定されている場合のみ加算
-  if (typeof plan.tetheringFee === "number" && plan.tetheringFee > 0) {
-    tetheringFee = plan.tetheringFee;
+  // === テザリング費用 ===
+  let tetheringFee = 0;
+  const wantsTethering = answers.phase2?.tetheringNeeded === true;
+  if (wantsTethering && plan.tetheringAvailable) {
+    if (typeof plan.tetheringFee === "number" && plan.tetheringFee > 0) {
+      tetheringFee = plan.tetheringFee;
+    }
   }
+
+  // === 🟩 セット割（光 / ルーター / ポケットWi-Fi） ===
+let fiberDiscount = 0;
+let routerDiscount = 0;
+let pocketWifiDiscount = 0;
+
+// 🔹 normalize helper（全角/半角/単位揺れを吸収）
+const normalize = (text: string) =>
+  text
+    ?.replace(/[Ａ-Ｚａ-ｚ０-９]/g, (s) =>
+      String.fromCharCode(s.charCodeAt(0) - 0xfee0)
+    )
+    .replace(/Gps/gi, "Gbps") // ← よくあるtypo補正
+    .replace(/\s+/g, "")
+    .trim() || "";
+
+if (answers.phase2?.fiberType && answers.phase2?.fiberSpeed) {
+  const ansFiberSpeed = normalize(answers.phase2.fiberSpeed);
+  const ansFiberType = normalize(answers.phase2.fiberType);
+
+  const match = fiberDiscountPlans.find(
+    (p: any) =>
+      p.carrier === plan.carrier &&
+      (!p.fiberType ||
+        normalize(p.fiberType) === ansFiberType ||
+        ansFiberType.includes(normalize(p.fiberType))) &&
+      (!p.fiberSpeed ||
+        normalize(p.fiberSpeed) === ansFiberSpeed ||
+        ansFiberSpeed.includes(normalize(p.fiberSpeed)))
+  );
+  if (match) fiberDiscount = match.setDiscountAmount;
+}
+
+if (answers.phase2?.routerCapacity && answers.phase2?.routerSpeed) {
+  const ansRouterCapacity = normalize(answers.phase2.routerCapacity);
+  const ansRouterSpeed = normalize(answers.phase2.routerSpeed);
+
+  const match = routerDiscountPlans.find((p: any) => {
+    if (p.carrier !== plan.carrier) return false;
+
+    const planCap = normalize(p.routerCapacity ?? "");
+    const planSpeed = normalize(p.routerSpeed ?? "");
+
+    // 容量が条件を「満たす or 上回る」ものを許可
+    const capacityOK =
+      planCap === ansRouterCapacity ||
+      planCap.includes("無制限") ||
+      (planCap.includes("100GB") && ansRouterCapacity.includes("20GB")) ||
+      (planCap.includes("50GB") && ansRouterCapacity.includes("20GB"));
+
+    // 速度が条件を「満たす or 上回る」ものを許可
+    const speedOK =
+      planSpeed === ansRouterSpeed ||
+      planSpeed.includes("Gbps") ||
+      ansRouterSpeed.includes("Mbps");
+
+    return capacityOK && speedOK;
+  });
+
+  if (match) routerDiscount = match.setDiscountAmount;
 }
 
 
-  // === ⑨ 合計 ===
+if (answers.phase2?.pocketWifiCapacity && answers.phase2?.pocketWifiSpeed) {
+  const ansPocketCapacity = normalize(answers.phase2.pocketWifiCapacity);
+  const ansPocketSpeed = normalize(answers.phase2.pocketWifiSpeed);
+
+  const match = pocketWifiDiscountPlans.find(
+    (p: any) =>
+      p.carrier === plan.carrier &&
+      (!p.pocketWifiCapacity ||
+        normalize(p.pocketWifiCapacity) === ansPocketCapacity ||
+        ansPocketCapacity.includes(normalize(p.pocketWifiCapacity))) &&
+      (!p.pocketWifiSpeed ||
+        normalize(p.pocketWifiSpeed) === ansPocketSpeed ||
+        ansPocketSpeed.includes(normalize(p.pocketWifiSpeed)))
+  );
+  if (match) pocketWifiDiscount = match.setDiscountAmount;
+}
+
+
+  // === 合計 ===
   const total =
     base +
     callOptionFee -
@@ -162,7 +235,10 @@ if (wantsTethering && plan.tetheringAvailable) {
     ageDiscount -
     economyDiscount -
     deviceDiscount -
-    cashback +
+    cashback -
+    fiberDiscount -
+    routerDiscount -
+    pocketWifiDiscount +
     initialFeeMonthly +
     tetheringFee;
 
@@ -177,6 +253,9 @@ if (wantsTethering && plan.tetheringAvailable) {
     cashback,
     initialFeeMonthly,
     tetheringFee,
+    fiberDiscount,
+    routerDiscount,
+    pocketWifiDiscount,
     total: Math.round(total),
   };
 }

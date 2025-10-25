@@ -20,6 +20,11 @@ interface PlanWithCost extends Plan {
     cashback: number;
     initialFeeMonthly: number;
     tetheringFee: number;
+
+    // 🏠 セット割追加項目
+    fiberDiscount?: number;
+    routerDiscount?: number;
+    pocketWifiDiscount?: number;
   };
   totalMonthly: number;
 }
@@ -60,6 +65,11 @@ export default function Result({ answers, onRestart }: Props) {
           cashback: cost.cashback ?? 0,
           initialFeeMonthly: cost.initialFeeMonthly ?? 0,
           tetheringFee: cost.tetheringFee ?? 0,
+
+          // 🏠 セット割を追加
+          fiberDiscount: cost.fiberDiscount ?? 0,
+          routerDiscount: cost.routerDiscount ?? 0,
+          pocketWifiDiscount: cost.pocketWifiDiscount ?? 0,
         },
         totalMonthly: cost.total ?? 0,
       };
@@ -123,6 +133,18 @@ export default function Result({ answers, onRestart }: Props) {
                 <p className="mt-1 text-sky-700 font-medium">
                   ・テザリング料: +¥{plan.breakdown.tetheringFee}
                 </p>
+
+               {/* 🏠 セット割追加（ここだけ差し替え） */}
+{(plan.breakdown as any)['fiberDiscount'] !== 0 && (
+  <p>・光回線セット割: -¥{(plan.breakdown as any)['fiberDiscount']}</p>
+)}
+{(plan.breakdown as any)['routerDiscount'] !== 0 && (
+  <p>・ルーター割引: -¥{(plan.breakdown as any)['routerDiscount']}</p>
+)}
+{(plan.breakdown as any)['pocketWifiDiscount'] !== 0 && (
+  <p>・ポケットWi-Fi割: -¥{(plan.breakdown as any)['pocketWifiDiscount']}</p>
+)}
+
               </div>
 
               {/* 🧠 デバッグ情報 */}
