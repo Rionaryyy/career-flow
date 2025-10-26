@@ -7,10 +7,10 @@ interface QuestionCardProps {
   id: string;
   question: string;
   options: string[];
-  type: "radio" | "checkbox" | "custom"; // custom を追加
+  type: "radio" | "checkbox" | "custom";
   value?: string | string[] | null;
   onChange: (id: keyof Phase2Answers, value: string | string[]) => void;
-  children?: React.ReactNode; // custom の中身を受け取る
+  children?: React.ReactNode;
   condition?: (answers: Phase2Answers) => boolean;
   answers?: Phase2Answers;
 }
@@ -30,10 +30,8 @@ export default function QuestionCard({
 
   const handleSelect = (option: string) => {
     if (type === "radio") {
-      // ラジオは単一選択
       onChange(id as keyof Phase2Answers, option);
     } else if (type === "checkbox") {
-      // チェックボックスは配列操作
       const prev = Array.isArray(value) ? value : [];
       const updated = prev.includes(option)
         ? prev.filter((o) => o !== option)
@@ -46,12 +44,11 @@ export default function QuestionCard({
     type === "checkbox" ? (Array.isArray(value) ? value : []) : [];
 
   return (
-    <div className="w-full bg-white p-6 rounded-2xl border border-sky-200 shadow-md space-y-4">
-      <p className="text-xl font-semibold text-sky-900 text-center">
+    <div className="w-full bg-sky-50 p-5 rounded-2xl border border-sky-500 shadow-sm space-y-4">
+      <p className="text-xl font-semibold text-sky-800 text-center">
         {question}
       </p>
 
-      {/* ラジオ／チェックボックス表示 */}
       {type !== "custom" && (
         <div className="grid grid-cols-1 gap-3 w-full">
           {options.map((opt) => {
@@ -63,8 +60,8 @@ export default function QuestionCard({
                 onClick={() => handleSelect(opt)}
                 className={`flex items-center w-full cursor-pointer h-14 px-4 rounded-xl border text-sm font-medium select-none transition-all duration-200 ${
                   checked
-                    ? "bg-gradient-to-r from-sky-400 to-sky-500 text-white shadow"
-                    : "bg-white border-sky-200 text-sky-900 hover:border-sky-300 hover:shadow-sm"
+                    ? "bg-gradient-to-r from-sky-400 to-sky-500 text-white shadow ring-1 ring-sky-600 border-sky-600"
+                    : "bg-white border-sky-500 text-sky-900 hover:border-sky-600 hover:shadow-sm"
                 }`}
               >
                 {opt}
@@ -74,7 +71,6 @@ export default function QuestionCard({
         </div>
       )}
 
-      {/* custom タイプ用に children を表示 */}
       {type === "custom" && <div className="w-full">{children}</div>}
     </div>
   );

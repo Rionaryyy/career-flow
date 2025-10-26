@@ -42,8 +42,8 @@ export interface Phase2Answers {
   unknownCallUsageDuration?: string | null;
 unknownCallFrequency?: string | null;
 needCallPlanConfirm?: string | null;
-
-
+needInternationalCallUnlimited?: string; // 「海外へのかけ放題オプションは必要ですか？」
+  internationalCallCarrier?: string[];
 
   // ③ 契約条件・割引
   familyLines: string | null;

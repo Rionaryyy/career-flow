@@ -17,9 +17,9 @@ const phase1Questions = [
     question: "キャリアの種類に希望はありますか？",
     type: "radio",
     options: [
-      "大手キャリア（ドコモ / au / ソフトバンク / 楽天）",
-      "サブブランド（ahamo / povo / LINEMO / UQなど）",
-      "格安SIM（IIJ / mineo / NUROなど）も含めて検討したい",
+      "大手キャリアのみで検討したい（ドコモ / au / ソフトバンク / 楽天）",
+      "サブブランドも含めて検討したい（ahamo / povo / LINEMO / UQなど）",
+      "格安SIMも含めて検討したい（IIJ / mineo / NUROなど）",
     ],
   },
   {
@@ -54,14 +54,13 @@ const phase1Questions = [
   {
     id: "appCallUnlimited",
     question:
-      "キャリアの通話アプリ（例：楽天リンクなど）を使った通話も、“かけ放題”に含めてよいですか？",
+      "各社提供の通話アプリ経由の通話も、かけ放題の対象に含めてよいですか？（例：楽天リンク）",
     type: "radio",
     options: [
       "はい（アプリ経由ならかけ放題として扱う）",
       "いいえ（通常プランのかけ放題のみを考慮する）",
     ],
   },
-  // 🟦 契約方法（店頭 or オンライン）
   {
     id: "contractMethod",
     question: "契約はどの方法で行いたいですか？",
@@ -72,7 +71,6 @@ const phase1Questions = [
       "どちらでも構わない（条件が良い方を優先）",
     ],
   },
-  // 🟦 料金比較の基準（メイン質問）
   {
     id: "compareAxis",
     question: "料金を比べるとき、どんな基準で比べたいですか？",
@@ -82,7 +80,7 @@ const phase1Questions = [
       "実際に支払う金額で比べたい\n　（初期費用やキャッシュバックも含めて、トータルの支出を月あたりで平均化して比べます。）",
     ],
   },
-  // 🟨 分岐質問：compareAxis の回答によって追加表示される
+  // 分岐表示：compareAxis が「実際に支払う金額」を含むとき
   {
     id: "comparePeriod",
     question:
@@ -101,23 +99,38 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
     setAnswers((prev) => ({ ...prev, [id]: value as string }));
   };
 
-  // --- 進捗カウント（全9ページ中の1ページ） ---
   const answeredCount = 1;
   const totalCount = 9;
-  // -------------------------------------------------
 
   return (
     <QuestionLayout answeredCount={answeredCount} totalCount={totalCount}>
-      {/* タイトル */}
-      <h1 className="text-3xl font-bold text-sky-900 text-center mb-6">
-        基本条件
-      </h1>
+      <h1 className="text-3xl font-bold text-sky-900 text-center mb-6">基本条件</h1>
 
-      {/* 質問リスト */}
       <div className="space-y-6 w-full">
         {phase1Questions.map((q) => {
-          // 分岐条件を満たさない場合は非表示
           if (q.condition && !q.condition(answers)) return null;
+
+          // 参考コードと同じ構成：外枠ボックス内に見出し(h3)＋QuestionCard
+          if (q.id === "comparePeriod") {
+            return (
+              <div
+                key={q.id}
+                className="w-full bg-sky-50 border border-sky-200 rounded-2xl p-5 space-y-4"
+              >
+                <h3 className="text-sky-700 font-semibold text-base">
+                  「実際に支払う金額で比べたい」に関する追加質問
+                </h3>
+                <QuestionCard
+                  id={q.id}
+                  question={q.question}
+                  options={q.options}
+                  type={q.type as "radio" | "checkbox"}
+                  value={answers[q.id as keyof Phase1Answers] as string}
+                  onChange={handleChange}
+                />
+              </div>
+            );
+          }
 
           return (
             <QuestionCard
@@ -133,7 +146,6 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
         })}
       </div>
 
-      {/* 次へボタン */}
       <div className="flex justify-end pt-6 w-full max-w-4xl">
         <button
           onClick={() => onSubmit(answers)}

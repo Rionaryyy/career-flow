@@ -18,7 +18,7 @@ interface Phase2Props {
   onSubmit: (answers: Phase2Answers) => void;
   defaultValues: Phase2Answers;
   onBack?: () => void;
-  phase1Answers: Phase1Answers; // ← 追加
+  phase1Answers: Phase1Answers;
 }
 
 export default function Phase2({ onSubmit, defaultValues, onBack, phase1Answers }: Phase2Props) {
@@ -69,7 +69,7 @@ export default function Phase2({ onSubmit, defaultValues, onBack, phase1Answers 
       case "contract":
         return <Phase2Contract {...stepProps} />;
       case "ecosystem":
-         return <Phase2Ecosystem {...stepProps} phase1Answers={phase1Answers} />; // ✅ 修正！return <Phase2Ecosystem {...stepProps} />;
+        return <Phase2Ecosystem {...stepProps} phase1Answers={phase1Answers} />;
       case "subscription":
         return <Phase2Subscription {...stepProps} />;
       case "device":
@@ -77,12 +77,7 @@ export default function Phase2({ onSubmit, defaultValues, onBack, phase1Answers 
       case "overseas":
         return <Phase2Overseas {...stepProps} />;
       case "payment":
-        return (
-          <Phase2Payment
-            {...stepProps}
-            phase1Answers={phase1Answers} // ← Propsから渡す
-          />
-        );
+        return <Phase2Payment {...stepProps} phase1Answers={phase1Answers} />;
       default:
         return null;
     }
@@ -91,6 +86,8 @@ export default function Phase2({ onSubmit, defaultValues, onBack, phase1Answers 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "auto" });
   }, [step]);
+
+  const isBackDisabled = step === 0 && !onBack;
 
   return (
     <QuestionLayout answeredCount={step + 2} totalCount={9}>
@@ -104,30 +101,26 @@ export default function Phase2({ onSubmit, defaultValues, onBack, phase1Answers 
 
       {/* 下部ナビボタン */}
       <div className="flex justify-between items-center pt-6 w-full max-w-4xl">
- {/* 戻るボタン（淡め & 文字は白） */}
-<button
-  onClick={handleBack}
-  className={`px-4 py-2 rounded-full text-lg font-semibold shadow-md transition-all duration-200
-    ${
-      step === 0 && !onBack
-        ? "bg-sky-100 text-sky-300 cursor-not-allowed shadow-none"
-        : "bg-gradient-to-r from-sky-200 to-sky-300 hover:from-sky-100 hover:to-sky-200 text-white"
-    }
-  `}
->
-  ← 戻る
-</button>
+        {/* 戻るボタン（「次へ」と同色。無効時は半透明） */}
+        <button
+          onClick={handleBack}
+          disabled={isBackDisabled}
+          className={`px-4 py-2 rounded-full text-lg font-semibold text-white shadow-md transition-all duration-200
+            bg-gradient-to-r from-sky-400 to-sky-500
+            ${isBackDisabled ? "opacity-50 cursor-not-allowed pointer-events-none" : "hover:from-sky-300 hover:to-sky-400"}
+          `}
+        >
+          ← 戻る
+        </button>
 
-
-  {/* 次へボタン（少し濃いめ） */}
-  <button
-    onClick={handleNext}
-    className="px-4 py-2 rounded-full bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-300 hover:to-sky-400 text-lg font-semibold text-white shadow-md transition-all duration-200"
-  >
-    {step === steps.length - 1 ? "結果を見る →" : "次へ →"}
-  </button>
-</div>
-
+        {/* 次へボタン */}
+        <button
+          onClick={handleNext}
+          className="px-4 py-2 rounded-full bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-300 hover:to-sky-400 text-lg font-semibold text-white shadow-md transition-all duration-200"
+        >
+          {step === steps.length - 1 ? "結果を見る →" : "次へ →"}
+        </button>
+      </div>
     </QuestionLayout>
   );
 }
