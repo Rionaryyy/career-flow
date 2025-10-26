@@ -143,6 +143,8 @@ export default function Phase2Call({ answers, onChange }: Props) {
         ans.overseasCallDuration !== "" &&
         ans.overseasCallDuration !== "海外にはほとんど通話しない",
     },
+
+    // 🌍 海外通話かけ放題 追加
     {
       id: "needInternationalCallUnlimited",
       question: "海外へのかけ放題オプションは必要ですか？",
@@ -152,7 +154,8 @@ export default function Phase2Call({ answers, onChange }: Props) {
     {
       id: "internationalCallCarrier",
       question:
-        "⚠️ 現在、海外通話かけ放題に対応しているのは以下のキャリアのみです。希望するものを選択してください（複数選択可）\n\n※ここで選択したキャリアのみ、以降のプラン比較に反映されます。",
+  "⚠️ 現在、海外通話かけ放題に対応しているのは以下のキャリアのみです。希望するものを選択してください（複数選択可）\n\n※ここで選択したキャリアのみ、以降のプラン比較に反映されます。",
+
       options: [
         "楽天モバイル（国際通話かけ放題：¥980/月・65カ国対象）",
         "au（国際通話定額：月900分・23カ国対象）",
@@ -161,6 +164,8 @@ export default function Phase2Call({ answers, onChange }: Props) {
       condition: (ans: Phase2Answers) =>
         ans.needInternationalCallUnlimited === "はい",
     },
+    // 🌍 ここまで追加
+
     {
       id: "callOptionsNeeded",
       question: "留守番電話のオプションは必要ですか？",
@@ -169,9 +174,11 @@ export default function Phase2Call({ answers, onChange }: Props) {
     },
   ];
 
+  // ✅ checkbox対応・型警告対策済み handleChange
   const handleChange = (id: string, value: string | string[]) => {
     const updated: Partial<Phase2Answers> = {};
 
+    // ✅ checkbox（複数選択）対応
     if (Array.isArray(value)) {
       (updated as Record<string, unknown>)[id] = value as unknown;
       onChange(updated);
@@ -179,17 +186,18 @@ export default function Phase2Call({ answers, onChange }: Props) {
     }
 
     if (id === "callPlanType") {
-      updated.callPlanType = Array.isArray(value) ? value : [value];
-      const isEmptyArray = Array.isArray(value) && value.length === 0;
-      if (isEmptyArray) {
-        updated.timeLimitPreference = "";
-        updated.monthlyLimitPreference = "";
-        updated.hybridCallPreference = "";
-      }
-      onChange(updated);
-      return;
-    }
+  updated.callPlanType = Array.isArray(value) ? value : [value];
+  const isEmptyArray = Array.isArray(value) && value.length === 0;
 
+  if (isEmptyArray) {
+    updated.timeLimitPreference = "";
+    updated.monthlyLimitPreference = "";
+    updated.hybridCallPreference = "";
+  }
+
+  onChange(updated);
+  return;
+}
     if (typeof id === "string" && typeof value === "string") {
       (updated as Record<string, unknown>)[id] = value as unknown;
     }
@@ -236,6 +244,65 @@ export default function Phase2Call({ answers, onChange }: Props) {
         {questions.map((q) => {
           if (q.condition && !q.condition(answers)) return null;
 
+          if (q.id === "unknownCallFrequency") {
+            return (
+              <motion.div
+                key={q.id}
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.25 }}
+              >
+                <QuestionCard
+                  id={q.id}
+                  question={q.question}
+                  options={q.options}
+                  type={q.type}
+                  value={answers[q.id as keyof Phase2Answers]}
+                  onChange={handleChange}
+                  answers={answers}
+                />
+
+                {suggestion && (
+                  <motion.div
+                    key="call-advice"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.4 }}
+                    className="bg-white shadow-sm border border-sky-200 rounded-2xl p-5 mt-6 text-sky-800 space-y-4"
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-sky-500 text-xl">📞</span>
+                      <h3 className="font-semibold text-sky-900">通話プランアドバイス</h3>
+                    </div>
+
+                    <ReactMarkdown
+                      components={{
+                        p: ({ node, ...props }) => (
+                          <p {...props} className="mb-3 leading-relaxed text-gray-800" />
+                        ),
+                        strong: ({ node, ...props }) => (
+                          <strong {...props} className="text-sky-900 font-semibold" />
+                        ),
+                        h3: ({ node, ...props }) => (
+                          <h3 {...props} className="text-lg font-bold text-sky-700 mt-4" />
+                        ),
+                      }}
+                    >
+                      {suggestion}
+                    </ReactMarkdown>
+
+                    <div className="border-t border-sky-100 my-3" />
+                    <p className="text-sm text-sky-600">
+                      このアドバイスを参考に、「かけ放題を利用したいですか？」の回答を再選択してください。
+                    </p>
+                  </motion.div>
+                )}
+              </motion.div>
+            );
+          }
+
           return (
             <motion.div
               key={q.id}
@@ -249,54 +316,10 @@ export default function Phase2Call({ answers, onChange }: Props) {
                 question={q.question}
                 options={q.options}
                 type={q.type}
-                value={
-                  typeof answers[q.id as keyof Phase2Answers] === "boolean"
-                    ? null
-                    : (answers[q.id as keyof Phase2Answers] as
-                        | string
-                        | string[]
-                        | null
-                        | undefined)
-                }
+                value={answers[q.id as keyof Phase2Answers]}
                 onChange={handleChange}
                 answers={answers}
               />
-              {q.id === "unknownCallFrequency" && suggestion && (
-                <motion.div
-                  key="call-advice"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.4 }}
-                  className="bg-white shadow-sm border border-sky-200 rounded-2xl p-5 mt-6 text-sky-800 space-y-4"
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-sky-500 text-xl">📞</span>
-                    <h3 className="font-semibold text-sky-900">
-                      通話プランアドバイス
-                    </h3>
-                  </div>
-                  <ReactMarkdown
-                    components={{
-                      p: ({ node, ...props }) => (
-                        <p {...props} className="mb-3 leading-relaxed text-gray-800" />
-                      ),
-                      strong: ({ node, ...props }) => (
-                        <strong {...props} className="text-sky-900 font-semibold" />
-                      ),
-                      h3: ({ node, ...props }) => (
-                        <h3 {...props} className="text-lg font-bold text-sky-700 mt-4" />
-                      ),
-                    }}
-                  >
-                    {suggestion}
-                  </ReactMarkdown>
-                  <div className="border-t border-sky-100 my-3" />
-                  <p className="text-sm text-sky-600">
-                    このアドバイスを参考に、「かけ放題を利用したいですか？」の回答を再選択してください。
-                  </p>
-                </motion.div>
-              )}
             </motion.div>
           );
         })}
