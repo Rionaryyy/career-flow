@@ -10,25 +10,24 @@ interface Props {
 
 export default function Phase2Data({ answers, onChange }: Props) {
   const questions = [
-    {
-      id: "dataUsage",
-      question: "月にどのくらいのデータ通信量が必要ですか？",
-      options: [
-        "できるだけ安く使いたい（容量は少なくてOK）",
-        "〜3GB（Wi-Fiメイン・通話専用など）",
-        "〜5GB（ライトユーザー・SNS中心）",
-        "〜10GB（標準的な利用・動画も少し）",
-        "〜20GB（外出時もよく使う）",
-        "〜30GB（大容量ユーザー・動画中心）",
-        "〜50GB（モバイル中心・高頻度利用）",
-        "無制限（上限なしで使いたい）",
-      ],
-      type: "radio" as const,
-    },
+   {
+  id: "dataUsage",
+  question: "月にどのくらいのデータ通信量が必要ですか？",
+  options: [
+    "できるだけ安く使いたい（容量は少なくてOK）",
+    "〜3GB（Wi-Fiメイン・通話専用など）",
+    "〜5GB（ライトユーザー・SNS中心）",
+    "〜10GB（標準的な利用・動画も少し）",
+    "〜20GB（外出時もよく使う）",
+    "〜30GB（大容量ユーザー・動画中心）",
+    "〜50GB（モバイル中心・高頻度利用）",
+    "無制限（上限なしで使いたい）",
+  ],
+  type: "radio" as const,
+},
     {
       id: "speedLimitImportance",
-      question:
-        "速度制限後の通信速度について、どの程度の快適さを求めますか？",
+      question: "速度制限後の通信速度について、どの程度の快適さを求めますか？",
       options: [
         "大手キャリア水準以上（1〜3Mbps・YouTube低画質も可）",
         "サブブランド水準以上（0.5〜1Mbps・SNSやWeb閲覧は可）",
@@ -48,21 +47,16 @@ export default function Phase2Data({ answers, onChange }: Props) {
       type: "radio" as const,
     },
     {
-      id: "tetheringUsage",
-      question:
-        "テザリングを利用する場合、月にどのくらいのデータ量を使いそうですか？",
-      options: [
-        "〜30GB（出先での作業やPC接続が多い）",
-        "〜60GB（在宅ワークなどで頻繁に利用）",
-        "制限なし・無制限プラン希望",
-      ],
-      type: "radio" as const,
-      // ✅ 修正: 明示的キャストを追加して never 型回避
-      condition: (ans: Phase2Answers) => {
-        const tether = ans.tetheringNeeded as string | undefined;
-        return typeof tether === "string" && tether.includes("はい");
-      },
-    },
+  id: "tetheringUsage",
+  question: "テザリングを利用する場合、月にどのくらいのデータ量を使いそうですか？",
+  options: [
+    "〜30GB（出先での作業やPC接続が多い）",
+    "〜60GB（在宅ワークなどで頻繁に利用）",
+    "制限なし・無制限プラン希望",
+  ],
+  type: "radio" as const,
+  condition: (ans: Phase2Answers) => ans.tetheringNeeded?.includes("はい"),
+},
   ];
 
   const handleChange = (id: string, value: string | string[]) => {
@@ -72,6 +66,7 @@ export default function Phase2Data({ answers, onChange }: Props) {
   return (
     <div className="w-full py-6 space-y-6">
       {questions.map((q) => {
+        // 分岐条件があれば表示制御
         if (q.condition && !q.condition(answers)) return null;
 
         const currentValue = answers[q.id as keyof Phase2Answers] as
