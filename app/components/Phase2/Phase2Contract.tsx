@@ -15,9 +15,8 @@ export default function Phase2Contract({ answers, onChange }: Props) {
       id: "familyLines",
       question: "家族割引を適用できる回線数はいくつですか？",
       options: [
-        "1回線(本人＋家族1人)",
-        "2回線(本人＋家族2人)",
-        "3回線(本人＋家族3人)",
+        "2回線(本人＋家族1人)",
+        "3回線(本人＋家族2人)",
         "4回線以上",
         "適用できない/わからない",
       ],
@@ -60,7 +59,7 @@ export default function Phase2Contract({ answers, onChange }: Props) {
   return (
     <div className="w-full py-6 space-y-6">
       {questions.map((q) => (
-        <div key={q.id} className="w-full py-6 space-y-6">
+        <div key={q.id}>
           {(!q.condition || q.condition(answers)) && (
             <QuestionCard
               id={q.id}
@@ -73,9 +72,9 @@ export default function Phase2Contract({ answers, onChange }: Props) {
             />
           )}
 
-          {/* ▼ 家族割詳細 */}
+          {/* ▼ 家族割詳細（前カードからの間隔のみmt-6で揃える） */}
           {q.id === "familyLines" && answers.familyLines === "4回線以上" && (
-            <div className="w-full py-6 space-y-6">
+            <div className="mt-6">
               <QuestionCard
                 id="familyLinesDetail"
                 question="具体的な回線数を教えてください"
@@ -88,9 +87,9 @@ export default function Phase2Contract({ answers, onChange }: Props) {
             </div>
           )}
 
-          {/* ▼ セット割詳細 */}
+          {/* ▼ セット割詳細（各ボックス間はspace-y-6、各ボックス内はp-5 space-y-4） */}
           {q.id === "setDiscount" && (
-            <div className="w-full py-6 space-y-6">
+            <div className="mt-6 space-y-6">
               {/* 光回線 */}
               {hasService("光回線の契約") && (
                 <motion.div
@@ -116,7 +115,7 @@ export default function Phase2Contract({ answers, onChange }: Props) {
                       id="fiberSpeed"
                       question="希望する通信速度を選んでください"
                       options={[
-                        "1Gps以上",
+                        "1Gbps以上",
                         "2Gbps以上",
                         "5Gbps以上",
                         "10Gbps以上",
@@ -199,12 +198,12 @@ export default function Phase2Contract({ answers, onChange }: Props) {
         </div>
       ))}
 
-      {/* ▼ 子ども専用プランオプション */}
+      {/* ▼ 子ども専用プランオプション（前ブロックからの余白はmt-6、内部はp-5 space-y-4） */}
       <motion.div
         initial={{ opacity: 0, y: -5 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="w-full bg-pink-50 border border-pink-200 rounded-2xl p-5 space-y-4"
+        className="w-full bg-pink-50 border border-pink-200 rounded-2xl p-5 space-y-4 mt-6"
       >
         <h3 className="text-pink-700 font-semibold text-base">
           👶 子ども専用プラン確認（追加オプション）
@@ -220,9 +219,7 @@ export default function Phase2Contract({ answers, onChange }: Props) {
           }
           answers={answers}
         />
-        <p className="text-sm text-pink-600">
-          ※ 子ども専用プランは大手キャリアのみ提供されます
-        </p>
+        <p className="text-sm text-pink-600">※ 子ども専用プランは大手キャリアのみ提供されます</p>
       </motion.div>
     </div>
   );
