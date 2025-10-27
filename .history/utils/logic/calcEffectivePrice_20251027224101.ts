@@ -127,7 +127,7 @@ export function calculatePlanCost(plan: Plan, answers: DiagnosisAnswers): PlanCo
     }
   }
 
-  // === 📱 端末関連（月額費用） ===
+   // === 📱 端末関連（月額費用） ===
   let deviceLeaseMonthly = 0;
   let deviceBuyMonthly = 0;
 
@@ -197,161 +197,48 @@ export function calculatePlanCost(plan: Plan, answers: DiagnosisAnswers): PlanCo
     }
   }
 
-  // === 💰 キャッシュバック・初期費用（月換算） ===
-  let cashback = 0;
-  let initialFeeMonthly = 0;
-  let cashbackTotal = plan.cashbackAmount ?? 0;
-  let initialCostTotal = plan.initialCost ?? 0;
 
-  // === フェーズ①回答を参照 ===
-  const compareAxis = answers.phase1?.compareAxis ?? "";
-  const comparePeriod = answers.phase1?.comparePeriod ?? "";
+// === 💰 キャッシュバック・初期費用（月換算） ===
+let cashback = 0;
+let initialFeeMonthly = 0;
+let cashbackTotal = plan.cashbackAmount ?? 0;
+let initialCostTotal = plan.initialCost ?? 0;
 
-  // デフォルトを12ヶ月に設定（comparePeriodが未選択時は1年扱い）
-  let periodMonths = 12;
-  if (comparePeriod.includes("2年")) periodMonths = 24;
-  else if (comparePeriod.includes("3年")) periodMonths = 36;
+// === フェーズ①回答を参照 ===
+const compareAxis = answers.phase1?.compareAxis ?? "";
+const comparePeriod = answers.phase1?.comparePeriod ?? "";
 
-  // === compareAxisによる分岐 ===
-  if (compareAxis.includes("実際に支払う金額")) {
-    cashback = cashbackTotal / periodMonths;
-    initialFeeMonthly = initialCostTotal / periodMonths;
-  } else {
-    cashback = 0;
-    initialFeeMonthly = 0;
+// デフォルトを12ヶ月に設定（comparePeriodが未選択時は1年扱い）
+let periodMonths = 12;
+if (comparePeriod.includes("2年")) periodMonths = 24;
+else if (comparePeriod.includes("3年")) periodMonths = 36;
+
+// === compareAxisによる分岐 ===
+// 「実際に支払う金額で比べたい」→ 初期費用・CBを平均化して加減算
+// 「毎月の支払い額だけで比べたい」→ 初期費用・CBを考慮せず単純月額で比較
+if (compareAxis.includes("実際に支払う金額")) {
+  cashback = cashbackTotal / periodMonths;        // キャッシュバックは割引扱い
+  initialFeeMonthly = initialCostTotal / periodMonths; // 初期費用は加算扱い
+} else {
+  cashback = 0;
+  initialFeeMonthly = 0;
+}
+
+
+  // === テザリング費用 ===
+  let tetheringFee = 0;
+  const wantsTethering = answers.phase2?.tetheringNeeded === true;
+  if (wantsTethering && plan.tetheringAvailable && plan.tetheringFee > 0) {
+    tetheringFee = plan.tetheringFee;
   }
 
-  // === 🎬 サブスク割 ===
-  let subscriptionDiscount = 0;
-  const allSubs = [
-    answers.phase2?.videoSubscriptions,
-    answers.phase2?.musicSubscriptions,
-    answers.phase2?.bookSubscriptions,
-    answers.phase2?.gameSubscriptions,
-    answers.phase2?.cloudSubscriptions,
-    answers.phase2?.otherSubscriptions,
-  ]
-    .flat()
-    .filter(Boolean);
-
-  if (allSubs.length && plan.subscriptionDiscountRules?.length) {
-    const matched = plan.subscriptionDiscountRules.filter((r) =>
-      r.applicableSubscriptions?.some((s) => allSubs.includes(s))
-    );
-    if (matched.length) subscriptionDiscount = matched.reduce((sum, r) => sum + (r.discount ?? 0), 0);
-  }
-
-  // === セット割・その他割引変数の初期化（ここを追加） ===
+  // === セット割（光・ルーター・電気など） ===
   let fiberDiscount = 0;
   let routerDiscount = 0;
   let pocketWifiDiscount = 0;
   let electricDiscount = 0;
   let gasDiscount = 0;
-  let tetheringFee = 0;
 
-  // === 💳 支払い割引・還元 ===
-  let paymentDiscount = 0;
-  let paymentReward = 0;
-  
-  const selectedMain = answers.phase2?.mainCard ?? [];
-  const selectedBrands = answers.phase2?.cardDetail ?? [];
-
-  if (plan.paymentBenefitRules?.length) {
-    for (const rule of plan.paymentBenefitRules) {
-      const matchesMethod = selectedMain.includes(rule.method);
-      const matchesBrand = rule.brands?.some((b) => selectedBrands.includes(b));
-      if (matchesMethod || matchesBrand) {
-        if (rule.discount) paymentDiscount += rule.discount;
-
-        if (rule.rate && rule.rate > 0) {
-          const totalAfterDiscounts =
-            base +
-            callOptionFee -
-            familyDiscount -
-            studentDiscount -
-            ageDiscount -
-            cashback -
-            fiberDiscount -
-            routerDiscount -
-            pocketWifiDiscount -
-            electricDiscount -
-            gasDiscount -
-            subscriptionDiscount -
-            paymentDiscount +
-            initialFeeMonthly +
-            tetheringFee;
-
-          paymentReward += Math.round(totalAfterDiscounts * rule.rate);
-        }
-      }
-    }
-  }
-
-  // === 🛍️ ショッピング還元 ===
-  let shoppingReward = 0;
-  const shoppingList = answers.phase2?.shoppingList ?? [];
-  const shoppingMonthly = answers.phase2?.shoppingMonthly ?? "";
-
-  const avgSpend =
-    shoppingMonthly.includes("〜5,000") ? 2500 :
-    shoppingMonthly.includes("5,000〜10,000") ? 7500 :
-    shoppingMonthly.includes("10,000〜30,000") ? 20000 :
-    shoppingMonthly.includes("30,000〜50,000") ? 40000 :
-    shoppingMonthly.includes("50,000") ? 60000 :
-    10000;
-
-  const rewardRateMap: Record<string, number> = {
-    "楽天": 0.01,
-    "d払い": 0.005,
-    "dカード": 0.005,
-    "PayPay": 0.005,
-    "au PAY": 0.004,
-  };
-
-  for (const [key, rate] of Object.entries(rewardRateMap)) {
-    if (shoppingList.some((s) =>
-      s.includes(key) ||
-      (key === "楽天" && s.includes("楽天市場")) ||
-      (key === "d払い" && s.includes("dカード")) ||
-      (key === "dカード" && s.includes("d払い"))
-    )) {
-      shoppingReward += Math.round(avgSpend * rate);
-    }
-  }
-
-  // === 💰 ポイント還元 ===
-  let pointReward = 0;
-  const paymentList = answers.phase2?.paymentList ?? [];
-  const paymentMonthly = answers.phase2?.paymentMonthly ?? "";
-
-  const avgPayment =
-    paymentMonthly.includes("〜5,000") ? 2500 :
-    paymentMonthly.includes("5,000〜10,000") ? 7500 :
-    paymentMonthly.includes("10,000〜30,000") ? 20000 :
-    paymentMonthly.includes("30,000〜50,000") ? 40000 :
-    paymentMonthly.includes("50,000") ? 60000 :
-    10000;
-
-  const pointRateMap: Record<string, number> = {
-    "楽天": 0.01,
-    "d払い": 0.005,
-    "dカード": 0.005,
-    "PayPay": 0.005,
-    "au PAY": 0.004,
-  };
-
-  for (const [key, rate] of Object.entries(pointRateMap)) {
-    if (paymentList.some((s) =>
-      s.includes(key) ||
-      (key === "d払い" && s.includes("dカード")) ||
-      (key === "dカード" && s.includes("d払い")) ||
-      (key === "楽天" && s.includes("楽天"))
-    )) {
-      pointReward += Math.round(avgPayment * rate);
-    }
-  }
-
-  // === セット割（光・ルーター・電気など） ===
   const normalizeText = (text: string) =>
     text
       ?.replace(/[Ａ-Ｚａ-ｚ０-９]/g, (s) => String.fromCharCode(s.charCodeAt(0) - 0xfee0))
@@ -401,6 +288,7 @@ export function calculatePlanCost(plan: Plan, answers: DiagnosisAnswers): PlanCo
     if (match) gasDiscount = match.discount;
   }
 
+  // === 合計 ===
   const total =
     base +
     callOptionFee -
@@ -412,12 +300,7 @@ export function calculatePlanCost(plan: Plan, answers: DiagnosisAnswers): PlanCo
     routerDiscount -
     pocketWifiDiscount -
     electricDiscount -
-    gasDiscount -
-    subscriptionDiscount -
-    paymentDiscount -
-    paymentReward -
-    shoppingReward -
-    pointReward +
+    gasDiscount +
     initialFeeMonthly +
     tetheringFee +
     deviceLeaseMonthly +
@@ -439,11 +322,6 @@ export function calculatePlanCost(plan: Plan, answers: DiagnosisAnswers): PlanCo
     pocketWifiDiscount,
     electricDiscount,
     gasDiscount,
-    subscriptionDiscount,
-    paymentDiscount,
-    paymentReward,
-    shoppingReward,
-    pointReward,
     deviceLeaseMonthly,
     deviceBuyMonthly,
     total: Math.round(total),

@@ -127,7 +127,7 @@ export function calculatePlanCost(plan: Plan, answers: DiagnosisAnswers): PlanCo
     }
   }
 
-  // === 📱 端末関連（月額費用） ===
+   // === 📱 端末関連（月額費用） ===
   let deviceLeaseMonthly = 0;
   let deviceBuyMonthly = 0;
 
@@ -197,29 +197,32 @@ export function calculatePlanCost(plan: Plan, answers: DiagnosisAnswers): PlanCo
     }
   }
 
-  // === 💰 キャッシュバック・初期費用（月換算） ===
-  let cashback = 0;
-  let initialFeeMonthly = 0;
-  let cashbackTotal = plan.cashbackAmount ?? 0;
-  let initialCostTotal = plan.initialCost ?? 0;
 
-  // === フェーズ①回答を参照 ===
-  const compareAxis = answers.phase1?.compareAxis ?? "";
-  const comparePeriod = answers.phase1?.comparePeriod ?? "";
+// === 💰 キャッシュバック・初期費用（月換算） ===
+let cashback = 0;
+let initialFeeMonthly = 0;
+let cashbackTotal = plan.cashbackAmount ?? 0;
+let initialCostTotal = plan.initialCost ?? 0;
 
-  // デフォルトを12ヶ月に設定（comparePeriodが未選択時は1年扱い）
-  let periodMonths = 12;
-  if (comparePeriod.includes("2年")) periodMonths = 24;
-  else if (comparePeriod.includes("3年")) periodMonths = 36;
+// === フェーズ①回答を参照 ===
+const compareAxis = answers.phase1?.compareAxis ?? "";
+const comparePeriod = answers.phase1?.comparePeriod ?? "";
 
-  // === compareAxisによる分岐 ===
-  if (compareAxis.includes("実際に支払う金額")) {
-    cashback = cashbackTotal / periodMonths;
-    initialFeeMonthly = initialCostTotal / periodMonths;
-  } else {
-    cashback = 0;
-    initialFeeMonthly = 0;
-  }
+// デフォルトを12ヶ月に設定（comparePeriodが未選択時は1年扱い）
+let periodMonths = 12;
+if (comparePeriod.includes("2年")) periodMonths = 24;
+else if (comparePeriod.includes("3年")) periodMonths = 36;
+
+// === compareAxisによる分岐 ===
+// 「実際に支払う金額で比べたい」→ 初期費用・CBを平均化して加減算
+// 「毎月の支払い額だけで比べたい」→ 初期費用・CBを考慮せず単純月額で比較
+if (compareAxis.includes("実際に支払う金額")) {
+  cashback = cashbackTotal / periodMonths;        // キャッシュバックは割引扱い
+  initialFeeMonthly = initialCostTotal / periodMonths; // 初期費用は加算扱い
+} else {
+  cashback = 0;
+  initialFeeMonthly = 0;
+}
 
   // === 🎬 サブスク割 ===
   let subscriptionDiscount = 0;
@@ -241,18 +244,10 @@ export function calculatePlanCost(plan: Plan, answers: DiagnosisAnswers): PlanCo
     if (matched.length) subscriptionDiscount = matched.reduce((sum, r) => sum + (r.discount ?? 0), 0);
   }
 
-  // === セット割・その他割引変数の初期化（ここを追加） ===
-  let fiberDiscount = 0;
-  let routerDiscount = 0;
-  let pocketWifiDiscount = 0;
-  let electricDiscount = 0;
-  let gasDiscount = 0;
-  let tetheringFee = 0;
-
   // === 💳 支払い割引・還元 ===
   let paymentDiscount = 0;
   let paymentReward = 0;
-  
+
   const selectedMain = answers.phase2?.mainCard ?? [];
   const selectedBrands = answers.phase2?.cardDetail ?? [];
 
@@ -351,7 +346,23 @@ export function calculatePlanCost(plan: Plan, answers: DiagnosisAnswers): PlanCo
     }
   }
 
+
+  // === テザリング費用 ===
+  let tetheringFee = 0;
+  const wantsTethering = answers.phase2?.tetheringNeeded === true;
+  if (wantsTethering && plan.tetheringAvailable && plan.tetheringFee > 0) {
+    tetheringFee = plan.tetheringFee;
+  }
+
   // === セット割（光・ルーター・電気など） ===
+  let fiberDiscount = 0;
+  let routerDiscount = 0;
+  let pocketWifiDiscount = 0;
+  let electricDiscount = 0;
+  let gasDiscount = 0;
+
+
+
   const normalizeText = (text: string) =>
     text
       ?.replace(/[Ａ-Ｚａ-ｚ０-９]/g, (s) => String.fromCharCode(s.charCodeAt(0) - 0xfee0))
@@ -401,52 +412,54 @@ export function calculatePlanCost(plan: Plan, answers: DiagnosisAnswers): PlanCo
     if (match) gasDiscount = match.discount;
   }
 
-  const total =
-    base +
-    callOptionFee -
-    familyDiscount -
-    studentDiscount -
-    ageDiscount -
-    cashback -
-    fiberDiscount -
-    routerDiscount -
-    pocketWifiDiscount -
-    electricDiscount -
-    gasDiscount -
-    subscriptionDiscount -
-    paymentDiscount -
-    paymentReward -
-    shoppingReward -
-    pointReward +
-    initialFeeMonthly +
-    tetheringFee +
-    deviceLeaseMonthly +
-    deviceBuyMonthly;
+const total =
+  base +
+  callOptionFee -
+  familyDiscount -
+  studentDiscount -
+  ageDiscount -
+  cashback -
+  fiberDiscount -
+  routerDiscount -
+  pocketWifiDiscount -
+  electricDiscount -
+  gasDiscount -
+  subscriptionDiscount -     // 🎬 サブスク割
+  paymentDiscount -          // 💳 支払い割引
+  paymentReward -            // 💰 支払い還元（ポイント換算）
+  shoppingReward -           // 🛍️ ショッピング還元
+  pointReward +              // 💎 経済圏ポイント還元
+  initialFeeMonthly +
+  tetheringFee +
+  deviceLeaseMonthly +
+  deviceBuyMonthly;
+
 
   return {
-    baseFee: base,
-    callOptionFee,
-    familyDiscount,
-    studentDiscount,
-    ageDiscount,
-    cashback,
-    cashbackTotal,
-    initialFeeMonthly,
-    initialCostTotal,
-    tetheringFee,
-    fiberDiscount,
-    routerDiscount,
-    pocketWifiDiscount,
-    electricDiscount,
-    gasDiscount,
-    subscriptionDiscount,
-    paymentDiscount,
-    paymentReward,
-    shoppingReward,
-    pointReward,
-    deviceLeaseMonthly,
-    deviceBuyMonthly,
-    total: Math.round(total),
-    totalWithDevice: Math.round(total),
-  };
+  baseFee: base,
+  callOptionFee,
+  familyDiscount,
+  studentDiscount,
+  ageDiscount,
+  cashback,
+  cashbackTotal,
+  initialFeeMonthly,
+  initialCostTotal,
+  tetheringFee,
+  fiberDiscount,
+  routerDiscount,
+  pocketWifiDiscount,
+  electricDiscount,
+  gasDiscount,
+  subscriptionDiscount, // 🎬 追加
+  paymentDiscount,      // 💳 追加
+  paymentReward,        // 💰 追加
+  shoppingReward,       // 🛍️ 追加
+  pointReward,          // 💎 追加
+  deviceLeaseMonthly,
+  deviceBuyMonthly,
+  total: Math.round(total),
+  totalWithDevice: Math.round(total),
+};
+
 }

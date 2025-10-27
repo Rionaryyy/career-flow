@@ -135,8 +135,6 @@ export default function Result({ answers, onRestart }: Props) {
                 <p>・家族割引: -¥{plan.breakdown.familyDiscount}</p>
                 <p>・学割: -¥{plan.breakdown.studentDiscount}</p>
                 <p>・年齢割: -¥{plan.breakdown.ageDiscount}</p>
-                <p>・テザリング料: +¥{plan.breakdown.tetheringFee}</p>
-
 
 {/* 💰 キャッシュバック・初期費用まとめ（compareAxisが「実際に支払う金額」の時のみ） */}
 {answers.phase1?.compareAxis?.includes("実際に支払う金額") && (
@@ -209,6 +207,9 @@ export default function Result({ answers, onRestart }: Props) {
                 ) : null}
 
 
+                <p className="mt-1 text-sky-700 font-medium">
+                  ・テザリング料: +¥{plan.breakdown.tetheringFee}
+                </p>
 
                 {plan.breakdown.fiberDiscount !== 0 && (
                   <p>・光回線セット割: -¥{plan.breakdown.fiberDiscount}</p>
