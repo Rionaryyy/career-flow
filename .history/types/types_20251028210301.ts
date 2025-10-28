@@ -21,8 +21,7 @@ export interface Phase2Answers {
   // ① データ通信ニーズ
   dataUsage: string | null;
   speedLimitImportance: string | null;
-  tetheringNeeded?: string | boolean | null;
-
+  tetheringNeeded?: boolean | null;
   tetheringUsage?: string | null;
 
   // ② 通話（国内・海外）

@@ -44,46 +44,52 @@ export function filterPlansByPhase2(answers: Phase2Answers, plans: Plan[]): Plan
 
     filtered = filtered.filter(plan => plan.maxDataGB >= minRequired);
   }
+// 🟨 ①.5 テザリングフィルター
+const tetheringNeededRaw = answers.tetheringNeeded;
+const tetheringNeeded =
+  tetheringNeededRaw === true ||
+  (typeof tetheringNeededRaw === "string" &&
+    tetheringNeededRaw.includes("はい"));
 
-  // 🟨 ①.5 テザリングフィルター
-  const tetheringNeeded =
-    typeof answers.tetheringNeeded === "boolean" ? answers.tetheringNeeded : false;
-  const tetheringUsage =
-    typeof answers.tetheringUsage === "string" ? answers.tetheringUsage.trim() : "";
+const tetheringUsage =
+  typeof answers.tetheringUsage === "string"
+    ? answers.tetheringUsage.trim()
+    : "";
 
-  if (tetheringNeeded || tetheringUsage !== "") {
-    let minRequired = 0;
+if (tetheringNeeded || tetheringUsage !== "") {
+  let minRequired = 0;
 
-    switch (true) {
-      case tetheringUsage.includes("30GB以上"):
-        minRequired = 30;
-        break;
-      case tetheringUsage.includes("60GB以上"):
-        minRequired = 60;
-        break;
-      case tetheringUsage.includes("無制限"):
-        minRequired = 999;
-        break;
-      default:
-        minRequired = 0;
-        break;
-    }
-
-    filtered = filtered.filter(
-      (plan) =>
-        plan.tetheringAvailable === true &&
-        (plan.tetheringUsage ?? 0) >= minRequired
-    );
-
-    console.log("🟨 テザリングフィルター適用:", {
-      minRequired,
-      resultCount: filtered.length,
-      filteredPlans: filtered.map((p) => ({
-        carrier: p.carrier,
-        usage: p.tetheringUsage,
-      })),
-    });
+  switch (true) {
+    case tetheringUsage.includes("〜30GB"):
+      minRequired = 30;
+      break;
+    case tetheringUsage.includes("〜60GB"):
+      minRequired = 60;
+      break;
+    case tetheringUsage.includes("無制限"):
+      minRequired = 999;
+      break;
+    default:
+      minRequired = 0;
+      break;
   }
+
+  filtered = filtered.filter(
+    (plan) =>
+      plan.tetheringAvailable === true &&
+      (plan.tetheringUsage ?? 0) >= minRequired
+  );
+
+  console.log("🟨 テザリングフィルター適用:", {
+    minRequired,
+    resultCount: filtered.length,
+    filteredPlans: filtered.map((p) => ({
+      carrier: p.carrier,
+      usage: p.tetheringUsage,
+    })),
+  });
+}
+
 
   // 🟩🟩 ③ 国内通話プランフィルター
   if (answers.callPlanType && answers.callPlanType.length > 0) {

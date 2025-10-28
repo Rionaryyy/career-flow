@@ -55,10 +55,10 @@ export function filterPlansByPhase2(answers: Phase2Answers, plans: Plan[]): Plan
     let minRequired = 0;
 
     switch (true) {
-      case tetheringUsage.includes("30GB以上"):
+      case tetheringUsage.includes("〜30GB"):
         minRequired = 30;
         break;
-      case tetheringUsage.includes("60GB以上"):
+      case tetheringUsage.includes("〜60GB"):
         minRequired = 60;
         break;
       case tetheringUsage.includes("無制限"):

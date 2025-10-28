@@ -148,6 +148,7 @@ export function calculatePlanCost(plan: Plan, answers: DiagnosisAnswers): PlanCo
   const selectedModel = normalize(answers.phase2?.deviceModel ?? "");
   const selectedStorage = normalize(answers.phase2?.deviceStorage ?? "");
 
+  // 🟦 リース型（返却プログラム）優先
   if (typeof buyingText === "string" && /(返却|カエドキ|トクする|スマホトク|プログラム)/.test(buyingText)) {
     const match = devicePricesLease.find(
       (d) =>
@@ -158,16 +159,19 @@ export function calculatePlanCost(plan: Plan, answers: DiagnosisAnswers): PlanCo
     );
     if (match) {
       deviceLeaseMonthly = match.monthlyPayment;
-      deviceBuyMonthly = 0;
+      deviceBuyMonthly = 0; // ← 排他制御：返却時は購入側を無効化
     }
-  } else if (typeof buyingText === "string" && /(購入|分割|一括)/.test(buyingText)) {
+  }
+
+  // 🟥 購入型（キャリアまたは正規店購入）※リース未選択時のみ
+  else if (typeof buyingText === "string" && /(購入|分割|一括)/.test(buyingText)) {
     const isCarrierPurchase =
       /(キャリア|au|docomo|ドコモ|ソフトバンク|softbank|rakuten|楽天)/i.test(buyingText);
     const isOfficialStorePurchase = /(正規|Apple|家電量販店)/i.test(buyingText);
 
     if (isOfficialStorePurchase) {
       deviceBuyMonthly = 0;
-      deviceLeaseMonthly = 0;
+      deviceLeaseMonthly = 0; // ← 正規店購入時は両方無効化
     } else {
       const matchBuy = devicePricesBuy.find((d) => {
         const modelMatch =
@@ -188,7 +192,7 @@ export function calculatePlanCost(plan: Plan, answers: DiagnosisAnswers): PlanCo
 
       if (matchBuy) {
         deviceBuyMonthly = matchBuy.monthlyPayment;
-        deviceLeaseMonthly = 0;
+        deviceLeaseMonthly = 0; // ← 排他制御：購入時はリース側を無効化
       }
     }
   }
@@ -199,16 +203,22 @@ export function calculatePlanCost(plan: Plan, answers: DiagnosisAnswers): PlanCo
   let cashbackTotal = plan.cashbackAmount ?? 0;
   let initialCostTotal = plan.initialCost ?? 0;
 
+  // === フェーズ①回答を参照 ===
   const compareAxis = answers.phase1?.compareAxis ?? "";
   const comparePeriod = answers.phase1?.comparePeriod ?? "";
 
+  // デフォルトを12ヶ月に設定（comparePeriodが未選択時は1年扱い）
   let periodMonths = 12;
   if (comparePeriod.includes("2年")) periodMonths = 24;
   else if (comparePeriod.includes("3年")) periodMonths = 36;
 
+  // === compareAxisによる分岐 ===
   if (compareAxis.includes("実際に支払う金額")) {
     cashback = cashbackTotal / periodMonths;
     initialFeeMonthly = initialCostTotal / periodMonths;
+  } else {
+    cashback = 0;
+    initialFeeMonthly = 0;
   }
 
   // === 🎬 サブスク割 ===
@@ -231,69 +241,55 @@ export function calculatePlanCost(plan: Plan, answers: DiagnosisAnswers): PlanCo
     if (matched.length) subscriptionDiscount = matched.reduce((sum, r) => sum + (r.discount ?? 0), 0);
   }
 
-  // === セット割・その他割引変数の初期化 ===
+  // === セット割・その他割引変数の初期化（ここを追加） ===
   let fiberDiscount = 0;
   let routerDiscount = 0;
   let pocketWifiDiscount = 0;
   let electricDiscount = 0;
   let gasDiscount = 0;
-
-// === ⑧ テザリング費用（DBに登録あり + 「はい」回答時のみ加算） ===
-let tetheringFee = 0;
-
-// 「はい（必要）」などの回答を含む場合のみ対象
-const tetheringAnswer = answers.phase2?.tetheringNeeded;
-const wantsTethering =
-  (typeof tetheringAnswer === "string" && tetheringAnswer.includes("はい")) ||
-  tetheringAnswer === true;
-
-if (wantsTethering && plan.tetheringAvailable) {
-  if (typeof plan.tetheringFee === "number" && plan.tetheringFee > 0) {
-    tetheringFee = plan.tetheringFee;
-  }
-}
-
-
-
-
+  let tetheringFee = 0;
 
   // === 💳 支払い割引・還元 ===
-  let paymentDiscount = 0;
-  let paymentReward = 0;
+let paymentDiscount = 0;
+let paymentReward = 0;
 
-  const selectedMain = answers.phase2?.mainCard ?? [];
-  const selectedBrands = answers.phase2?.cardDetail ?? [];
+const selectedMain = answers.phase2?.mainCard ?? [];
+const selectedBrands = answers.phase2?.cardDetail ?? [];
 
-  if (plan.paymentBenefitRules?.length) {
-    for (const rule of plan.paymentBenefitRules) {
-      const matchesMethod = selectedMain.includes(rule.method);
-      const matchesBrand = rule.brands?.some((b) => selectedBrands.includes(b));
+if (plan.paymentBenefitRules?.length) {
+  for (const rule of plan.paymentBenefitRules) {
+    // 支払い方法とブランドが両方一致したときのみ発動
+    const matchesMethod = selectedMain.includes(rule.method);
+    const matchesBrand = rule.brands?.some((b) => selectedBrands.includes(b));
 
-      if (matchesMethod && matchesBrand) {
-        if (rule.discount) paymentDiscount += rule.discount;
-        if (rule.rate && rule.rate > 0) {
-          const totalAfterDiscounts =
-            base +
-            callOptionFee -
-            familyDiscount -
-            studentDiscount -
-            ageDiscount -
-            cashback -
-            fiberDiscount -
-            routerDiscount -
-            pocketWifiDiscount -
-            electricDiscount -
-            gasDiscount -
-            subscriptionDiscount -
-            paymentDiscount +
-            initialFeeMonthly +
-            tetheringFee;
+    if (matchesMethod && matchesBrand) {
+      // 固定割引（例: 100円引き）
+      if (rule.discount) paymentDiscount += rule.discount;
 
-          paymentReward += Math.round(totalAfterDiscounts * rule.rate);
-        }
+      // 還元率（例: 5%還元）
+      if (rule.rate && rule.rate > 0) {
+        const totalAfterDiscounts =
+          base +
+          callOptionFee -
+          familyDiscount -
+          studentDiscount -
+          ageDiscount -
+          cashback -
+          fiberDiscount -
+          routerDiscount -
+          pocketWifiDiscount -
+          electricDiscount -
+          gasDiscount -
+          subscriptionDiscount -
+          paymentDiscount +
+          initialFeeMonthly +
+          tetheringFee;
+
+        paymentReward += Math.round(totalAfterDiscounts * rule.rate);
       }
     }
   }
+}
 
   // === 🛍️ ショッピング還元 ===
   let shoppingReward = 0;

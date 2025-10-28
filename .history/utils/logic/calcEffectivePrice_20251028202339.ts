@@ -238,23 +238,17 @@ export function calculatePlanCost(plan: Plan, answers: DiagnosisAnswers): PlanCo
   let electricDiscount = 0;
   let gasDiscount = 0;
 
-// === ⑧ テザリング費用（DBに登録あり + 「はい」回答時のみ加算） ===
+// === ⑧ テザリング費用（DBに登録あり + true の場合のみ加算） ===
 let tetheringFee = 0;
 
-// 「はい（必要）」などの回答を含む場合のみ対象
-const tetheringAnswer = answers.phase2?.tetheringNeeded;
-const wantsTethering =
-  (typeof tetheringAnswer === "string" && tetheringAnswer.includes("はい")) ||
-  tetheringAnswer === true;
+// boolean型対応版（true の場合のみ加算）
+const wantsTethering = answers.phase2?.tetheringNeeded === true;
 
 if (wantsTethering && plan.tetheringAvailable) {
   if (typeof plan.tetheringFee === "number" && plan.tetheringFee > 0) {
     tetheringFee = plan.tetheringFee;
   }
 }
-
-
-
 
 
   // === 💳 支払い割引・還元 ===
