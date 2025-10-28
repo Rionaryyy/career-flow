@@ -16,14 +16,12 @@ interface Props {
 const outerCard = "bg-sky-50 border border-sky-300 rounded-2xl p-5 space-y-4";
 const innerCard = "bg-sky-50 border border-sky-300 rounded-xl p-4";
 
-/** 追加質問文言（赤寄りピンク）と注記（赤） */
-const headingText = "text-pink-700 font-semibold text-base";
-const descText = "text-pink-700";
-const noteText = "text-red-600";
+/** QuestionCard と同じ“本文トーン”に揃える（色・サイズ・太さ） */
+const bodyText = "text-gray-800 text-sm md:text-base leading-normal font-normal";
 
-/** 選択肢ボタン（枠は水色、選択時は濃い水色） */
+/** 選択肢ボタン（文字サイズもQuestionCardに合わせて text-sm ベース） */
 const optBtnBase =
-  "w-full text-left rounded-xl border px-4 py-3 transition select-none";
+  "w-full text-left rounded-xl border px-4 py-3 transition select-none text-sm md:text-base";
 const optBtnOn = "bg-sky-100 border-sky-600 text-gray-900 shadow-sm";
 const optBtnOff = "bg-white border-sky-400 text-gray-900 hover:border-sky-500";
 
@@ -42,6 +40,18 @@ function getQCValue(
   return typeof v === "boolean"
     ? undefined
     : (v as string | string[] | null | undefined);
+}
+
+/** 見出し行：絵文字はそのまま、テキストは本文と完全同一クラスを適用 */
+function HeadingRow({ emoji, text }: { emoji: string; text: string }) {
+  return (
+    <div className="inline-flex items-center gap-2">
+      <span aria-hidden className="text-sm md:text-base leading-none align-middle shrink-0 select-none">
+        {emoji}
+      </span>
+      <span className={bodyText}>{text}</span>
+    </div>
+  );
 }
 
 export default function Phase2Call({ answers, onChange }: Props) {
@@ -268,9 +278,9 @@ export default function Phase2Call({ answers, onChange }: Props) {
         {questions.map((q) => {
           if (q.condition && !q.condition(answers)) return null;
 
-          /** 「よくわからない」側：外枠＝文言（ピンク文字＋絵文字❓）、内枠＝質問＋選択肢（水色） */
+          /** 「よくわからない」側：外枠＝見出し＋❓、内枠＝本文＋選択肢（水色） */
           if (isUnknownFollowupId(q.id)) {
-            const title = "❓ 「よくわからない（おすすめを知りたい）」に関する追加質問";
+            const title = "「よくわからない（おすすめを知りたい）」に関する追加質問";
 
             if (q.id === "unknownCallFrequency") {
               return (
@@ -282,10 +292,10 @@ export default function Phase2Call({ answers, onChange }: Props) {
                   transition={{ duration: 0.25 }}
                   className={outerCard}
                 >
-                  <h3 className={headingText}>{title}</h3>
+                  <HeadingRow emoji="❓" text={title} />
 
                   <div className={innerCard}>
-                    <p className="text-gray-800 mb-3">{q.question}</p>
+                    <p className={`${bodyText} mb-3`}>{q.question}</p>
                     <Options id={q.id as keyof Phase2Answers} type={q.type} options={q.options} />
                   </div>
 
@@ -299,20 +309,20 @@ export default function Phase2Call({ answers, onChange }: Props) {
                       className="bg-white shadow-sm border border-gray-200 rounded-2xl p-5 text-gray-800 space-y-4"
                     >
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-pink-600 text-xl">📞</span>
+                        <span className="text-sm md:text-base leading-none align-middle">📞</span>
                         <h3 className="font-semibold text-gray-900">通話プランアドバイス</h3>
                       </div>
                       <ReactMarkdown
                         components={{
-                          p: (props) => <p {...props} className="mb-2 leading-relaxed text-gray-800" />,
+                          p: (props) => <p {...props} className="mb-2 leading-relaxed text-gray-800 text-sm md:text-base" />,
                           strong: (props) => <strong {...props} className="text-gray-900 font-semibold" />,
-                          h3: (props) => <h3 {...props} className="text-lg font-bold text-gray-800 mt-3" />,
+                          h3: (props) => <h3 {...props} className="text-base md:text-lg font-bold text-gray-800 mt-3" />,
                         }}
                       >
                         {suggestion as string}
                       </ReactMarkdown>
                       <div className="border-t border-gray-100 my-2" />
-                      <p className="text-sm text-gray-600">
+                      <p className="text-xs md:text-sm text-gray-600">
                         このアドバイスを参考に、「かけ放題を利用したいですか？」の回答を再選択してください。
                       </p>
                     </motion.div>
@@ -330,16 +340,16 @@ export default function Phase2Call({ answers, onChange }: Props) {
                 transition={{ duration: 0.25 }}
                 className={outerCard}
               >
-                <h3 className={headingText}>{title}</h3>
+                <HeadingRow emoji="❓" text={title} />
                 <div className={innerCard}>
-                  <p className="text-gray-800 mb-3">{q.question}</p>
+                  <p className={`${bodyText} mb-3`}>{q.question}</p>
                   <Options id={q.id as keyof Phase2Answers} type={q.type} options={q.options} />
                 </div>
               </motion.div>
             );
           }
 
-          /** 「はい」側：外枠＝文言（ピンク文字＋絵文字✅）、内枠＝質問＋選択肢（水色） */
+          /** 「はい」側：外枠＝見出し＋✅、内枠＝本文＋選択肢（水色） */
           if (isYesFollowupId(q.id)) {
             return (
               <motion.div
@@ -350,16 +360,16 @@ export default function Phase2Call({ answers, onChange }: Props) {
                 transition={{ duration: 0.25 }}
                 className={outerCard}
               >
-                <h3 className={headingText}>✅ 「はい（利用したい）」に関する追加質問</h3>
+                <HeadingRow emoji="✅" text="「はい（利用したい）」に関する追加質問" />
                 <div className={innerCard}>
-                  <p className="text-gray-800 mb-3">{q.question}</p>
+                  <p className={`${bodyText} mb-3`}>{q.question}</p>
                   <Options id={q.id as keyof Phase2Answers} type={q.type} options={q.options} />
                 </div>
               </motion.div>
             );
           }
 
-          /** 国際通話：外枠＝文言（ピンク文字＋絵文字🌍）＋注記（赤）、内枠＝選択肢（水色） */
+          /** 国際通話：外枠＝見出し＋🌍、内枠＝本文＋選択肢（水色） */
           if (q.id === "internationalCallCarrier") {
             const selected = Array.isArray(answers.internationalCallCarrier)
               ? answers.internationalCallCarrier
@@ -374,11 +384,11 @@ export default function Phase2Call({ answers, onChange }: Props) {
                 transition={{ duration: 0.25 }}
                 className={outerCard}
               >
-                <h3 className={headingText}>🌍 「はい」に関する追加質問</h3>
-                <p className={`${descText} whitespace-pre-line`}>
+                <HeadingRow emoji="🌍" text="「はい」に関する追加質問" />
+                <p className={`${bodyText} whitespace-pre-line`}>
                   ⚠️ 現在、海外通話かけ放題に対応しているのは以下のキャリアのみです。希望するものを選択してください（複数選択可）
                 </p>
-                <p className={`${noteText} text-[0.85rem]`}>
+                <p className="text-red-600 text-xs md:text-sm">
                   ※ここで選択したキャリアのみ、以降のプラン比較に反映されます。
                 </p>
 
@@ -408,7 +418,7 @@ export default function Phase2Call({ answers, onChange }: Props) {
             );
           }
 
-          /** 通常の質問は既存の QuestionCard のまま（灰系フォントへ統一感） */
+          /** 通常の質問は QuestionCard をそのまま使用（ここが基準の見た目） */
           return (
             <motion.div
               key={q.id}
@@ -418,15 +428,14 @@ export default function Phase2Call({ answers, onChange }: Props) {
               transition={{ duration: 0.25 }}
             >
               <QuestionCard
-  id={q.id}
-  question={q.question}
-  options={q.options}
-  type={q.type}
-  value={getQCValue(q.id as keyof Phase2Answers, answers)}
-  onChange={handleChange}
-  answers={answers}
-/>
-
+                id={q.id}
+                question={q.question}
+                options={q.options}
+                type={q.type}
+                value={getQCValue(q.id as keyof Phase2Answers, answers)}
+                onChange={handleChange}
+                answers={answers}
+              />
             </motion.div>
           );
         })}
