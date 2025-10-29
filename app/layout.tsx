@@ -3,13 +3,15 @@ import { Inter, Roboto_Mono } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
-  variable: "--font-geist-sans", // 変数名はそのままでOK
+  variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const robotoMono = Roboto_Mono({
-  variable: "--font-geist-mono", // 同様に維持
+  variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -19,15 +21,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="ja">
-      <body
-        className={`${inter.variable} ${robotoMono.variable} antialiased bg-white text-gray-900`}
-        suppressHydrationWarning
-      >
+      <body className={`${inter.variable} ${robotoMono.variable} antialiased`} suppressHydrationWarning>
         {children}
       </body>
     </html>
