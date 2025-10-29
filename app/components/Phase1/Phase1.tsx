@@ -80,7 +80,6 @@ const phase1Questions = [
       "実際に支払う金額で比べたい\n　（初期費用やキャッシュバックも含めて、トータルの支出を月あたりで平均化して比べます。）",
     ],
   },
-  // 分岐表示：compareAxis が「実際に支払う金額」を含むとき
   {
     id: "comparePeriod",
     question:
@@ -104,56 +103,58 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
 
   return (
     <QuestionLayout answeredCount={answeredCount} totalCount={totalCount}>
-      <h1 className="text-3xl font-bold text-sky-900 text-center mb-6">基本条件</h1>
+      {/* ここが“質問カード周りの白背景”を猫柄に置き換えるラッパ 🐱 */}
+      <section className="calico-bg rounded-[1.25rem] p-5">
+        <h1 className="text-3xl font-bold text-sky-900 text-center mb-6">基本条件</h1>
 
-      <div className="space-y-6 w-full">
-        {phase1Questions.map((q) => {
-          if (q.condition && !q.condition(answers)) return null;
+        <div className="space-y-6 w-full">
+          {phase1Questions.map((q) => {
+            if (q.condition && !q.condition(answers)) return null;
 
-          // 参考コードと同じ構成：外枠ボックス内に見出し(h3)＋QuestionCard
-          if (q.id === "comparePeriod") {
+            if (q.id === "comparePeriod") {
+              return (
+                <div
+                  key={q.id}
+                  className="w-full bg-sky-50 border border-sky-200 rounded-2xl p-5 space-y-4"
+                >
+                  <h3 className="text-sky-700 font-semibold text-base">
+                    「実際に支払う金額で比べたい」に関する追加質問
+                  </h3>
+                  <QuestionCard
+                    id={q.id}
+                    question={q.question}
+                    options={q.options}
+                    type={q.type as "radio" | "checkbox"}
+                    value={answers[q.id as keyof Phase1Answers] as string}
+                    onChange={handleChange}
+                  />
+                </div>
+              );
+            }
+
             return (
-              <div
+              <QuestionCard
                 key={q.id}
-                className="w-full bg-sky-50 border border-sky-200 rounded-2xl p-5 space-y-4"
-              >
-                <h3 className="text-sky-700 font-semibold text-base">
-                  「実際に支払う金額で比べたい」に関する追加質問
-                </h3>
-                <QuestionCard
-                  id={q.id}
-                  question={q.question}
-                  options={q.options}
-                  type={q.type as "radio" | "checkbox"}
-                  value={answers[q.id as keyof Phase1Answers] as string}
-                  onChange={handleChange}
-                />
-              </div>
+                id={q.id}
+                question={q.question}
+                options={q.options}
+                type={q.type as "radio" | "checkbox"}
+                value={answers[q.id as keyof Phase1Answers] as string}
+                onChange={handleChange}
+              />
             );
-          }
+          })}
+        </div>
 
-          return (
-            <QuestionCard
-              key={q.id}
-              id={q.id}
-              question={q.question}
-              options={q.options}
-              type={q.type as "radio" | "checkbox"}
-              value={answers[q.id as keyof Phase1Answers] as string}
-              onChange={handleChange}
-            />
-          );
-        })}
-      </div>
-
-      <div className="flex justify-end pt-6 w-full max-w-4xl">
-        <button
-          onClick={() => onSubmit(answers)}
-          className="px-4 py-2 rounded-full bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-300 hover:to-sky-400 text-lg font-semibold text-white shadow-md transition-all duration-200"
-        >
-          次へ →
-        </button>
-      </div>
+        <div className="flex justify-end pt-6 w-full max-w-4xl">
+          <button
+            onClick={() => onSubmit(answers)}
+            className="px-4 py-2 rounded-full bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-300 hover:to-sky-400 text-lg font-semibold text-white shadow-md transition-all duration-200"
+          >
+            次へ →
+          </button>
+        </div>
+      </section>
     </QuestionLayout>
   );
 }

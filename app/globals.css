@@ -1,13 +1,12 @@
-@tailwind base;
-
-@plugin "tailwindcss-animate";
-@tailwind components;
-@tailwind utilities;
+/* ==== Tailwind v4 ベース読み込み ==== */
 @import "tailwindcss";
+
+/* プラグイン（使っているなら残す） */
+@plugin "tailwindcss-animate";
 @import "tw-animate-css";
 
+/* ダークバリアント & テーマ変数（既存のまま） */
 @custom-variant dark (&:is(.dark *));
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -48,6 +47,7 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/* カラートークン（既存のまま） */
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
@@ -117,11 +117,30 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* ベース適用 */
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+  * { @apply border-border outline-ring/50; }
+  body { @apply bg-background text-foreground; }
+}
+
+/* === 質問カード周りの猫タイル背景 ========================== */
+@layer utilities {
+  .calico-bg {
+    position: relative;
+    isolation: isolate; /* この中だけで擬似要素を閉じ込める */
   }
-  body {
-    @apply bg-background text-foreground;
+  .calico-bg::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;        /* かならず背面 */
+    pointer-events: none;
+
+    background-image: url("/images/calicocat.png"); /* public/images/calicocat.png */
+    background-repeat: repeat;
+    background-size: 64px 64px;    /* 小さめ（48〜80pxで調整） */
+    opacity: 0.18;                 /* うっすら */
+    transform: rotate(12deg) scale(1.05); /* 斜め */
+    transform-origin: center;
   }
 }
