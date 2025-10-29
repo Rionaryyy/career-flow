@@ -14,22 +14,22 @@ export function filterPlansByPhase2(answers: Phase2Answers, plans: Plan[]): Plan
     let minRequired = 0;
 
     switch (true) {
-      case usage.includes("3GB以上"):
+      case usage.includes("〜3GB"):
         minRequired = 3;
         break;
-      case usage.includes("5GB以上"):
+      case usage.includes("〜5GB"):
         minRequired = 5;
         break;
-      case usage.includes("10GB以上"):
+      case usage.includes("〜10GB"):
         minRequired = 10;
         break;
-      case usage.includes("20GB以上"):
+      case usage.includes("〜20GB"):
         minRequired = 20;
         break;
-      case usage.includes("30GB以上"):
+      case usage.includes("〜30GB"):
         minRequired = 30;
         break;
-      case usage.includes("50GB以上"):
+      case usage.includes("〜50GB"):
         minRequired = 50;
         break;
       case usage.includes("無制限"):

@@ -37,6 +37,7 @@ const testAnswers: Partial<Phase2Answers> = {
   timeLimitPreference: "5分以内",
   monthlyLimitPreference: "月60分まで無料",
   hybridCallPreference: "月30回まで各10分無料",
+  callOptionsNeeded: "はい（必要）",
   mainCard: ["クレジットカード"],
   cardDetail: ["dカード GOLD"], // 💳 支払い方法詳細テスト追加
   shoppingList: ["楽天市場・楽天ブックス・楽天トラベルなど（楽天経済圏）"], // 🛒 ショッピング還元テスト用
@@ -51,7 +52,7 @@ const testAnswers: Partial<Phase2Answers> = {
   routerSpeed: "最大1Gbps",
   pocketWifiCapacity: "〜20GB",
   pocketWifiSpeed: "100Mbps程度",
-  buyingDevice: "キャリアで購入",
+ buyingDevice: "キャリアで購入",
 
   deviceModel: "iPhone 17 Pro",
   deviceStorage: "512GB",
@@ -65,16 +66,6 @@ const testAnswers: Partial<Phase2Answers> = {
     "dTV",
     "U-NEXT",
   ],
-
-  // 🌍 海外通話オプションテスト追加
-  needInternationalCallUnlimited: "はい",
-  internationalCallCarrier: [
-    "楽天モバイル（国際通話かけ放題：¥980/月・65カ国対象）",
-    "au（国際通話定額：月900分・23カ国対象）",
-  ],
-
-  // 🟩 留守番電話オプションテスト追加
-  callOptionsNeeded: "はい（留守番電話あり）",
 };
 
 // ===================================================
@@ -135,18 +126,20 @@ mobileResult.forEach((plan, i) => {
     }
   }
 
+
   console.log(`・初期費用(月換算): +¥${cost.initialFeeMonthly}`);
   console.log(`・テザリング料: +¥${cost.tetheringFee}`);
 
-  // 🆕 === 🌍 国際通話オプション（月額費用） ===
-  if ("internationalCallFee" in cost && cost.internationalCallFee && cost.internationalCallFee > 0) {
-    console.log(`・国際通話オプション: +¥${cost.internationalCallFee}`);
+    // === 🗣️ 留守番電話オプション ===
+  if ("voicemailFee" in plan && plan.voicemailFee && plan.voicemailFee > 0) {
+    const needsVoicemail =
+      testAnswers.callOptionsNeeded === "はい（必要）" 
+
+    if (needsVoicemail) {
+      console.log(`・留守番電話オプション: +¥${plan.voicemailFee}`);
+    }
   }
 
-  // 🟩 === 📞 留守番電話オプション（月額費用） ===
-  if ("voicemailFee" in cost && cost.voicemailFee && cost.voicemailFee > 0) {
-    console.log(`・留守番電話オプション: +¥${cost.voicemailFee}`);
-  }
 
   // === セット割系 ===
   if (fiberResult.length) console.log(`・光回線セット割: -¥${fiberResult[0].setDiscountAmount}`);
@@ -208,7 +201,7 @@ console.log({
   "ポケットWi-Fi候補数": pocketResult.length,
   "モバイル候補数": mobileResult.length,
 });
-console.log("\n✅ 完了: Result.tsx + サブスク割 + 支払い割引 + ポイント還元 + 🌍海外通話 + 📞留守電オプション確認OK\n");
+console.log("\n✅ 完了: Result.tsx + サブスク割 + 支払い割引 + ポイント還元確認OK\n");
 
 // ===================================================
 // 🔍 総合整合性チェック

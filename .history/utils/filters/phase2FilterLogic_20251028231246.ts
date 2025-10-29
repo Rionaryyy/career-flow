@@ -14,22 +14,22 @@ export function filterPlansByPhase2(answers: Phase2Answers, plans: Plan[]): Plan
     let minRequired = 0;
 
     switch (true) {
-      case usage.includes("3GB以上"):
+      case usage.includes("〜3GB"):
         minRequired = 3;
         break;
-      case usage.includes("5GB以上"):
+      case usage.includes("〜5GB"):
         minRequired = 5;
         break;
-      case usage.includes("10GB以上"):
+      case usage.includes("〜10GB"):
         minRequired = 10;
         break;
-      case usage.includes("20GB以上"):
+      case usage.includes("〜20GB"):
         minRequired = 20;
         break;
-      case usage.includes("30GB以上"):
+      case usage.includes("〜30GB"):
         minRequired = 30;
         break;
-      case usage.includes("50GB以上"):
+      case usage.includes("〜50GB"):
         minRequired = 50;
         break;
       case usage.includes("無制限"):
@@ -164,35 +164,42 @@ export function filterPlansByPhase2(answers: Phase2Answers, plans: Plan[]): Plan
       matches.push(...filtered.filter((p) => p.callType === "unlimited"));
     }
 
+    // 🌍 海外通話かけ放題フィルター（独立）
+if (
+  answers.needInternationalCallUnlimited === "はい" &&
+  Array.isArray(answers.internationalCallCarrier) &&
+  answers.internationalCallCarrier.length > 0
+) {
+  const selectedCarriers = answers.internationalCallCarrier.map(c => c.toLowerCase());
+  filtered = filtered.filter(plan => {
+    const carrier = plan.carrier?.toLowerCase() ?? "";
+    if (selectedCarriers.some(c => c.includes("楽天"))) {
+      return carrier.includes("rakuten") && plan.supportsInternationalUnlimitedCalls === true;
+    }
+    if (selectedCarriers.some(c => c.includes("au"))) {
+      return carrier.includes("au") && plan.supportsInternationalUnlimitedCalls === true;
+    }
+    if (selectedCarriers.some(c => c.includes("softbank"))) {
+      return carrier.includes("softbank") && plan.supportsInternationalUnlimitedCalls === true;
+    }
+    if (selectedCarriers.some(c => c.includes("docomo"))) {
+      return carrier.includes("docomo") && plan.supportsInternationalUnlimitedCalls === true;
+    }
+    return false;
+  });
+
+  console.log("🌍 海外通話フィルター適用:", {
+    selectedCarriers,
+    resultCount: filtered.length,
+    matched: filtered.map(p => ({
+      carrier: p.carrier,
+      supportsIntl: p.supportsInternationalUnlimitedCalls,
+      intlFee: p.internationalCallFee,
+    })),
+  });
+}
+
     filtered = Array.from(new Map(matches.map((p) => [p.planId, p])).values());
-  }
-
-  // 🌍 国際通話（海外通話）フィルター ← 🟢 修正位置：ここに移動
-  if (answers.needInternationalCallUnlimited === "はい") {
-    const selectedCarriers = Array.isArray(answers.internationalCallCarrier)
-      ? answers.internationalCallCarrier
-      : [];
-
-    filtered = filtered.filter((plan) => {
-      if (!plan.supportsInternationalUnlimitedCalls) return false;
-
-      if (selectedCarriers.length === 0) return true;
-
-      return selectedCarriers.some((c) => {
-        const lower = c.toLowerCase();
-        return (
-          (lower.includes("楽天") && plan.carrier?.toLowerCase().includes("rakuten")) ||
-          (lower.includes("au") && plan.carrier?.toLowerCase().includes("au")) ||
-          (lower.includes("softbank") && plan.carrier?.toLowerCase().includes("softbank")) ||
-          (lower.includes("docomo") && plan.carrier?.toLowerCase().includes("docomo"))
-        );
-      });
-    });
-
-    console.log("🌐 国際通話フィルター適用:", {
-      resultCount: filtered.length,
-      matched: filtered.map(p => p.carrier)
-    });
   }
 
   // === 📱 端末モデル＋容量の一致チェック ===
@@ -201,9 +208,11 @@ export function filterPlansByPhase2(answers: Phase2Answers, plans: Plan[]): Plan
     const selectedStorage = answers.deviceStorage.trim();
     const buyingText = answers.buyingDevice ?? "";
 
+    // 🩵 正規店購入の場合はフィルターをスキップ（全キャリア残す）
     if (typeof buyingText === "string" && buyingText.includes("正規店")) {
       console.log("🧩 device filter skipped for 正規店購入 (全キャリア対象)");
     } else {
+      // 🟥 通常の返却プログラム or キャリア購入時のみ lease で絞り込み
       filtered = filtered.filter(plan => {
         const match = devicePricesLease.some(
           d =>
@@ -212,7 +221,7 @@ export function filterPlansByPhase2(answers: Phase2Answers, plans: Plan[]): Plan
             d.carrier === plan.carrier &&
             d.ownershipType === "lease"
         );
-        return match;
+        return match; // lease 一致キャリアのみ残す
       });
 
       console.log("🧩 device filter applied:", {
@@ -249,11 +258,13 @@ export function filterPlansByPhase2(answers: Phase2Answers, plans: Plan[]): Plan
     let matchedRouterPlans: any[] = [];
     let matchedPocketPlans: any[] = [];
 
+    // 光回線
     if (isFiber) {
       matchedFiberPlans = filterByFiberSet(answers, setDiscountPlans, plans[0]?.planId);
       console.log("🟩 光回線フィルター結果:", matchedFiberPlans);
     }
 
+    // ルーター
     if (isRouter) {
       try {
         const { filterByRouterSet } = require("./filterByRouterSet");
@@ -265,6 +276,7 @@ export function filterPlansByPhase2(answers: Phase2Answers, plans: Plan[]): Plan
       }
     }
 
+    // ポケットWi-Fi
     if (isPocket) {
       try {
         const { filterByPocketWifiSet } = require("./filterByPocketWifiSet");
@@ -276,6 +288,7 @@ export function filterPlansByPhase2(answers: Phase2Answers, plans: Plan[]): Plan
       }
     }
 
+    // キャリア表記ゆれ補正
     const normalizeCarrier = (name: string) => {
       const lower = name.toLowerCase();
       if (lower.includes("docomo") || name.includes("ドコモ")) return "docomo";
@@ -285,6 +298,7 @@ export function filterPlansByPhase2(answers: Phase2Answers, plans: Plan[]): Plan
       return lower;
     };
 
+    // 割引合算
     filtered = filtered.map((plan) => {
       const planCarrier = normalizeCarrier(plan.carrier);
 

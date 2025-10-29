@@ -32,7 +32,6 @@ export interface PlanCostBreakdown {
   cashbackTotal?: number;
   initialCostTotal?: number;
   deviceTotal?: number;
-  internationalCallFee?: number;
   voicemailFee?: number;
 }
 
@@ -74,52 +73,21 @@ export function calculatePlanCost(plan: Plan, answers: DiagnosisAnswers): PlanCo
     callOptionFee = cheapestOption?.fee ?? 0;
   }
 
-  // 🌍 === 国際通話オプション料金（個別項目として扱う） ===
-  let internationalCallFee = 0;
-
-  if (answers.phase2?.needInternationalCallUnlimited === "はい") {
-    const selected = answers.phase2?.internationalCallCarrier ?? [];
-
-    for (const c of selected) {
-      const lower = c.toLowerCase();
-
-      // キャリア判定
-      const carrierMatch =
-        (lower.includes("楽天") && plan.carrier?.toLowerCase().includes("rakuten")) ||
-        (lower.includes("au") && plan.carrier?.toLowerCase().includes("au")) ||
-        (lower.includes("softbank") && plan.carrier?.toLowerCase().includes("softbank")) ||
-        (lower.includes("docomo") && plan.carrier?.toLowerCase().includes("docomo"));
-
-      if (carrierMatch) {
-        // ✅ callOptions → internationalOptions に変更
-        const intlOption =
-          plan.internationalOptions?.find(
-            (opt) =>
-              opt.name?.includes("国際通話") ||
-              opt.id?.includes("international")
-          ) ?? null;
-
-        if (intlOption && typeof intlOption.fee === "number") {
-          internationalCallFee += intlOption.fee;
-          console.log(`🌍 ${plan.carrier} に国際通話オプション (${intlOption.fee}円) 加算`);
-        }
-      }
-    }
-  }
-
-  // === ⑨ 留守番電話オプション費用 ===
+  // === ⑨ 留守番電話オプション費用 ===
 let voicemailFee = 0;
 
 // 「はい（必要）」が選択された場合のみ対象
 const wantsVoicemail =
-  typeof answers.phase2?.callOptionsNeeded === "string" &&
-  answers.phase2.callOptionsNeeded.includes("はい");
+  typeof answers.phase2?.callOptionsNeeded === "string" &&
+  answers.phase2.callOptionsNeeded.includes("はい");
 
 if (wantsVoicemail) {
-  if (typeof plan.voicemailFee === "number" && plan.voicemailFee > 0) {
-    voicemailFee = plan.voicemailFee;
-  }
+  if (typeof plan.voicemailFee === "number" && plan.voicemailFee > 0) {
+    voicemailFee = plan.voicemailFee;
+  }
 }
+
+
 
   // === 家族割 ===
   let familyDiscount = 0;
@@ -337,7 +305,6 @@ if (wantsTethering && plan.tetheringAvailable) {
             paymentDiscount +
             initialFeeMonthly +
             tetheringFee+
-            internationalCallFee+
             voicemailFee;
 
           paymentReward += Math.round(totalAfterDiscounts * rule.rate);
@@ -465,6 +432,7 @@ if (wantsTethering && plan.tetheringAvailable) {
     callOptionFee -
     familyDiscount -
     studentDiscount -
+    voicemailFee +
     ageDiscount -
     cashback -
     fiberDiscount -
@@ -480,17 +448,14 @@ if (wantsTethering && plan.tetheringAvailable) {
     initialFeeMonthly +
     tetheringFee +
     deviceLeaseMonthly +
-    deviceBuyMonthly+
-    internationalCallFee+
-    voicemailFee;
+    deviceBuyMonthly;
 
   return {
     baseFee: base,
     callOptionFee,
     familyDiscount,
-    internationalCallFee,
-    voicemailFee,
     studentDiscount,
+    voicemailFee,
     ageDiscount,
     cashback,
     cashbackTotal,

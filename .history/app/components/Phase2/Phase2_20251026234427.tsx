@@ -22,8 +22,7 @@ interface Phase2Props {
 }
 
 export default function Phase2({ onSubmit, defaultValues, onBack, phase1Answers }: Phase2Props) {
-  const [answers, setAnswers] = useState<Phase2Answers>(() => ({ ...defaultValues }));
-
+  const [answers, setAnswers] = useState<Phase2Answers>(defaultValues);
   const [step, setStep] = useState<number>(0);
 
   const steps = [
@@ -41,15 +40,14 @@ export default function Phase2({ onSubmit, defaultValues, onBack, phase1Answers 
     setAnswers((prev) => ({ ...prev, ...updated }));
   };
 
-const handleNext = () => {
-  if (step < steps.length - 1) {
-    setStep(step + 1);
-  } else {
-    console.log("🚀 Submitting Phase2:", answers); // ← デバッグ用
-    onSubmit({ ...answers }); // ← シャローコピーで確実に最新を渡す
-    window.scrollTo({ top: 0, behavior: "auto" });
-  }
-};
+  const handleNext = () => {
+    if (step < steps.length - 1) {
+      setStep(step + 1);
+    } else {
+      onSubmit(answers);
+      window.scrollTo({ top: 0, behavior: "auto" });
+    }
+  };
 
   const handleBack = () => {
     if (step > 0) {

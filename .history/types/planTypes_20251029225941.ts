@@ -96,7 +96,6 @@ export interface Plan {
   callOptions?: CallOption[];
     // 🌍 国際通話オプション（追加）
   internationalOptions?: InternationalCallOption[];
-  voicemailFee?: number;
 
 
   // === 割引・家族系 ===

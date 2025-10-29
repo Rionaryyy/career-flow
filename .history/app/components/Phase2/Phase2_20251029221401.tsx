@@ -22,8 +22,7 @@ interface Phase2Props {
 }
 
 export default function Phase2({ onSubmit, defaultValues, onBack, phase1Answers }: Phase2Props) {
-  const [answers, setAnswers] = useState<Phase2Answers>(() => ({ ...defaultValues }));
-
+  const [answers, setAnswers] = useState<Phase2Answers>(defaultValues);
   const [step, setStep] = useState<number>(0);
 
   const steps = [

@@ -33,8 +33,6 @@ interface PlanWithCost extends Plan {
     cashbackTotal?: number;
     initialCostTotal?: number;
     deviceTotal?: number;
-    internationalCallFee?: number; // 🆕 国際通話オプション追加
-    voicemailFee?: number; // 🆕 留守番電話オプション追加
   };
   totalMonthly: number;
 }
@@ -95,8 +93,6 @@ export default function Result({ answers, onRestart }: Props) {
             ((cost.deviceBuyMonthly ?? 0) * 24) ||
             ((cost.deviceLeaseMonthly ?? 0) * 24) ||
             (plan.deviceProgram?.totalPayment ?? 0),
-          internationalCallFee: cost.internationalCallFee ?? 0, // 🆕 追加
-          voicemailFee: cost.voicemailFee ?? 0, // 🆕 追加
         },
         totalMonthly: cost.total ?? 0,
       };
@@ -145,14 +141,6 @@ export default function Result({ answers, onRestart }: Props) {
                 <p>・学割: -¥{plan.breakdown.studentDiscount}</p>
                 <p>・年齢割: -¥{plan.breakdown.ageDiscount}</p>
                 <p>・テザリング料: +¥{plan.breakdown.tetheringFee}</p>
-
-                {/* 🆕 追加: 国際通話 & 留守番電話オプション表示 */}
-                {plan.breakdown.internationalCallFee !== 0 && (
-                  <p>・国際通話オプション: +¥{plan.breakdown.internationalCallFee}</p>
-                )}
-                {plan.breakdown.voicemailFee !== 0 && (
-                  <p>・留守番電話オプション: +¥{plan.breakdown.voicemailFee}</p>
-                )}
 
                 {answers.phase1?.compareAxis?.includes("実際に支払う金額") && (
                   <div className="mt-3 border-t border-dashed border-gray-300 pt-2">

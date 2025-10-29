@@ -43,7 +43,6 @@ export const allPlans: Plan[] = [
       { id: "5min", name: "5分かけ放題", fee: 550 },
       { id: "10min", name: "10分かけ放題", fee: 880 },
     ],
-    voicemailFee: 300,
     supportsFamilyDiscount: true,
     familyDiscountRules: [
       { lines: 2, discount: 550 },
@@ -154,7 +153,6 @@ export const allPlans: Plan[] = [
       { id: "monthly60", name: "月60分無料", fee: 770 },
     ],
     supportsInternationalUnlimitedCalls: false,
-    voicemailFee: 200,
     supportsFamilyDiscount: true,
     familyDiscountRules: [
       { lines: 2, discount: 550 },
@@ -262,16 +260,6 @@ export const allPlans: Plan[] = [
       { id: "none", name: "なし", fee: 0 },
       { id: "hybrid_30x10", name: "月30回・各10分無料", fee: 880 },
     ],
-    internationalOptions: [
-  {
-    id: "international_unlimited_au",
-    name: "国際通話定額オプション（23カ国・月900分）",
-    description: "対象23カ国への国際通話が月900分まで無料（以降30秒22円）",
-    fee: 900,
-    type: "international",
-  },
-],
-voicemailFee: 330,
     supportsInternationalUnlimitedCalls: true, // ✅ ←追加
     supportsFamilyDiscount: true,
     familyDiscountRules: [
@@ -367,17 +355,6 @@ voicemailFee: 330,
     callType: "unlimited",
     callIncluded: true,
     callOptions: [{ id: "unlimited", name: "無制限かけ放題", fee: 0 }],
-    internationalOptions: [
-  {
-    id: "international_unlimited_rakuten",
-    name: "国際通話かけ放題オプション（65カ国対象）",
-    description: "Rakuten Linkアプリ利用で65カ国への国際通話がかけ放題",
-    fee: 980,
-    type: "international",
-  },
-],
-voicemailFee: 0,
-
     supportsFamilyDiscount: true,
     familyDiscountRules: [
       { lines: 2, discount: 200 },

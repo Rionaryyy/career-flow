@@ -108,27 +108,12 @@ export default function DiagnosisFlow() {
     window.scrollTo({ top: 0, behavior: "auto" });
   };
 
-  // ✅ フェーズ2送信（JSON展開＋部分更新）
+  // ✅ フェーズ2送信
   const handlePhase2Submit = (phase2Answers: Phase2Answers) => {
-    console.log("📨 Phase2 Submit Data:", JSON.stringify(phase2Answers, null, 2)); // ← 展開して表示
-
     setAnswers((prev) => {
-      const updated: DiagnosisAnswers = {
-        ...prev,
-        phase2: {
-          ...prev.phase2,   // ← 既存値を保持
-          ...phase2Answers, // ← 今回の回答を上書き
-        },
-      };
-
-      console.log("💾 DiagnosisAnswers 更新後:", JSON.stringify(updated.phase2, null, 2)); // ← 確認用ログ
-
-      // ローカル保存も同時に更新
-      localStorage.setItem("diagnosisAnswers", JSON.stringify(updated));
-
+      const updated: DiagnosisAnswers = { ...prev, phase2: phase2Answers };
       return JSON.parse(JSON.stringify(updated)) as DiagnosisAnswers;
     });
-
     setStep("result");
     window.scrollTo({ top: 0, behavior: "auto" });
   };

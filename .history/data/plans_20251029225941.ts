@@ -43,7 +43,6 @@ export const allPlans: Plan[] = [
       { id: "5min", name: "5分かけ放題", fee: 550 },
       { id: "10min", name: "10分かけ放題", fee: 880 },
     ],
-    voicemailFee: 300,
     supportsFamilyDiscount: true,
     familyDiscountRules: [
       { lines: 2, discount: 550 },
@@ -154,7 +153,6 @@ export const allPlans: Plan[] = [
       { id: "monthly60", name: "月60分無料", fee: 770 },
     ],
     supportsInternationalUnlimitedCalls: false,
-    voicemailFee: 200,
     supportsFamilyDiscount: true,
     familyDiscountRules: [
       { lines: 2, discount: 550 },
@@ -271,7 +269,7 @@ export const allPlans: Plan[] = [
     type: "international",
   },
 ],
-voicemailFee: 330,
+
     supportsInternationalUnlimitedCalls: true, // ✅ ←追加
     supportsFamilyDiscount: true,
     familyDiscountRules: [
@@ -376,7 +374,6 @@ voicemailFee: 330,
     type: "international",
   },
 ],
-voicemailFee: 0,
 
     supportsFamilyDiscount: true,
     familyDiscountRules: [

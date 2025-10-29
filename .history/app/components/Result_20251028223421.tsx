@@ -33,8 +33,6 @@ interface PlanWithCost extends Plan {
     cashbackTotal?: number;
     initialCostTotal?: number;
     deviceTotal?: number;
-    internationalCallFee?: number; // 🆕 国際通話オプション追加
-    voicemailFee?: number; // 🆕 留守番電話オプション追加
   };
   totalMonthly: number;
 }
@@ -56,13 +54,9 @@ export default function Result({ answers, onRestart }: Props) {
     if (answers.phase1 && Object.values(answers.phase1).some(v => v)) {
       result = filterPlansByPhase1(answers.phase1, result);
     }
-
-    // 🩵 修正版：Phase2のフィルターを常に実行（nullでもスキップしない）
-    if (answers.phase2) {
+    if (answers.phase2 && Object.values(answers.phase2).some(v => v)) {
       result = filterPlansByPhase2(answers.phase2, result);
     }
-
-    console.log("✅ Filtered result count:", result.length);
 
     const withCosts: PlanWithCost[] = result.map(plan => {
       const cost = calculatePlanCost(plan, answers);
@@ -95,8 +89,6 @@ export default function Result({ answers, onRestart }: Props) {
             ((cost.deviceBuyMonthly ?? 0) * 24) ||
             ((cost.deviceLeaseMonthly ?? 0) * 24) ||
             (plan.deviceProgram?.totalPayment ?? 0),
-          internationalCallFee: cost.internationalCallFee ?? 0, // 🆕 追加
-          voicemailFee: cost.voicemailFee ?? 0, // 🆕 追加
         },
         totalMonthly: cost.total ?? 0,
       };
@@ -106,8 +98,7 @@ export default function Result({ answers, onRestart }: Props) {
     return withCosts.sort((a, b) => a.totalMonthly - b.totalMonthly);
   }, [answers.phase1, answers.phase2]);
 
-  // 🟢 該当箇所のみ修正
-  console.log("📦 Phase2 Debug in Result:", JSON.stringify(answers.phase2, null, 2));
+  console.log("📦 Phase2 Debug in Result:", answers.phase2);
 
   return (
     <div className="w-full py-10 px-6 max-w-4xl mx-auto">
@@ -146,54 +137,60 @@ export default function Result({ answers, onRestart }: Props) {
                 <p>・年齢割: -¥{plan.breakdown.ageDiscount}</p>
                 <p>・テザリング料: +¥{plan.breakdown.tetheringFee}</p>
 
-                {/* 🆕 追加: 国際通話 & 留守番電話オプション表示 */}
-                {plan.breakdown.internationalCallFee !== 0 && (
-                  <p>・国際通話オプション: +¥{plan.breakdown.internationalCallFee}</p>
-                )}
-                {plan.breakdown.voicemailFee !== 0 && (
-                  <p>・留守番電話オプション: +¥{plan.breakdown.voicemailFee}</p>
-                )}
+                {answers.phase2?.callOptionsNeeded === "はい（必要）" &&
+ plan.voicemailFee &&
+ plan.voicemailFee > 0 && (
+  <p>・留守番電話オプション: +¥{plan.voicemailFee}</p>
+)}
 
-                {answers.phase1?.compareAxis?.includes("実際に支払う金額") && (
-                  <div className="mt-3 border-t border-dashed border-gray-300 pt-2">
-                    <p className="font-semibold text-gray-800 mb-1">💰 初期費用・特典内訳</p>
 
-                    <p className="ml-2 text-gray-700">
-                      ・キャッシュバック総額: -¥
-                      {(plan.breakdown.cashbackTotal ?? 0).toLocaleString()}
-                    </p>
-                    <p className="ml-2 text-gray-700">
-                      ・契約・初期費用総額: +¥
-                      {(plan.breakdown.initialCostTotal ?? 0).toLocaleString()}
-                    </p>
 
-                    {(() => {
-                      const cashbackTotal = plan.breakdown.cashbackTotal ?? 0;
-                      const initialCostTotal = plan.breakdown.initialCostTotal ?? 0;
-                      const netInitialCost = initialCostTotal - cashbackTotal;
-                      const comparePeriod = answers.phase1?.comparePeriod ?? "";
-                      let months = 12;
-                      if (comparePeriod.includes("2年")) months = 24;
-                      else if (comparePeriod.includes("3年")) months = 36;
+{/* 💰 キャッシュバック・初期費用まとめ（compareAxisが「実際に支払う金額」の時のみ） */}
+{answers.phase1?.compareAxis?.includes("実際に支払う金額") && (
+  <div className="mt-3 border-t border-dashed border-gray-300 pt-2">
+    <p className="font-semibold text-gray-800 mb-1">💰 初期費用・特典内訳</p>
 
-                      const netMonthly = Math.round(netInitialCost / months);
+    {/* 個別明細 */}
+    <p className="ml-2 text-gray-700">
+      ・キャッシュバック総額: -¥
+      {(plan.breakdown.cashbackTotal ?? 0).toLocaleString()}
+    </p>
+    <p className="ml-2 text-gray-700">
+      ・契約・初期費用総額: +¥
+      {(plan.breakdown.initialCostTotal ?? 0).toLocaleString()}
+    </p>
 
-                      return (
-                        <div className="ml-2 mt-2">
-                          <p className="text-gray-800 font-medium">
-                            📦 実質初期費用(月換算):{" "}
-                            {netMonthly >= 0 ? "+" : "-"}¥{Math.abs(netMonthly).toLocaleString()}
-                          </p>
-                          <p className="text-xs text-gray-500 ml-4">
-                            ↳ 総額: {netInitialCost >= 0 ? "+" : "-"}¥
-                            {Math.abs(netInitialCost).toLocaleString()} / {months}ヶ月平均
-                          </p>
-                        </div>
-                      );
-                    })()}
-                  </div>
-                )}
+    {/* 実質初期費用（差し引き） */}
+    {(() => {
+      const cashbackTotal = plan.breakdown.cashbackTotal ?? 0;
+      const initialCostTotal = plan.breakdown.initialCostTotal ?? 0;
+      const netInitialCost = initialCostTotal - cashbackTotal; // ← 差額計算
+      const comparePeriod = answers.phase1?.comparePeriod ?? "";
+      let months = 12;
+      if (comparePeriod.includes("2年")) months = 24;
+      else if (comparePeriod.includes("3年")) months = 36;
 
+      const netMonthly = Math.round(netInitialCost / months);
+
+      return (
+        <div className="ml-2 mt-2">
+          <p className="text-gray-800 font-medium">
+            📦 実質初期費用(月換算):{" "}
+            {netMonthly >= 0 ? "+" : "-"}¥{Math.abs(netMonthly).toLocaleString()}
+          </p>
+          <p className="text-xs text-gray-500 ml-4">
+            ↳ 総額: {netInitialCost >= 0 ? "+" : "-"}¥
+            {Math.abs(netInitialCost).toLocaleString()} / {months}ヶ月平均
+          </p>
+        </div>
+      );
+    })()}
+  </div>
+)}
+
+
+
+                                {/* 💻 端末関連（返却プログラム／購入は排他表示） */}
                 {plan.breakdown.deviceLeaseMonthly && plan.breakdown.deviceLeaseMonthly > 0 ? (
                   <div className="mt-1">
                     <p className="font-medium text-indigo-700">
@@ -201,7 +198,8 @@ export default function Result({ answers, onRestart }: Props) {
                       ¥{plan.breakdown.deviceLeaseMonthly}
                     </p>
                     <p className="text-xs text-gray-500 ml-3">
-                      ↳ 総額（目安）: ¥{(plan.breakdown.deviceTotal ?? 0).toLocaleString()}
+                      ↳ 総額（目安）:
+                      ¥{(plan.breakdown.deviceTotal ?? 0).toLocaleString()}
                     </p>
                   </div>
                 ) : plan.breakdown.deviceBuyMonthly && plan.breakdown.deviceBuyMonthly > 0 ? (
@@ -211,10 +209,13 @@ export default function Result({ answers, onRestart }: Props) {
                       ¥{plan.breakdown.deviceBuyMonthly}
                     </p>
                     <p className="text-xs text-gray-500 ml-3">
-                      ↳ 総額（目安）: ¥{(plan.breakdown.deviceTotal ?? 0).toLocaleString()}
+                      ↳ 総額（目安）:
+                      ¥{(plan.breakdown.deviceTotal ?? 0).toLocaleString()}
                     </p>
                   </div>
                 ) : null}
+
+
 
                 {plan.breakdown.fiberDiscount !== 0 && (
                   <p>・光回線セット割: -¥{plan.breakdown.fiberDiscount}</p>
@@ -223,7 +224,9 @@ export default function Result({ answers, onRestart }: Props) {
                   <p>・ルーター割引: -¥{plan.breakdown.routerDiscount}</p>
                 )}
                 {plan.breakdown.pocketWifiDiscount !== 0 && (
-                  <p>・ポケットWi-Fi割: -¥{plan.breakdown.pocketWifiDiscount}</p>
+                  <p>
+                    ・ポケットWi-Fi割: -¥{plan.breakdown.pocketWifiDiscount}
+                  </p>
                 )}
                 {plan.breakdown.electricDiscount !== 0 && (
                   <p>・電気セット割: -¥{plan.breakdown.electricDiscount}</p>
@@ -241,17 +244,22 @@ export default function Result({ answers, onRestart }: Props) {
                   <p>・支払い還元（実質）: -¥{plan.breakdown.paymentReward}</p>
                 )}
                 {plan.breakdown.shoppingReward !== 0 && (
-                  <p>・ショッピング還元（実質）: -¥{plan.breakdown.shoppingReward}</p>
+                  <p>
+                    ・ショッピング還元（実質）: -¥
+                    {plan.breakdown.shoppingReward}
+                  </p>
                 )}
                 {plan.breakdown.pointReward !== 0 && (
                   <p>・ポイント還元（実質）: -¥{plan.breakdown.pointReward}</p>
                 )}
               </div>
 
-              {(answers.phase2?.deviceModel || answers.phase2?.deviceStorage) && (
+              {(answers.phase2?.deviceModel ||
+                answers.phase2?.deviceStorage) && (
                 <div className="mt-2 text-xs text-gray-600 border-t border-dashed border-gray-300 pt-1">
                   📱 {answers.phase2?.deviceModel ?? plan.deviceProgram?.model}
-                  {answers.phase2?.deviceStorage && `（${answers.phase2.deviceStorage}）`}{" "}
+                  {answers.phase2?.deviceStorage &&
+                    `（${answers.phase2.deviceStorage}）`}{" "}
                   /{" "}
                   {answers.phase2?.buyingDevice?.includes("返却")
                     ? "返却プログラム"

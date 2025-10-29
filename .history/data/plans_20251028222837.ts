@@ -43,7 +43,6 @@ export const allPlans: Plan[] = [
       { id: "5min", name: "5分かけ放題", fee: 550 },
       { id: "10min", name: "10分かけ放題", fee: 880 },
     ],
-    voicemailFee: 300,
     supportsFamilyDiscount: true,
     familyDiscountRules: [
       { lines: 2, discount: 550 },
@@ -88,6 +87,10 @@ export const allPlans: Plan[] = [
       { type: "電気", discount: 500 },
       { type: "ガス", discount: 400 },
     ],
+
+    // ドコモ（docomo）
+// → 「留守番電話サービス」月額 330円（税込）※ahamoなど一部プラン無料
+voicemailFee: 330,
 
     // ✅ 🎬 サブスクセット割対応
     subscriptionDiscountRules: [
@@ -153,8 +156,9 @@ export const allPlans: Plan[] = [
       { id: "monthly30", name: "月30分無料", fee: 550 },
       { id: "monthly60", name: "月60分無料", fee: 770 },
     ],
-    supportsInternationalUnlimitedCalls: false,
-    voicemailFee: 200,
+// ソフトバンク（softbank）
+// → 「留守番電話プラス」月額 330円（税込）※通常の留守電は無料
+voicemailFee: 300,
     supportsFamilyDiscount: true,
     familyDiscountRules: [
       { lines: 2, discount: 550 },
@@ -262,22 +266,14 @@ export const allPlans: Plan[] = [
       { id: "none", name: "なし", fee: 0 },
       { id: "hybrid_30x10", name: "月30回・各10分無料", fee: 880 },
     ],
-    internationalOptions: [
-  {
-    id: "international_unlimited_au",
-    name: "国際通話定額オプション（23カ国・月900分）",
-    description: "対象23カ国への国際通話が月900分まで無料（以降30秒22円）",
-    fee: 900,
-    type: "international",
-  },
-],
-voicemailFee: 330,
-    supportsInternationalUnlimitedCalls: true, // ✅ ←追加
     supportsFamilyDiscount: true,
     familyDiscountRules: [
       { lines: 2, discount: 550 },
       { lines: 3, discount: 1100 },
     ],
+    // au（au）
+// → 「留守番電話サービスEX」月額 330円（税込）※スマートパスプレミアム加入で無料の場合あり
+voicemailFee: 200,
     familyDiscountCap: 1100,
     supportsStudentDiscount: true,
     supportsAgeDiscount: true,
@@ -367,23 +363,15 @@ voicemailFee: 330,
     callType: "unlimited",
     callIncluded: true,
     callOptions: [{ id: "unlimited", name: "無制限かけ放題", fee: 0 }],
-    internationalOptions: [
-  {
-    id: "international_unlimited_rakuten",
-    name: "国際通話かけ放題オプション（65カ国対象）",
-    description: "Rakuten Linkアプリ利用で65カ国への国際通話がかけ放題",
-    fee: 980,
-    type: "international",
-  },
-],
-voicemailFee: 0,
-
     supportsFamilyDiscount: true,
     familyDiscountRules: [
       { lines: 2, discount: 200 },
       { lines: 3, discount: 400 },
       { lines: 4, discount: 600 },
     ],
+    // 楽天モバイル（rakuten）
+// → 留守番電話機能は標準提供（無料）
+voicemailFee: 0,
     familyDiscountCap: 600,
     supportsStudentDiscount: true,
     supportsAgeDiscount: true,
@@ -391,7 +379,6 @@ voicemailFee: 0,
       { minAge: 15, maxAge: 22, discount: 440 },
       { minAge: 23, maxAge: 25, discount: 300 },
     ],
-    supportsInternationalUnlimitedCalls: true, // ✅ ←追加
     ageDiscountRules: [
       { ageGroup: "18歳以下", discount: 400 },
       { ageGroup: "25歳以下", discount: 300 },

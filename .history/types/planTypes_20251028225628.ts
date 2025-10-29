@@ -10,15 +10,6 @@ export interface CallOption {
   fee: number;
 }
 
-// 🌍 国際通話オプション定義（追加）
-export interface InternationalCallOption {
-  id: string;
-  name: string;
-  description?: string;
-  fee: number;
-  type?: "international" | "roaming";
-}
-
 /**
  * ===================================================
  * 🎬 サブスク割定義（新規追加）
@@ -94,9 +85,8 @@ export interface Plan {
   callIncluded?: boolean;
   supportsInternationalUnlimitedCalls?: boolean;
   callOptions?: CallOption[];
-    // 🌍 国際通話オプション（追加）
-  internationalOptions?: InternationalCallOption[];
-  voicemailFee?: number;
+  voicemailFee?: number | null; // 留守番電話オプション料金（月額）
+  internationalCallFee?: number | null; // 🆕 海外通話オプション料金
 
 
   // === 割引・家族系 ===

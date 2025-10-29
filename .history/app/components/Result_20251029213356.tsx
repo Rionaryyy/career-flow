@@ -33,8 +33,6 @@ interface PlanWithCost extends Plan {
     cashbackTotal?: number;
     initialCostTotal?: number;
     deviceTotal?: number;
-    internationalCallFee?: number; // 🆕 国際通話オプション追加
-    voicemailFee?: number; // 🆕 留守番電話オプション追加
   };
   totalMonthly: number;
 }
@@ -95,8 +93,6 @@ export default function Result({ answers, onRestart }: Props) {
             ((cost.deviceBuyMonthly ?? 0) * 24) ||
             ((cost.deviceLeaseMonthly ?? 0) * 24) ||
             (plan.deviceProgram?.totalPayment ?? 0),
-          internationalCallFee: cost.internationalCallFee ?? 0, // 🆕 追加
-          voicemailFee: cost.voicemailFee ?? 0, // 🆕 追加
         },
         totalMonthly: cost.total ?? 0,
       };
@@ -106,8 +102,7 @@ export default function Result({ answers, onRestart }: Props) {
     return withCosts.sort((a, b) => a.totalMonthly - b.totalMonthly);
   }, [answers.phase1, answers.phase2]);
 
-  // 🟢 該当箇所のみ修正
-  console.log("📦 Phase2 Debug in Result:", JSON.stringify(answers.phase2, null, 2));
+  console.log("📦 Phase2 Debug in Result:", answers.phase2);
 
   return (
     <div className="w-full py-10 px-6 max-w-4xl mx-auto">
@@ -146,14 +141,7 @@ export default function Result({ answers, onRestart }: Props) {
                 <p>・年齢割: -¥{plan.breakdown.ageDiscount}</p>
                 <p>・テザリング料: +¥{plan.breakdown.tetheringFee}</p>
 
-                {/* 🆕 追加: 国際通話 & 留守番電話オプション表示 */}
-                {plan.breakdown.internationalCallFee !== 0 && (
-                  <p>・国際通話オプション: +¥{plan.breakdown.internationalCallFee}</p>
-                )}
-                {plan.breakdown.voicemailFee !== 0 && (
-                  <p>・留守番電話オプション: +¥{plan.breakdown.voicemailFee}</p>
-                )}
-
+                {/* 💰 キャッシュバック・初期費用まとめ（compareAxisが「実際に支払う金額」の時のみ） */}
                 {answers.phase1?.compareAxis?.includes("実際に支払う金額") && (
                   <div className="mt-3 border-t border-dashed border-gray-300 pt-2">
                     <p className="font-semibold text-gray-800 mb-1">💰 初期費用・特典内訳</p>
@@ -194,6 +182,7 @@ export default function Result({ answers, onRestart }: Props) {
                   </div>
                 )}
 
+                {/* 💻 端末関連 */}
                 {plan.breakdown.deviceLeaseMonthly && plan.breakdown.deviceLeaseMonthly > 0 ? (
                   <div className="mt-1">
                     <p className="font-medium text-indigo-700">
