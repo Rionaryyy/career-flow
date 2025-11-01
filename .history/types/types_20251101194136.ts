@@ -83,10 +83,7 @@ export interface Phase2Answers {
   auDetails?: string[]; 
   linkedBank?: string[]; // 経済圏連携銀行（例：楽天銀行、auじぶん銀行、三井住友銀行など）
        // au / Ponta経済圏の支払い手段
-  monthlyBarcodeSpend?: number;              // ← すでにあるかも
-  shoppingEcosystem?: string[];              // 🟩 ショッピング経済圏の選択肢
-  monthlyShoppingSpend?: number;             // 🟩 ショッピング月額利用額
-  
+
   // ⑤ サブスク
   videoSubscriptions: string[] | null;
   musicSubscriptions: string[] | null;

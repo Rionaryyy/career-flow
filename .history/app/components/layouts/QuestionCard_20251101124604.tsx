@@ -51,7 +51,7 @@ export default function QuestionCard({
   const selectedValues =
     type === "checkbox" ? (Array.isArray(value) ? value : []) : [];
 
-  // 🟦 修正版：スライダータイプ（上限maxがUIに連動）
+  // 🟦 ここから追加：スライダータイプ
   if (type === "slider") {
     const sliderValue =
       typeof value === "number"
@@ -59,9 +59,6 @@ export default function QuestionCard({
         : typeof value === "string"
         ? Number(value)
         : min ?? 0;
-
-    // ✅ 上限値が小さすぎるときは、選択中の値を上限内に補正
-    const cappedValue = Math.min(sliderValue, max ?? 200000);
 
     return (
       <div className="w-full bg-sky-50 p-5 rounded-2xl border border-sky-500 shadow-sm space-y-6">
@@ -71,28 +68,23 @@ export default function QuestionCard({
           <input
             type="range"
             min={min ?? 0}
-            max={max ?? 200000} // ← 🟩 上限が動的に反映
+            max={max ?? 100000}
             step={step ?? 1000}
-            value={cappedValue}
+            value={sliderValue}
             onChange={(e) =>
               onChange(id as keyof Phase2Answers, Number(e.target.value))
             }
             className="w-full accent-sky-600 cursor-pointer"
           />
           <p className="text-gray-800 text-lg font-semibold">
-            ¥{cappedValue.toLocaleString()}
+            ¥{sliderValue.toLocaleString()}
             {unit && <span className="text-gray-500 text-sm ml-1">{unit}</span>}
           </p>
-          {max && (
-            <p className="text-xs text-sky-700">
-              （上限：{max.toLocaleString()}円）
-            </p>
-          )}
         </div>
       </div>
     );
   }
-  // 🟦 修正ここまで
+  // 🟦 追加ここまで
 
   return (
     <div className="w-full bg-sky-50 p-5 rounded-2xl border border-sky-500 shadow-sm space-y-4">

@@ -34,16 +34,12 @@ const testAnswers: Partial<Phase2Answers> = {
   timeLimitPreference: "5分以内",
   monthlyLimitPreference: "月60分まで無料",
   hybridCallPreference: "月30回まで各10分無料",
-  monthlyBarcodeSpend: 20000, // ← スライダー想定（円）
-
-  // 🛒 ショッピング利用経済圏（新フィールド）
-  shoppingEcosystem: [
-    "楽天市場・楽天ブックス・楽天トラベルなど（楽天経済圏）",
-  ],
-  // 🛒 ショッピング利用額（新フィールド）
-  monthlyShoppingSpend: 20000, // ← スライダー想定（円）
-  paymentEcosystem: ["dポイント経済圏"], // ✅ 追加：還元率判定に必要
-  linkedBank: ["三井住友銀行"], // ✅ 追加：銀行連携特典の確認用
+  mainCard: ["クレジットカード"],
+  cardDetail: ["dカード GOLD"],
+  shoppingList: ["楽天市場・楽天ブックス・楽天トラベルなど（楽天経済圏）"],
+  shoppingMonthly: "20000",
+  paymentList: ["d払い / dカード（dポイント経済圏）"],
+  paymentMonthly: "20000",
   overseasSupport: "はい",
   setDiscount: "光回線の契約, ルーター購入・レンタル, ポケットWi-Fi契約, 電気, ガス",
   fiberType: "戸建て",
@@ -54,14 +50,7 @@ const testAnswers: Partial<Phase2Answers> = {
   pocketWifiSpeed: "100Mbps程度",
   hasElectricSet: true,
   hasGasSet: true,
-  subscriptionList: [
-    "Netflix",
-    "YouTube Premium",
-    "Amazon Prime Video",
-    "Spotify",
-    "dTV",
-    "U-NEXT",
-  ],
+  subscriptionList: ["Netflix", "YouTube Premium", "Amazon Prime Video", "Spotify", "dTV", "U-NEXT"],
 };
 
 // ===================================================
@@ -84,7 +73,6 @@ console.log("【フェーズ②回答内容】");
 console.log(JSON.stringify(testAnswers, null, 2));
 console.log("\n----------------------------------------\n");
 
-
 mobileResult.forEach((plan, i) => {
   const cost = calculatePlanCost(plan, { phase1: testPhase1Answers, phase2: testAnswers } as any);
 
@@ -101,9 +89,9 @@ mobileResult.forEach((plan, i) => {
   console.log(`・初期費用(月換算): +¥${cost.initialFeeMonthly}`);
   console.log(`・テザリング料: +¥${cost.tetheringFee}`);
 
-  if (cost.internationalCallFee && cost.internationalCallFee > 0)
+  if ("internationalCallFee" in cost && cost.internationalCallFee && cost.internationalCallFee > 0)
     console.log(`・国際通話オプション: +¥${cost.internationalCallFee}`);
-  if (cost.voicemailFee && cost.voicemailFee > 0)
+  if ("voicemailFee" in cost && cost.voicemailFee && cost.voicemailFee > 0)
     console.log(`・留守番電話オプション: +¥${cost.voicemailFee}`);
 
   if (fiberResult.length) console.log(`・光回線セット割: -¥${fiberResult[0].setDiscountAmount}`);
@@ -132,19 +120,25 @@ mobileResult.forEach((plan, i) => {
     }
   }
 
-    // === 💳 支払い方法割引・還元 ===
+  // === 💳 支払い方法割引・還元 ===
   if (cost.paymentDiscount && cost.paymentDiscount > 0)
     console.log(`・支払い方法割引: -¥${cost.paymentDiscount}`);
 
   // 🟢 === 💰 各種還元額（円換算で可視化） ===
-  if (cost.paymentReward || cost.dailyPaymentReward || cost.shoppingReward || cost.carrierBarcodeReward || cost.carrierShoppingReward) {
+  if (cost.paymentReward || cost.dailyPaymentReward || cost.shoppingReward) {
     console.log("\n💴 【還元額詳細】");
+    console.log(`🪙 経済圏支払い還元: ¥${(cost.dailyPaymentReward ?? 0).toLocaleString()}`);
     console.log(`💳 カード特典還元: ¥${(cost.paymentReward ?? 0).toLocaleString()}`);
-    console.log(`📱 キャリアバーコード還元: ¥${(cost.carrierBarcodeReward ?? 0).toLocaleString()}`);
-    console.log(`🛍 キャリアショッピング還元: ¥${(cost.carrierShoppingReward ?? 0).toLocaleString()}`);
-    console.log(`🎁 キャリア合算還元: ¥${(cost.totalCarrierReward ?? 0).toLocaleString()}`);
+    console.log(`🛒 ショッピング還元: ¥${(cost.shoppingReward ?? 0).toLocaleString()}`);
   }
 
+  // 🟢 総還元合計を表示
+  const totalReward =
+    (cost.dailyPaymentReward ?? 0) +
+    (cost.paymentReward ?? 0) +
+    (cost.shoppingReward ?? 0);
+  if (totalReward > 0)
+    console.log(`🎁 総還元合計: ¥${totalReward.toLocaleString()}\n`);
 
   console.log(`🧩 planId: ${plan.planId}`);
   console.log(`📞 通話タイプ: ${plan.callType}`);
@@ -165,7 +159,7 @@ console.log({
   "ポケットWi-Fi候補数": pocketResult.length,
   "モバイル候補数": mobileResult.length,
 });
-console.log("\n✅ 完了: Result.tsx + サブスク割 + 支払い割引 + 還元額合算 + 🌍海外通話 + 📞留守電オプション + 💳経済圏還元率テストOK\n");
+console.log("\n✅ 完了: Result.tsx + サブスク割 + 支払い割引 + 還元額合算 + 🌍海外通話 + 📞留守電オプション確認OK\n");
 
 // ===================================================
 // 🔍 総合整合性チェック

@@ -5,8 +5,8 @@ import { routerDiscountPlans } from "../../data/setDiscounts/routerDiscountPlans
 import { pocketWifiDiscountPlans } from "../../data/setDiscounts/pocketWifiDiscountPlans";
 import { devicePricesLease } from "../../data/devicePricesLease";
 import { devicePricesBuy } from "../../data/devicePricesBuy";
-
-
+import { paymentRewardRates } from "../../data/rewards/paymentRewardRates";
+import { shoppingRewardRates } from "../../data/rewards/shoppingRewardRates";
 
 export interface PlanCostBreakdown {
   baseFee: number;
@@ -40,12 +40,7 @@ export interface PlanCostBreakdown {
   fiberBaseFee?: number;
   routerBaseFee?: number;
   pocketWifiBaseFee?: number;
-  carrierBarcodeReward?: number;
-  carrierShoppingReward?: number;
-  totalCarrierReward?: number;
-   effectiveReward?: number;        // 支払い還元 + 経済圏合算の総合還元
 }
-
 
 export function calculatePlanCost(plan: Plan, answers: DiagnosisAnswers): PlanCostBreakdown {
   const base = plan.baseMonthlyFee ?? 0;
@@ -355,43 +350,58 @@ if (wantsTethering && plan.tetheringAvailable) {
       }
     }
   }
+// === 🪙 日々の支払い還元（paymentRewardRates.ts参照） ===
+  let dailyPaymentReward = 0;
 
-// === 💰 キャリア契約によるバーコード決済・ショッピング還元 ===
-let carrierBarcodeReward = 0;
-let carrierShoppingReward = 0;
+  const detectEcosystem = (): keyof typeof paymentRewardRates[0]["values"] => {
+    const allText = [
+      ...(answers.phase2?.paymentEcosystem ?? []),
+      ...(answers.phase2?.cardDetail ?? []),
+      ...(answers.phase2?.mainCard ?? []),
+    ].join(",");
+    if (allText.includes("楽天")) return "rakuten";
+    if (allText.includes("PayPay")) return "paypay";
+    if (allText.includes("d") || allText.includes("ドコモ")) return "dpoint";
+    if (allText.includes("au") || allText.includes("Ponta")) return "ponta";
+    return "rakuten";
+  };
+  const ecosystem = detectEcosystem();
 
-// 💳 バーコード決済利用額（月間）
-const barcodeMonthly =
-  Number((answers.phase2?.monthlyBarcodeSpend || "0").toString().replace(/\D/g, "")) || 0;
+  // 還元率合算（paymentRewardRates）
+  const calcPaymentRewardRate = () => {
+    return paymentRewardRates.reduce(
+      (sum, row) => sum + (row.values[ecosystem as keyof typeof row.values] || 0),
+      0
+    );
+  };
 
-if (plan.carrierPaymentRewardRate && plan.carrierPaymentRewardRate > 0) {
-  const calcReward = Math.round(barcodeMonthly * plan.carrierPaymentRewardRate);
-  carrierBarcodeReward = plan.carrierPaymentRewardLimit
-    ? Math.min(calcReward, plan.carrierPaymentRewardLimit)
-    : calcReward;
-  console.log(
-    `💳 ${plan.carrier} バーコード還元: rate=${plan.carrierPaymentRewardRate}, 還元=${carrierBarcodeReward}`
-  );
-}
+  const dailyPaymentRate = calcPaymentRewardRate();
+  const paymentMonthly = answers.phase2?.paymentMonthly ?? 0;
+  const paymentAmount = typeof paymentMonthly === "number" ? paymentMonthly : 0;
 
-// 🛒 ショッピング利用額（月間）
-const shoppingMonthly =
-  Number((answers.phase2?.monthlyShoppingSpend || "0").toString().replace(/\D/g, "")) || 0;
-const shoppingList = answers.phase2?.shoppingEcosystem ?? [];
+  // 月間支払い還元額
+  dailyPaymentReward = Math.round(paymentAmount * dailyPaymentRate);
 
-// 対象モールに応じて還元率判定
-let shopRate = 0;
-if (shoppingList.some((s) => s.includes("Yahoo!ショッピング")))
-  shopRate = plan.carrierShoppingRewardRate_Yahoo ?? 0;
-else if (shoppingList.some((s) => s.includes("LOHACO")))
-  shopRate = plan.carrierShoppingRewardRate_LOHACO ?? 0;
-else if (shoppingList.some((s) => s.includes("楽天市場")))
-  shopRate = plan.carrierShoppingRewardRate_Rakuten ?? 0;
-else if (shoppingList.some((s) => s.includes("au PAYマーケット")))
-  shopRate = plan.carrierShoppingRewardRate_AUPayMarket ?? 0;
+  console.log(`🪙 日々の支払い還元: 経済圏=${ecosystem}, rate=${dailyPaymentRate}, reward=${dailyPaymentReward}`);
 
-carrierShoppingReward = Math.round(shoppingMonthly * shopRate);
-const totalCarrierReward = carrierBarcodeReward + carrierShoppingReward;
+  // === 🛍️ ショッピング還元（shoppingRewardRates.ts参照） ===
+  let shoppingReward = 0;
+
+  const calcShoppingRewardRate = () => {
+    return shoppingRewardRates.reduce(
+      (sum, row) => sum + (row.values[ecosystem as keyof typeof row.values] || 0),
+      0
+    );
+  };
+
+  const shoppingRate = calcShoppingRewardRate();
+  const shoppingMonthly = answers.phase2?.shoppingMonthly ?? 0;
+  const shoppingAmount = typeof shoppingMonthly === "number" ? shoppingMonthly : 0;
+
+  // 支払い上限を超えないよう制限
+  shoppingReward = Math.round(Math.min(shoppingAmount, paymentAmount) * shoppingRate);
+
+  console.log(`🛒 ショッピング還元: 経済圏=${ecosystem}, rate=${shoppingRate}, reward=${shoppingReward}`);
 
 
 
@@ -472,7 +482,7 @@ if (answers.phase2?.pocketWifiCapacity || answers.phase2?.pocketWifiSpeed) {
 
   // === セット割（光・ルーター・電気など） ===（省略）
 
-     const total =
+    const total =
     base +
     callOptionFee -
     familyDiscount -
@@ -487,13 +497,15 @@ if (answers.phase2?.pocketWifiCapacity || answers.phase2?.pocketWifiSpeed) {
     subscriptionDiscount -
     paymentDiscount -
     paymentReward -
-    totalCarrierReward + // ← キャリア還元を反映
+    dailyPaymentReward - // ←追加（日々の支払い）
+    shoppingReward +      // ←そのまま反映
     initialFeeMonthly +
     tetheringFee +
     deviceLeaseMonthly +
     deviceBuyMonthly +
     internationalCallFee +
     voicemailFee;
+
   return {
     baseFee: base,
     callOptionFee,
@@ -515,16 +527,14 @@ if (answers.phase2?.pocketWifiCapacity || answers.phase2?.pocketWifiSpeed) {
     subscriptionDiscount,
     paymentDiscount,
     paymentReward,
+    shoppingReward,
+    dailyPaymentReward,
     deviceLeaseMonthly,
     deviceBuyMonthly,
     fiberBaseFee,
     routerBaseFee,
     pocketWifiBaseFee,
-    carrierBarcodeReward,
-    carrierShoppingReward,
-    totalCarrierReward,
     total: Math.round(total),
     totalWithDevice: Math.round(total),
-    effectiveReward: paymentReward + totalCarrierReward, // 💡 実質合算還元（UI用）
   };
 }

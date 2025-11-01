@@ -95,11 +95,6 @@ const phase1Questions = [
 export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props) {
   const [answers, setAnswers] = React.useState<Phase1Answers>(defaultValues);
 
-  // 🟦 ページ表示時に最上部へスクロール
-  React.useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, []);
-
   const handleChange = (id: string, value: string | string[]) => {
     setAnswers((prev) => ({ ...prev, [id]: value as string }));
   };

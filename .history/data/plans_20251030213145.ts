@@ -88,13 +88,6 @@ export const allPlans: Plan[] = [
       { type: "電気", discount: 500 },
       { type: "ガス", discount: 400 },
     ],
-    carrierPaymentRewardRate: 0.005,          // d払い +0.5%
-carrierPaymentRewardLimit: 1000,
-carrierShoppingRewardRate_Yahoo: 0,
-carrierShoppingRewardRate_LOHACO: 0,
-carrierShoppingRewardRate_Rakuten: 0,
-carrierShoppingRewardRate_AUPayMarket: 0,
-
 
     // ✅ 🎬 サブスクセット割対応
     subscriptionDiscountRules: [
@@ -206,14 +199,6 @@ carrierShoppingRewardRate_AUPayMarket: 0,
       { type: "電気", discount: 500 },
       { type: "ガス", discount: 400 },
     ],
-
-    // 💳 キャリア還元・ショッピング加算（バーコード決済・経済圏）
-carrierPaymentRewardRate: 0.05,          // PayPay利用時の還元率（例：5%）
-carrierPaymentRewardLimit: 1500,         // 月上限（円）
-carrierShoppingRewardRate_Yahoo: 0.02,   // Yahoo!ショッピング +2%
-carrierShoppingRewardRate_LOHACO: 0.02,  // LOHACO +2%
-carrierShoppingRewardRate_Rakuten: 0,    // 楽天市場は対象外
-carrierShoppingRewardRate_AUPayMarket: 0,// au PAYマーケット対象外
 
     subscriptionDiscountRules: [
       { id: "sub_softbank_yahoo", applicableSubscriptions: ["Yahoo!プレミアム"], discount: 200 },
@@ -331,12 +316,6 @@ voicemailFee: 330,
       { type: "電気", discount: 500 },
       { type: "ガス", discount: 400 },
     ],
-carrierPaymentRewardRate: 0.005,          // au PAY +0.5%
-carrierPaymentRewardLimit: 1000,
-carrierShoppingRewardRate_Yahoo: 0,
-carrierShoppingRewardRate_LOHACO: 0,
-carrierShoppingRewardRate_Rakuten: 0,
-carrierShoppingRewardRate_AUPayMarket: 0.01, // au PAYマーケット +1%
 
     subscriptionDiscountRules: [
       { id: "sub_au_telasa", applicableSubscriptions: ["TELASA（テラサ）"], discount: 300 },
@@ -444,12 +423,6 @@ voicemailFee: 0,
       { type: "電気", discount: 300 },
       { type: "ガス", discount: 300 },
     ],
-carrierPaymentRewardRate: 0.01,           // 楽天ペイ +1%
-carrierPaymentRewardLimit: 500,           // 月上限（円）
-carrierShoppingRewardRate_Yahoo: 0,
-carrierShoppingRewardRate_LOHACO: 0,
-carrierShoppingRewardRate_Rakuten: 0.01,  // 楽天市場 +1%（SPU）
-carrierShoppingRewardRate_AUPayMarket: 0,
 
     subscriptionDiscountRules: [
       { id: "sub_rakuten_tv", applicableSubscriptions: ["Rakuten TV"], discount: 200 },

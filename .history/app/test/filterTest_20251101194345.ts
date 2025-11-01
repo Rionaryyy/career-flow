@@ -8,6 +8,7 @@ import { fiberDiscountPlans as fiberPlans } from "../../data/setDiscounts/fiberD
 import { routerDiscountPlans as routerPlans } from "../../data/setDiscounts/routerDiscountPlans";
 import { pocketWifiDiscountPlans as pocketPlans } from "../../data/setDiscounts/pocketWifiDiscountPlans";
 import { calculatePlanCost } from "../../utils/logic/calcEffectivePrice";
+import { calcRewardRates } from "../../utils/logic/calcRewardRates"; // ✅ 追加
 import { Phase1Answers, Phase2Answers } from "../../types/types";
 import { validateDiagnosisResult, printValidationReport } from "./diagnosisValidator";
 
@@ -34,14 +35,12 @@ const testAnswers: Partial<Phase2Answers> = {
   timeLimitPreference: "5分以内",
   monthlyLimitPreference: "月60分まで無料",
   hybridCallPreference: "月30回まで各10分無料",
-  monthlyBarcodeSpend: 20000, // ← スライダー想定（円）
-
-  // 🛒 ショッピング利用経済圏（新フィールド）
-  shoppingEcosystem: [
-    "楽天市場・楽天ブックス・楽天トラベルなど（楽天経済圏）",
-  ],
-  // 🛒 ショッピング利用額（新フィールド）
-  monthlyShoppingSpend: 20000, // ← スライダー想定（円）
+  mainCard: ["クレジットカード"],
+  cardDetail: ["dカード GOLD"],
+  shoppingList: ["楽天市場・楽天ブックス・楽天トラベルなど（楽天経済圏）"],
+  shoppingMonthly: "20000",
+  paymentList: ["d払い / dカード（dポイント経済圏）"],
+  paymentMonthly: "20000",
   paymentEcosystem: ["dポイント経済圏"], // ✅ 追加：還元率判定に必要
   linkedBank: ["三井住友銀行"], // ✅ 追加：銀行連携特典の確認用
   overseasSupport: "はい",
@@ -84,6 +83,12 @@ console.log("【フェーズ②回答内容】");
 console.log(JSON.stringify(testAnswers, null, 2));
 console.log("\n----------------------------------------\n");
 
+// ✅ 還元率テスト（calcRewardRates連携確認）
+const { paymentRewardRate, shoppingRewardRate, debug } = calcRewardRates(testAnswers as Phase2Answers);
+console.log("💳 支払い還元率:", paymentRewardRate);
+console.log("🛒 ショッピング還元率:", shoppingRewardRate);
+console.log("🧩 debug:", debug);
+console.log("----------------------------------------\n");
 
 mobileResult.forEach((plan, i) => {
   const cost = calculatePlanCost(plan, { phase1: testPhase1Answers, phase2: testAnswers } as any);
@@ -132,19 +137,25 @@ mobileResult.forEach((plan, i) => {
     }
   }
 
-    // === 💳 支払い方法割引・還元 ===
+  // === 💳 支払い方法割引・還元 ===
   if (cost.paymentDiscount && cost.paymentDiscount > 0)
     console.log(`・支払い方法割引: -¥${cost.paymentDiscount}`);
 
   // 🟢 === 💰 各種還元額（円換算で可視化） ===
-  if (cost.paymentReward || cost.dailyPaymentReward || cost.shoppingReward || cost.carrierBarcodeReward || cost.carrierShoppingReward) {
+  if (cost.paymentReward || cost.dailyPaymentReward || cost.shoppingReward) {
     console.log("\n💴 【還元額詳細】");
+    console.log(`🪙 経済圏支払い還元: ¥${(cost.dailyPaymentReward ?? 0).toLocaleString()}`);
     console.log(`💳 カード特典還元: ¥${(cost.paymentReward ?? 0).toLocaleString()}`);
-    console.log(`📱 キャリアバーコード還元: ¥${(cost.carrierBarcodeReward ?? 0).toLocaleString()}`);
-    console.log(`🛍 キャリアショッピング還元: ¥${(cost.carrierShoppingReward ?? 0).toLocaleString()}`);
-    console.log(`🎁 キャリア合算還元: ¥${(cost.totalCarrierReward ?? 0).toLocaleString()}`);
+    console.log(`🛒 ショッピング還元: ¥${(cost.shoppingReward ?? 0).toLocaleString()}`);
   }
 
+  // 🟢 総還元合計を表示
+  const totalReward =
+    (cost.dailyPaymentReward ?? 0) +
+    (cost.paymentReward ?? 0) +
+    (cost.shoppingReward ?? 0);
+  if (totalReward > 0)
+    console.log(`🎁 総還元合計: ¥${totalReward.toLocaleString()}\n`);
 
   console.log(`🧩 planId: ${plan.planId}`);
   console.log(`📞 通話タイプ: ${plan.callType}`);

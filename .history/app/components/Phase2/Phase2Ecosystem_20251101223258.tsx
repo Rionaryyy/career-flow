@@ -71,39 +71,22 @@ export default function Phase2Ecosystem({ answers, onChange, phase1Answers, onNe
   ];
 
   const handleChange = (id: string, value: string | string[] | number) => {
-  let newValue = value;
+    let newValue = value;
 
-  // 「特になし」を選んだら他の選択肢を解除
-  if (Array.isArray(value) && value.includes("特になし")) {
-    newValue = ["特になし"];
-  }
+    // 「特になし」を選んだら他の選択肢を解除
+    if (Array.isArray(value) && value.includes("特になし")) {
+      newValue = ["特になし"];
+    }
 
-  // 🆕 「どれが一番お得か分からないので〜」を選んだら全選択にする
-  if (
-    Array.isArray(value) &&
-    value.includes("どれが一番お得か分からないので、すべてのパターンを比較したい")
-  ) {
-    const allOptions = [
-      "楽天市場・楽天ブックス・楽天トラベルなど（楽天経済圏）",
-      "Yahoo!ショッピング・PayPayモール・LOHACOなど（PayPay / ソフトバンク経済圏）",
-      "au PAYマーケット・au Wowma!など（au PAY / Ponta経済圏）",
-      "どれが一番お得か分からないので、すべてのパターンを比較したい",
-      "特になし",
-    ];
-    // 「特になし」以外をすべて選択
-    newValue = allOptions.filter((opt) => opt !== "特になし");
-  }
+    const updates: Partial<Phase2Answers> = { [id]: newValue };
 
-  const updates: Partial<Phase2Answers> = { [id]: newValue };
+    // 「特になし」の場合、対応する月額質問の値をリセット
+    if (id === "shoppingEcosystem" && Array.isArray(newValue) && newValue.includes("特になし")) {
+      updates.monthlyShoppingSpend = undefined;
+    }
 
-  // 「特になし」の場合、対応する月額質問をリセット
-  if (id === "shoppingEcosystem" && Array.isArray(newValue) && newValue.includes("特になし")) {
-    updates.monthlyShoppingSpend = undefined;
-  }
-
-  onChange(updates);
-};
-
+    onChange(updates);
+  };
 
   return (
     <div className="w-full py-6 space-y-6">

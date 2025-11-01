@@ -160,7 +160,6 @@ export default function Result({ answers, onRestart }: Props) {
                 <p>・年齢割: -¥{plan.breakdown.ageDiscount}</p>
                 <p>・テザリング料: +¥{plan.breakdown.tetheringFee}</p>
 
-
                 {plan.breakdown.internationalCallFee !== 0 && (
                   <p>・国際通話オプション: +¥{plan.breakdown.internationalCallFee}</p>
                 )}
@@ -213,46 +212,6 @@ export default function Result({ answers, onRestart }: Props) {
                 {plan.breakdown.paymentDiscount !== 0 && (
                   <p>・支払い方法割引: -¥{plan.breakdown.paymentDiscount}</p>
                 )}
-                 {answers.phase1?.compareAxis?.includes("実際に支払う金額") && (
-                  <div className="mt-3 border-t border-dashed border-gray-300 pt-2">
-                    <p className="font-semibold text-gray-800 mb-1">💰 初期費用・特典内訳</p>
-
-                    <p className="ml-2 text-gray-700">
-                      ・キャッシュバック総額: -¥
-                      {(plan.breakdown.cashbackTotal ?? 0).toLocaleString()}
-                    </p>
-                    <p className="ml-2 text-gray-700">
-                      ・契約・初期費用総額: +¥
-                      {(plan.breakdown.initialCostTotal ?? 0).toLocaleString()}
-                    </p>
-
-                    {(() => {
-                      const cashbackTotal = plan.breakdown.cashbackTotal ?? 0;
-                      const initialCostTotal = plan.breakdown.initialCostTotal ?? 0;
-                      const netInitialCost = initialCostTotal - cashbackTotal;
-                      const comparePeriod = answers.phase1?.comparePeriod ?? "";
-                      let months = 12;
-                      if (comparePeriod.includes("2年")) months = 24;
-                      else if (comparePeriod.includes("3年")) months = 36;
-
-                      const netMonthly = Math.round(netInitialCost / months);
-
-                      return (
-                        <div className="ml-2 mt-2">
-                          <p className="text-gray-800 font-medium">
-                            📦 実質初期費用(月換算):{" "}
-                            {netMonthly >= 0 ? "+" : "-"}¥{Math.abs(netMonthly).toLocaleString()}
-                          </p>
-                          <p className="text-xs text-gray-500 ml-4">
-                            ↳ 総額: {netInitialCost >= 0 ? "+" : "-"}¥
-                            {Math.abs(netInitialCost).toLocaleString()} / {months}ヶ月平均
-                          </p>
-                        </div>
-                      );
-                    })()}
-                  </div>
-                )}
-
 
                 {/* 💴 還元額詳細ブロック */}
                 {((plan.breakdown?.paymentReward ?? 0) > 0 ||
@@ -277,30 +236,6 @@ export default function Result({ answers, onRestart }: Props) {
                   </div>
                 )}
               </div>
- {/* 💻 端末関連（返却プログラム／購入は排他表示） */}
-                {plan.breakdown.deviceLeaseMonthly && plan.breakdown.deviceLeaseMonthly > 0 ? (
-                  <div className="mt-1">
-                    <p className="font-medium text-indigo-700">
-                      ・返却プログラム（月額端末費）: +
-                      ¥{plan.breakdown.deviceLeaseMonthly}
-                    </p>
-                    <p className="text-xs text-gray-500 ml-3">
-                      ↳ 総額（目安）:
-                      ¥{(plan.breakdown.deviceTotal ?? 0).toLocaleString()}
-                    </p>
-                  </div>
-                ) : plan.breakdown.deviceBuyMonthly && plan.breakdown.deviceBuyMonthly > 0 ? (
-                  <div className="mt-1">
-                    <p className="font-medium text-sky-700">
-                      ・端末購入（月額端末費）: +
-                      ¥{plan.breakdown.deviceBuyMonthly}
-                    </p>
-                    <p className="text-xs text-gray-500 ml-3">
-                      ↳ 総額（目安）:
-                      ¥{(plan.breakdown.deviceTotal ?? 0).toLocaleString()}
-                    </p>
-                  </div>
-                ) : null}
 
               {(answers.phase2?.deviceModel || answers.phase2?.deviceStorage) && (
                 <div className="mt-2 text-xs text-gray-600 border-t border-dashed border-gray-300 pt-1">

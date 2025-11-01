@@ -43,7 +43,6 @@ export interface PlanCostBreakdown {
   carrierBarcodeReward?: number;
   carrierShoppingReward?: number;
   totalCarrierReward?: number;
-   effectiveReward?: number;        // 支払い還元 + 経済圏合算の総合還元
 }
 
 
@@ -357,42 +356,38 @@ if (wantsTethering && plan.tetheringAvailable) {
   }
 
 // === 💰 キャリア契約によるバーコード決済・ショッピング還元 ===
-let carrierBarcodeReward = 0;
-let carrierShoppingReward = 0;
+  let carrierBarcodeReward = 0;
+  let carrierShoppingReward = 0;
 
-// 💳 バーコード決済利用額（月間）
-const barcodeMonthly =
-  Number((answers.phase2?.monthlyBarcodeSpend || "0").toString().replace(/\D/g, "")) || 0;
+  const barcodeMonthly =
+    Number((answers.phase2?.paymentMonthly || "0").toString().replace(/\D/g, "")) || 0;
 
-if (plan.carrierPaymentRewardRate && plan.carrierPaymentRewardRate > 0) {
-  const calcReward = Math.round(barcodeMonthly * plan.carrierPaymentRewardRate);
-  carrierBarcodeReward = plan.carrierPaymentRewardLimit
-    ? Math.min(calcReward, plan.carrierPaymentRewardLimit)
-    : calcReward;
-  console.log(
-    `💳 ${plan.carrier} バーコード還元: rate=${plan.carrierPaymentRewardRate}, 還元=${carrierBarcodeReward}`
-  );
-}
+  if (plan.carrierPaymentRewardRate && plan.carrierPaymentRewardRate > 0) {
+    const calcReward = Math.round(barcodeMonthly * plan.carrierPaymentRewardRate);
+    carrierBarcodeReward = plan.carrierPaymentRewardLimit
+      ? Math.min(calcReward, plan.carrierPaymentRewardLimit)
+      : calcReward;
+    console.log(
+      `💳 ${plan.carrier} バーコード還元: rate=${plan.carrierPaymentRewardRate}, 還元=${carrierBarcodeReward}`
+    );
+  }
 
-// 🛒 ショッピング利用額（月間）
-const shoppingMonthly =
-  Number((answers.phase2?.monthlyShoppingSpend || "0").toString().replace(/\D/g, "")) || 0;
-const shoppingList = answers.phase2?.shoppingEcosystem ?? [];
+  const shoppingMonthly =
+    Number((answers.phase2?.shoppingMonthly || "0").toString().replace(/\D/g, "")) || 0;
+  const shoppingList = answers.phase2?.shoppingList ?? [];
 
-// 対象モールに応じて還元率判定
-let shopRate = 0;
-if (shoppingList.some((s) => s.includes("Yahoo!ショッピング")))
-  shopRate = plan.carrierShoppingRewardRate_Yahoo ?? 0;
-else if (shoppingList.some((s) => s.includes("LOHACO")))
-  shopRate = plan.carrierShoppingRewardRate_LOHACO ?? 0;
-else if (shoppingList.some((s) => s.includes("楽天市場")))
-  shopRate = plan.carrierShoppingRewardRate_Rakuten ?? 0;
-else if (shoppingList.some((s) => s.includes("au PAYマーケット")))
-  shopRate = plan.carrierShoppingRewardRate_AUPayMarket ?? 0;
+  let shopRate = 0;
+  if (shoppingList.some((s) => s.includes("Yahoo!ショッピング")))
+    shopRate = plan.carrierShoppingRewardRate_Yahoo ?? 0;
+  else if (shoppingList.some((s) => s.includes("LOHACO")))
+    shopRate = plan.carrierShoppingRewardRate_LOHACO ?? 0;
+  else if (shoppingList.some((s) => s.includes("楽天市場")))
+    shopRate = plan.carrierShoppingRewardRate_Rakuten ?? 0;
+  else if (shoppingList.some((s) => s.includes("au PAYマーケット")))
+    shopRate = plan.carrierShoppingRewardRate_AUPayMarket ?? 0;
 
-carrierShoppingReward = Math.round(shoppingMonthly * shopRate);
-const totalCarrierReward = carrierBarcodeReward + carrierShoppingReward;
-
+  carrierShoppingReward = Math.round(shoppingMonthly * shopRate);
+  const totalCarrierReward = carrierBarcodeReward + carrierShoppingReward;
 
 
   // === セット割（光・ルーター・電気など） ===
@@ -525,6 +520,5 @@ if (answers.phase2?.pocketWifiCapacity || answers.phase2?.pocketWifiSpeed) {
     totalCarrierReward,
     total: Math.round(total),
     totalWithDevice: Math.round(total),
-    effectiveReward: paymentReward + totalCarrierReward, // 💡 実質合算還元（UI用）
   };
 }

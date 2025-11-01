@@ -48,32 +48,6 @@ if (answers.dataUsage) {
     filtered = filtered.filter(plan => plan.maxDataGB >= minRequired);
   }
 }
-// 🟦 ② 速度制限後の通信速度フィルター（格安SIMはスキップ）
-if (answers.speedLimitImportance) {
-  const importance = answers.speedLimitImportance ?? "";
-  let minSpeed = 0;
-
-  if (importance.includes("大手キャリア水準")) {
-    minSpeed = 1; // 1Mbps以上
-  } else if (importance.includes("サブブランド水準")) {
-    minSpeed = 0.5; // 0.5Mbps以上
-  } else {
-    // 「格安SIM水準でも可」はフィルタしない（すべて通す）
-    console.log("🚦速度制限フィルター: 格安SIM水準 → フィルタスキップ");
-    return filtered;
-  }
-
-  filtered = filtered.filter(plan => (plan.speedLimitMbps ?? 0) >= minSpeed);
-
-  console.log("🚦速度制限フィルター:", {
-    minSpeed,
-    resultCount: filtered.length,
-    matched: filtered.map(p => ({
-      carrier: p.carrier,
-      speed: p.speedLimitMbps,
-    })),
-  });
-}
 
   // 🟨 ①.5 テザリングフィルター
   const tetheringNeeded =

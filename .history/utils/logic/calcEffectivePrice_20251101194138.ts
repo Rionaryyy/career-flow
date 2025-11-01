@@ -5,7 +5,9 @@ import { routerDiscountPlans } from "../../data/setDiscounts/routerDiscountPlans
 import { pocketWifiDiscountPlans } from "../../data/setDiscounts/pocketWifiDiscountPlans";
 import { devicePricesLease } from "../../data/devicePricesLease";
 import { devicePricesBuy } from "../../data/devicePricesBuy";
-
+import { paymentRewardRates } from "../../data/rewards/paymentRewardRates";
+import { shoppingRewardRates } from "../../data/rewards/shoppingRewardRates";
+import { calcRewardRates } from "../../utils/logic/calcRewardRates"; // ✅ 追加
 
 
 export interface PlanCostBreakdown {
@@ -40,12 +42,7 @@ export interface PlanCostBreakdown {
   fiberBaseFee?: number;
   routerBaseFee?: number;
   pocketWifiBaseFee?: number;
-  carrierBarcodeReward?: number;
-  carrierShoppingReward?: number;
-  totalCarrierReward?: number;
-   effectiveReward?: number;        // 支払い還元 + 経済圏合算の総合還元
 }
-
 
 export function calculatePlanCost(plan: Plan, answers: DiagnosisAnswers): PlanCostBreakdown {
   const base = plan.baseMonthlyFee ?? 0;
@@ -356,43 +353,21 @@ if (wantsTethering && plan.tetheringAvailable) {
     }
   }
 
-// === 💰 キャリア契約によるバーコード決済・ショッピング還元 ===
-let carrierBarcodeReward = 0;
-let carrierShoppingReward = 0;
+// === 🪙 支払い・ショッピング還元（共通関数から取得） ===
 
-// 💳 バーコード決済利用額（月間）
-const barcodeMonthly =
-  Number((answers.phase2?.monthlyBarcodeSpend || "0").toString().replace(/\D/g, "")) || 0;
+const { paymentRewardRate, shoppingRewardRate, debug } = calcRewardRates(answers.phase2);
 
-if (plan.carrierPaymentRewardRate && plan.carrierPaymentRewardRate > 0) {
-  const calcReward = Math.round(barcodeMonthly * plan.carrierPaymentRewardRate);
-  carrierBarcodeReward = plan.carrierPaymentRewardLimit
-    ? Math.min(calcReward, plan.carrierPaymentRewardLimit)
-    : calcReward;
-  console.log(
-    `💳 ${plan.carrier} バーコード還元: rate=${plan.carrierPaymentRewardRate}, 還元=${carrierBarcodeReward}`
-  );
-}
+// 💰 支払い・ショッピング金額を取得
+const paymentAmount = Number((answers.phase2?.paymentMonthly || "0").toString().replace(/\D/g, "")) || 0;
+const shoppingAmount = Number((answers.phase2?.shoppingMonthly || "0").toString().replace(/\D/g, "")) || 0;
 
-// 🛒 ショッピング利用額（月間）
-const shoppingMonthly =
-  Number((answers.phase2?.monthlyShoppingSpend || "0").toString().replace(/\D/g, "")) || 0;
-const shoppingList = answers.phase2?.shoppingEcosystem ?? [];
+// 🌟 還元額計算
+const dailyPaymentReward = Math.round(paymentAmount * paymentRewardRate);
+const shoppingReward = Math.round(shoppingAmount * shoppingRewardRate);
 
-// 対象モールに応じて還元率判定
-let shopRate = 0;
-if (shoppingList.some((s) => s.includes("Yahoo!ショッピング")))
-  shopRate = plan.carrierShoppingRewardRate_Yahoo ?? 0;
-else if (shoppingList.some((s) => s.includes("LOHACO")))
-  shopRate = plan.carrierShoppingRewardRate_LOHACO ?? 0;
-else if (shoppingList.some((s) => s.includes("楽天市場")))
-  shopRate = plan.carrierShoppingRewardRate_Rakuten ?? 0;
-else if (shoppingList.some((s) => s.includes("au PAYマーケット")))
-  shopRate = plan.carrierShoppingRewardRate_AUPayMarket ?? 0;
-
-carrierShoppingReward = Math.round(shoppingMonthly * shopRate);
-const totalCarrierReward = carrierBarcodeReward + carrierShoppingReward;
-
+console.log("💳 支払い還元率:", paymentRewardRate, "還元額:", dailyPaymentReward);
+console.log("🛒 ショッピング還元率:", shoppingRewardRate, "還元額:", shoppingReward);
+console.log("🔍 還元デバッグ:", debug);
 
 
   // === セット割（光・ルーター・電気など） ===
@@ -472,7 +447,7 @@ if (answers.phase2?.pocketWifiCapacity || answers.phase2?.pocketWifiSpeed) {
 
   // === セット割（光・ルーター・電気など） ===（省略）
 
-     const total =
+    const total =
     base +
     callOptionFee -
     familyDiscount -
@@ -487,13 +462,15 @@ if (answers.phase2?.pocketWifiCapacity || answers.phase2?.pocketWifiSpeed) {
     subscriptionDiscount -
     paymentDiscount -
     paymentReward -
-    totalCarrierReward + // ← キャリア還元を反映
+    dailyPaymentReward - // ←追加（日々の支払い）
+    shoppingReward +      // ←そのまま反映
     initialFeeMonthly +
     tetheringFee +
     deviceLeaseMonthly +
     deviceBuyMonthly +
     internationalCallFee +
     voicemailFee;
+
   return {
     baseFee: base,
     callOptionFee,
@@ -515,16 +492,14 @@ if (answers.phase2?.pocketWifiCapacity || answers.phase2?.pocketWifiSpeed) {
     subscriptionDiscount,
     paymentDiscount,
     paymentReward,
+    shoppingReward,
+    dailyPaymentReward,
     deviceLeaseMonthly,
     deviceBuyMonthly,
     fiberBaseFee,
     routerBaseFee,
     pocketWifiBaseFee,
-    carrierBarcodeReward,
-    carrierShoppingReward,
-    totalCarrierReward,
     total: Math.round(total),
     totalWithDevice: Math.round(total),
-    effectiveReward: paymentReward + totalCarrierReward, // 💡 実質合算還元（UI用）
   };
 }

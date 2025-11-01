@@ -34,14 +34,12 @@ const testAnswers: Partial<Phase2Answers> = {
   timeLimitPreference: "5分以内",
   monthlyLimitPreference: "月60分まで無料",
   hybridCallPreference: "月30回まで各10分無料",
-  monthlyBarcodeSpend: 20000, // ← スライダー想定（円）
-
-  // 🛒 ショッピング利用経済圏（新フィールド）
-  shoppingEcosystem: [
-    "楽天市場・楽天ブックス・楽天トラベルなど（楽天経済圏）",
-  ],
-  // 🛒 ショッピング利用額（新フィールド）
-  monthlyShoppingSpend: 20000, // ← スライダー想定（円）
+  mainCard: ["クレジットカード"],
+  cardDetail: ["dカード GOLD"],
+  shoppingList: ["楽天市場・楽天ブックス・楽天トラベルなど（楽天経済圏）"],
+  shoppingMonthly: "20000",
+  paymentList: ["d払い / dカード（dポイント経済圏）"],
+  paymentMonthly: "20000",
   paymentEcosystem: ["dポイント経済圏"], // ✅ 追加：還元率判定に必要
   linkedBank: ["三井住友銀行"], // ✅ 追加：銀行連携特典の確認用
   overseasSupport: "はい",

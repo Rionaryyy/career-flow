@@ -43,7 +43,6 @@ export interface PlanCostBreakdown {
   carrierBarcodeReward?: number;
   carrierShoppingReward?: number;
   totalCarrierReward?: number;
-   effectiveReward?: number;        // 支払い還元 + 経済圏合算の総合還元
 }
 
 
@@ -525,6 +524,5 @@ if (answers.phase2?.pocketWifiCapacity || answers.phase2?.pocketWifiSpeed) {
     totalCarrierReward,
     total: Math.round(total),
     totalWithDevice: Math.round(total),
-    effectiveReward: paymentReward + totalCarrierReward, // 💡 実質合算還元（UI用）
   };
 }
