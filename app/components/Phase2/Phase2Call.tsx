@@ -184,44 +184,63 @@ export default function Phase2Call({ answers, onChange }: Props) {
     []
   );
 
-  const handleChange = (id: keyof Phase2Answers, value: string | string[]) => {
-    const updated: Partial<Phase2Answers> = {};
+const handleChange = (id: keyof Phase2Answers, value: string | number | string[]) => {
+  const updated: Partial<Phase2Answers> = {};
 
-    if (Array.isArray(value)) {
-      (updated as Record<string, unknown>)[id as string] = value as unknown;
-      onChange(updated);
-      return;
-    }
+  if (Array.isArray(value)) {
+    // 🟢 ここを安全キャスト（string[]に限定）
+    (updated as Record<string, unknown>)[id as string] = value.filter(
+      (v): v is string => typeof v === "string"
+    );
+    onChange(updated);
+    return;
+  }
 
-    if (id === "callPlanType") {
-      updated.callPlanType = Array.isArray(value) ? value : [value];
-      const isEmptyArray = Array.isArray(value) && value.length === 0;
-      if (isEmptyArray) {
-        updated.timeLimitPreference = "";
-        updated.monthlyLimitPreference = "";
-        updated.hybridCallPreference = "";
-      }
-      onChange(updated);
-      return;
-    }
+  if (id === "callPlanType") {
+    // 🟢 同じく numberを弾いてstringだけ扱う
+    const valArray = Array.isArray(value)
+      ? value.filter((v): v is string => typeof v === "string")
+      : [value as string];
+    updated.callPlanType = valArray;
 
-    (updated as Record<string, unknown>)[id as string] = value as unknown;
-
-    if (id === "needCallPlan" && value === "いいえ（使った分だけ支払いたい）") {
-      updated.callPlanType = [];
+    const isEmptyArray = valArray.length === 0;
+    if (isEmptyArray) {
       updated.timeLimitPreference = "";
       updated.monthlyLimitPreference = "";
       updated.hybridCallPreference = "";
     }
-
-    if (id === "needCallPlan" && value === "よくわからない（おすすめを知りたい）") {
-      updated.unknownCallUsageDuration = "";
-      updated.unknownCallFrequency = "";
-      updated.needCallPlanConfirm = "";
-    }
-
     onChange(updated);
-  };
+    return;
+  }
+
+  (updated as Record<string, unknown>)[id as string] =
+    typeof value === "number" ? String(value) : value;
+
+  // 📞 かけ放題なしの場合
+  if (id === "needCallPlan" && value === "いいえ（使った分だけ支払いたい）") {
+    updated.callPlanType = [];
+    updated.timeLimitPreference = "";
+    updated.monthlyLimitPreference = "";
+    updated.hybridCallPreference = "";
+  }
+
+  // ❓ おまかせ選択時は内部質問をリセット
+  if (id === "needCallPlan" && value === "よくわからない（おすすめを知りたい）") {
+    updated.unknownCallUsageDuration = "";
+    updated.unknownCallFrequency = "";
+    updated.needCallPlanConfirm = "";
+  }
+
+  // 🌐 海外通話：いいえを選んだらキャリア選択をクリア
+  if (id === "needInternationalCallUnlimited") {
+    if (value === "いいえ") {
+      updated.internationalCallCarrier = [];
+    }
+  }
+
+  onChange(updated);
+};
+
 
   const showAdvice =
     answers.needCallPlan === "よくわからない（おすすめを知りたい）" &&
