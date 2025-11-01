@@ -123,24 +123,50 @@
   body { @apply bg-background text-foreground; }
 }
 
-/* === 質問カード周りの猫タイル背景 ========================== */
+/* カード周りだけに敷く版：猫サイズ固定64px、タイルは等間隔で並べる */
+/* ここだけ修正：data URIをやめ、PNGを直接参照 */
 @layer utilities {
   .calico-bg {
     position: relative;
-    isolation: isolate; /* この中だけで擬似要素を閉じ込める */
+    isolation: isolate;
+    overflow: hidden;
   }
   .calico-bg::before {
     content: "";
     position: absolute;
-    inset: 0;
-    z-index: -1;        /* かならず背面 */
+    inset: -12%;
+    z-index: -1;
     pointer-events: none;
 
-    background-image: url("/images/calicocat.png"); /* public/images/calicocat.png */
-    background-repeat: repeat;
-    background-size: 64px 64px;    /* 小さめ（48〜80pxで調整） */
-    opacity: 0.18;                 /* うっすら */
-    transform: rotate(12deg) scale(1.05); /* 斜め */
+    background-image: url("/images/calicocat.png");
+    background-size: 64px 64px;
+    background-repeat: space;
+    background-position: top left;
+    opacity: 0.18;
+    transform: rotate(-12deg) scale(1.1);
+    transform-origin: center;
+  }
+}
+
+/* ページ全体の猫タイル（新規追加・スクロール阻害なし） */
+@layer utilities {
+  .calico-page {
+    position: relative;
+    isolation: isolate;
+  }
+  .calico-page::before {
+    content: "";
+    position: fixed;
+    inset: -16%;
+    z-index: 0;
+    pointer-events: none;
+
+    background-image: url("/images/calicocat.png");
+    background-size: 64px 64px;
+    background-repeat: space;
+    background-position: top left;
+    opacity: 0.14;
+    transform: rotate(-12deg) scale(1.06);
     transform-origin: center;
   }
 }
