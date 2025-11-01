@@ -49,8 +49,7 @@ export default function Phase2Contract({ answers, onChange }: Props) {
     },
   ];
 
-  const handleChange = (id: keyof Phase2Answers, value: string | number | string[]) => {
-
+  const handleChange = (id: string, value: string | string[]) => {
     onChange({ [id]: value } as Partial<Phase2Answers>);
   };
 
