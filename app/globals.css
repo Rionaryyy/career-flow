@@ -123,24 +123,58 @@
   body { @apply bg-background text-foreground; }
 }
 
-/* === 質問カード周りの猫タイル背景 ========================== */
+/* カード周りだけに敷く版：猫サイズ固定64px、タイルは等間隔で並べる */
+/* ここだけ修正：data URIをやめ、PNGを直接参照 */
 @layer utilities {
   .calico-bg {
     position: relative;
-    isolation: isolate; /* この中だけで擬似要素を閉じ込める */
+    isolation: isolate;
+    overflow: hidden;
   }
   .calico-bg::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;        /* かならず背面 */
-    pointer-events: none;
+  content: "";
+  position: absolute;
+  inset: -12%;
+  z-index: -1;
+  pointer-events: none;
 
-    background-image: url("/images/calicocat.png"); /* public/images/calicocat.png */
-    background-repeat: repeat;
-    background-size: 64px 64px;    /* 小さめ（48〜80pxで調整） */
-    opacity: 0.18;                 /* うっすら */
-    transform: rotate(12deg) scale(1.05); /* 斜め */
-    transform-origin: center;
-  }
+  /* タイル 200px、猫64pxを中央に（x=y=68） */
+  background-image: url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'>\
+  <image href='/images/calicocat.png' x='70' y='70' width='64' height='64'/>\
+</svg>");
+  background-size: 400px 400px;
+  background-repeat: repeat;
+  background-position: top left;
+  opacity: 0.18;
+  transform: rotate(-12deg) scale(1.1);
+  transform-origin: center;
 }
+
+}
+
+/* ページ全体の猫タイル（新規追加・スクロール阻害なし） */
+@layer utilities {
+  .calico-page {
+    position: relative;
+    isolation: isolate;
+  }
+  .calico-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;                 /* ビューポート全面に敷く */
+  z-index: 0;
+  pointer-events: none;
+
+      background-image: url("/images/calicocat.png"); /* ← 新しい1枚に差し替え */
+    background-repeat: repeat;                      /* 1枚をタイル状に敷く */
+    background-position: 0 0;                       /* 左上起点で継ぎ目ゼロ */
+    background-size: 1024px 576px;                  /* 画像の実寸に固定（今回の画像サイズ） */
+
+    opacity: 0.14;                                  /* 濃さはここで微調整 */
+    transform: none;                                /* 回転/拡大は継ぎ目の原因 → 無効 */
+}
+}
+/* ページ背景使用時はカード側の猫を消す（重複防止） */
+.calico-page .calico-bg::before { content: none; }
+

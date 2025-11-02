@@ -142,7 +142,7 @@ export default function DiagnosisFlow() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-black w-full">
+    <div className="min-h-screen bg-transparent text-black w-full">{/* ← bg-white を bg-transparent に変更 */}
       <Header />
       <main className="w-full pt-16 space-y-8">
         <HeroMini />

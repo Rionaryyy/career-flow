@@ -3,16 +3,24 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Bars3Icon, XMarkIcon, DevicePhoneMobileIcon } from "@heroicons/react/24/solid";
+import Image from "next/image";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/solid";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <header className="fixed top-0 left-0 w-full bg-white z-50 shadow-md py-3 px-4 flex items-center justify-between">
-      {/* サイトタイトル（クリック不可） */}
+      {/* 左上：猫ロゴ＋サイトタイトル（静止表示） */}
       <div className="flex items-center space-x-2 cursor-default select-none">
-        <DevicePhoneMobileIcon className="w-6 h-6 text-sky-500" />
+        <Image
+          src="/images/logo-cat.png"
+          alt="サイトロゴ"
+          width={28}
+          height={28}
+          priority
+          className="block"
+        />
         <span className="text-xl font-bold text-sky-900">通信キャリア診断</span>
       </div>
 
