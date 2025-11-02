@@ -5,7 +5,11 @@ import { routerDiscountPlans } from "../../data/setDiscounts/routerDiscountPlans
 import { pocketWifiDiscountPlans } from "../../data/setDiscounts/pocketWifiDiscountPlans";
 import { devicePricesLease } from "../../data/devicePricesLease";
 import { devicePricesBuy } from "../../data/devicePricesBuy";
+import { subscriptionData } from "../../data/subscriptionData";
 
+// ←ここに追加！
+console.log("🧠 calcEffectivePrice.ts loaded correctly!");
+console.log("🧠 file path check: calcEffectivePrice.ts is active");
 
 
 export interface PlanCostBreakdown {
@@ -24,6 +28,7 @@ export interface PlanCostBreakdown {
   electricDiscount?: number;
   gasDiscount?: number;
   subscriptionDiscount?: number;
+  subscriptionReward?: number;
   paymentDiscount?: number;
   paymentReward?: number;
   dailyPaymentReward?: number;
@@ -43,11 +48,30 @@ export interface PlanCostBreakdown {
   carrierBarcodeReward?: number;
   carrierShoppingReward?: number;
   totalCarrierReward?: number;
-   effectiveReward?: number;        // 支払い還元 + 経済圏合算の総合還元
+   effectiveReward?: number; 
+   subscriptionBaseFee?: number;   
 }
 
 
 export function calculatePlanCost(plan: Plan, answers: DiagnosisAnswers): PlanCostBreakdown {
+  console.log("🚀 calculatePlanCost called for", plan.carrier);
+ // ✅ チェックポイント追加！
+  console.log("✅ checkpoint: start (関数の最初) →", plan.carrier);
+  // 🧠 Phase2を安全に解決（answers直下に来た場合も拾う）
+  const phase2 =
+    answers.phase2 && Object.keys(answers.phase2).length > 0
+      ? answers.phase2
+      : answers;
+
+  console.log("🧠 Phase2 Fallback Check:", {
+    hasPhase2: !!answers.phase2,
+    phase2Keys: Object.keys(answers.phase2 || {}),
+    usedKeys: Object.keys(phase2 || {}),
+  });
+  console.log("🧠 phase2 resolved for:", plan.carrier, phase2);
+
+
+
   const base = plan.baseMonthlyFee ?? 0;
 
   // === 通話オプション料金 ===
@@ -81,42 +105,97 @@ export function calculatePlanCost(plan: Plan, answers: DiagnosisAnswers): PlanCo
       return false;
     });
 
-    const cheapestOption = validOptions.sort((a, b) => a.fee - b.fee)[0];
+   // ✅ feeが数値でない要素を除外してからソート（エラー防止）
+const cheapestOption = validOptions
+  .filter((v) => typeof v.fee === "number" && !isNaN(v.fee))
+  .sort((a, b) => a.fee - b.fee)[0];
+
     callOptionFee = cheapestOption?.fee ?? 0;
   }
 
-  // 🌍 === 国際通話オプション料金（個別項目として扱う） ===
-  let internationalCallFee = 0;
+// 🌍 === 国際通話オプション料金（個別項目として扱う） ===
+let internationalCallFee = 0;
 
-  if (answers.phase2?.needInternationalCallUnlimited === "はい") {
-    const selected = answers.phase2?.internationalCallCarrier ?? [];
+try {
+  const intl = answers.phase2?.internationalCallCarrier;
+  const wantsIntlCall =
+    answers.phase2?.needInternationalCallUnlimited === "はい" ||
+    (Array.isArray(intl) && intl.length > 0);
+
+  console.log("🌍 国際通話ブロック開始:", {
+    wantsIntlCall,
+    intl,
+    carrier: plan.carrier,
+    hasIntlOptionArray: Array.isArray(plan.internationalOptions),
+  });
+
+  if (!wantsIntlCall) {
+    console.log(`🌍 ${plan.carrier}: 国際通話対象外`);
+  }
+
+  if (wantsIntlCall) {
+    const selected = Array.isArray(intl)
+      ? intl.filter((v) => typeof v === "string")
+      : [];
+
+    if (selected.length === 0) {
+      console.log("⚠️ 国際通話キャリア選択なし → skip");
+    }
 
     for (const c of selected) {
-      const lower = c.toLowerCase();
+      try {
+        const lower = c.toLowerCase();
+        const carrierMatch =
+          (lower.includes("楽天") &&
+            plan.carrier?.toLowerCase().includes("rakuten")) ||
+          (lower.includes("au") &&
+            plan.carrier?.toLowerCase().includes("au")) ||
+          (lower.includes("softbank") &&
+            plan.carrier?.toLowerCase().includes("softbank")) ||
+          (lower.includes("docomo") &&
+            plan.carrier?.toLowerCase().includes("docomo"));
 
-      // キャリア判定
-      const carrierMatch =
-        (lower.includes("楽天") && plan.carrier?.toLowerCase().includes("rakuten")) ||
-        (lower.includes("au") && plan.carrier?.toLowerCase().includes("au")) ||
-        (lower.includes("softbank") && plan.carrier?.toLowerCase().includes("softbank")) ||
-        (lower.includes("docomo") && plan.carrier?.toLowerCase().includes("docomo"));
+        if (!carrierMatch) {
+          console.log(`❌ ${c} → ${plan.carrier} にマッチしない`);
+          continue;
+        }
 
-      if (carrierMatch) {
-        // ✅ callOptions → internationalOptions に変更
-        const intlOption =
-          plan.internationalOptions?.find(
-            (opt) =>
-              opt.name?.includes("国際通話") ||
-              opt.id?.includes("international")
-          ) ?? null;
+        const intlList = Array.isArray(plan.internationalOptions)
+          ? plan.internationalOptions
+          : [];
+
+        if (intlList.length === 0) {
+          console.log(`⚠️ ${plan.carrier}: internationalOptions 未定義`);
+          continue;
+        }
+
+        const intlOption = intlList.find(
+          (opt) =>
+            (opt.name && opt.name.includes("国際通話")) ||
+            (opt.id && opt.id.includes("international"))
+        );
 
         if (intlOption && typeof intlOption.fee === "number") {
           internationalCallFee += intlOption.fee;
-          console.log(`🌍 ${plan.carrier} に国際通話オプション (${intlOption.fee}円) 加算`);
+          console.log(
+            `🌍 ${plan.carrier} に国際通話オプション (${intlOption.fee}円) 加算`
+          );
+        } else {
+          console.log(`⚠️ ${plan.carrier}: 該当オプションなし`);
         }
+      } catch (innerErr) {
+        console.warn(`⚠️ 国際通話ループ中エラー (${plan.carrier}):`, innerErr);
+        continue;
       }
-    }
-  }
+    } // ← for 終了
+  } // ← if 終了
+} catch (err) {
+  console.warn("⚠️ 国際通話処理中に例外:", err);
+}
+
+
+
+
 
   // === ⑨ 留守番電話オプション費用 ===
 let voicemailFee = 0;
@@ -253,43 +332,166 @@ if (wantsVoicemail) {
     }
   }
 
-  // === 💰 キャッシュバック・初期費用（月換算） ===
-  let cashback = 0;
-  let initialFeeMonthly = 0;
-  let cashbackTotal = plan.cashbackAmount ?? 0;
-  let initialCostTotal = plan.initialCost ?? 0;
+// === 💰 キャッシュバック・初期費用（月換算） ===
+let cashback = 0;
+let initialFeeMonthly = 0;
+let cashbackTotal = plan.cashbackAmount ?? 0;
+let initialCostTotal = plan.initialCost ?? 0;
 
-  const compareAxis = answers.phase1?.compareAxis ?? "";
-  const comparePeriod = answers.phase1?.comparePeriod ?? "";
+console.log("✅ checkpoint: before compareAxis", plan.carrier);
 
-  let periodMonths = 12;
-  if (comparePeriod.includes("2年")) periodMonths = 24;
-  else if (comparePeriod.includes("3年")) periodMonths = 36;
+// ✅ compareAxis安全確認（phase1直下にも対応）
+const compareAxis =
+  (answers.phase1 && answers.phase1.compareAxis) ||
+  (answers.compareAxis ?? "");
+
+const comparePeriod =
+  (answers.phase1 && answers.phase1.comparePeriod) ||
+  (answers.comparePeriod ?? "");
+
+console.log("✅ compareAxis:", compareAxis);
+console.log("✅ comparePeriod:", comparePeriod);
+
+let periodMonths = 12;
+if (comparePeriod.includes("2年")) periodMonths = 24;
+else if (comparePeriod.includes("3年")) periodMonths = 36;
+
 
   if (compareAxis.includes("実際に支払う金額")) {
     cashback = cashbackTotal / periodMonths;
     initialFeeMonthly = initialCostTotal / periodMonths;
   }
 
-  // === 🎬 サブスク割 ===
-  let subscriptionDiscount = 0;
-  const allSubs = [
-    answers.phase2?.videoSubscriptions,
-    answers.phase2?.musicSubscriptions,
-    answers.phase2?.bookSubscriptions,
-    answers.phase2?.gameSubscriptions,
-    answers.phase2?.cloudSubscriptions,
-    answers.phase2?.otherSubscriptions,
-  ]
-    .flat()
-    .filter(Boolean);
 
-  if (allSubs.length && plan.subscriptionDiscountRules?.length) {
-    const matched = plan.subscriptionDiscountRules.filter((r) =>
-      r.applicableSubscriptions?.some((s) => allSubs.includes(s))
-    );
-    if (matched.length) subscriptionDiscount = matched.reduce((sum, r) => sum + (r.discount ?? 0), 0);
-  }
+
+
+// === 🎬 サブスク割（subscriptionDataから自動計算） ===
+console.log("✅ checkpoint: before subs", plan.carrier);
+
+const subsSource = phase2 as any;
+
+// === 初期化 ===
+let subscriptionDiscount = 0;
+let subscriptionReward = 0;
+let subscriptionBaseFee = 0; // ←★ 新規追加：サブスク本体料金の合計
+
+// === ユーザーがサブスク回答をしていない場合はスキップ ===
+const allSubsRaw = [
+  subsSource.subscriptionList,
+  subsSource.videoSubscriptions,
+  subsSource.musicSubscriptions,
+  subsSource.bookSubscriptions,
+  subsSource.gameSubscriptions,
+  subsSource.cloudSubscriptions,
+  subsSource.otherSubscriptions,
+];
+
+const allSubs = allSubsRaw
+  .flatMap((v) => (Array.isArray(v) ? v : typeof v === "string" ? [v] : []))
+  .filter((v): v is string => typeof v === "string" && v.trim().length > 0);
+
+if (allSubs.length === 0) {
+  console.log("⚠️ No subs detected for", plan.carrier, "→ skip subscription calc");
+} else {
+  console.log("🎬 Subscription block START", {
+    video: subsSource.videoSubscriptions,
+    music: subsSource.musicSubscriptions,
+    carrier: plan.carrier,
+  });
+
+  const carrierKey = plan.carrier.toLowerCase() as
+    | "docomo"
+    | "au"
+    | "softbank"
+    | "rakuten";
+
+  const normalizeSubName = (text: string): string => {
+    if (!text) return "";
+    let replaced = text
+      .toLowerCase()
+      .replace(/[（）()【】「」『』［］]/g, "")
+      .replace(/（.*?）/g, "")
+      .replace(/[\s・]/g, "")
+      .replace(/[^a-z0-9ぁ-んァ-ン一-龠]/g, "")
+      .trim();
+
+    const aliases: Record<string, string> = {
+      ネトフリ: "netflix",
+      netflix: "netflix",
+      アマプラ: "amazonprime",
+      アマゾンプライム: "amazonprime",
+      amazonprimevideo: "amazonprime",
+      primevideo: "amazonprime",
+      ディズニープラス: "disney",
+      disneyplus: "disney",
+      ディズニー: "disney",
+      spotify: "spotify",
+      スポティファイ: "spotify",
+      アップルミュージック: "applemusic",
+      applemusic: "applemusic",
+    };
+
+    for (const [alias, canonical] of Object.entries(aliases)) {
+      if (replaced.includes(alias)) return canonical;
+    }
+    return replaced;
+  };
+
+  allSubs.forEach((subName, i) => {
+    const normalizedSub = normalizeSubName(subName);
+    console.log(`🧩 [${i}] Checking sub: ${subName} → normalized: ${normalizedSub}`);
+
+    const matchedEntries = subscriptionData.filter((s) => {
+      const target = normalizeSubName(
+        s.name
+          .replace(/（セット割）|（本体価格還元）/g, "")
+          .replace(/セット割|本体価格還元/g, "")
+      );
+      const match = normalizedSub.includes(target) || target.includes(normalizedSub);
+      if (match) console.log(`✅ Match found: ${subName} ↔ ${s.name} (${s.key})`);
+      return match;
+    });
+
+    matchedEntries.forEach((entry) => {
+      const base = entry.basePrice ?? 0;
+
+      // --- セット割 ---
+      if (entry.key.endsWith("_set")) {
+        const discount = Number(entry.discounts?.[carrierKey] ?? 0);
+        if (discount > 0) {
+          subscriptionDiscount += discount;
+          console.log(`🎬 セット割: ${plan.carrier} - ${entry.name} (-¥${discount}/月)`);
+        }
+      }
+
+      // --- 還元 ---
+      if (entry.key.endsWith("_reward")) {
+        const rate = Number(entry.rewards?.[carrierKey]);
+        if (!isNaN(rate) && rate > 0) {
+          const reward = Math.round(base * rate);
+          subscriptionReward += reward;
+          console.log(`💸 還元: ${plan.carrier} - ${entry.name} (${rate * 100}% → ¥${reward}/月)`);
+        }
+      }
+
+      // --- 本体料金を常に加算 ---
+      if (base > 0) {
+        subscriptionBaseFee += base;
+        console.log(`🧾 本体料金加算: ${entry.name} (+¥${base}/月)`);
+      }
+    });
+  });
+
+  console.log("🔢 subscriptionBaseFee total:", subscriptionBaseFee);
+  console.log("🔢 subscriptionDiscount total:", subscriptionDiscount);
+  console.log("🔢 subscriptionReward total:", subscriptionReward);
+}
+
+
+
+
+
+
 
   // === セット割・その他割引変数の初期化 ===
   let fiberDiscount = 0;
@@ -492,8 +694,13 @@ if (answers.phase2?.pocketWifiCapacity || answers.phase2?.pocketWifiSpeed) {
     tetheringFee +
     deviceLeaseMonthly +
     deviceBuyMonthly +
+    subscriptionBaseFee　+
     internationalCallFee +
     voicemailFee;
+      console.log("🧾 calcPlanCost still alive just before return", plan.carrier);
+  console.log("🧾 subscriptionDiscount/reward:", subscriptionDiscount, subscriptionReward);
+console.log("✅ checkpoint: before return", plan.carrier);
+
   return {
     baseFee: base,
     callOptionFee,
@@ -522,6 +729,8 @@ if (answers.phase2?.pocketWifiCapacity || answers.phase2?.pocketWifiSpeed) {
     pocketWifiBaseFee,
     carrierBarcodeReward,
     carrierShoppingReward,
+    subscriptionBaseFee,
+    subscriptionReward,   // ←追加
     totalCarrierReward,
     total: Math.round(total),
     totalWithDevice: Math.round(total),
