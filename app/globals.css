@@ -132,20 +132,25 @@
     overflow: hidden;
   }
   .calico-bg::before {
-    content: "";
-    position: absolute;
-    inset: -12%;
-    z-index: -1;
-    pointer-events: none;
+  content: "";
+  position: absolute;
+  inset: -12%;
+  z-index: -1;
+  pointer-events: none;
 
-    background-image: url("/images/calicocat.png");
-    background-size: 64px 64px;
-    background-repeat: space;
-    background-position: top left;
-    opacity: 0.18;
-    transform: rotate(-12deg) scale(1.1);
-    transform-origin: center;
-  }
+  /* タイル 200px、猫64pxを中央に（x=y=68） */
+  background-image: url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'>\
+  <image href='/images/calicocat.png' x='70' y='70' width='64' height='64'/>\
+</svg>");
+  background-size: 400px 400px;
+  background-repeat: repeat;
+  background-position: top left;
+  opacity: 0.18;
+  transform: rotate(-12deg) scale(1.1);
+  transform-origin: center;
+}
+
 }
 
 /* ページ全体の猫タイル（新規追加・スクロール阻害なし） */
@@ -170,3 +175,6 @@
     transform-origin: center;
   }
 }
+/* ページ背景使用時はカード側の猫を消す（重複防止） */
+.calico-page .calico-bg::before { content: none; }
+
