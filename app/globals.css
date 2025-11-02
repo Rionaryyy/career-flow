@@ -160,20 +160,20 @@
     isolation: isolate;
   }
   .calico-page::before {
-    content: "";
-    position: fixed;
-    inset: -16%;
-    z-index: 0;
-    pointer-events: none;
+  content: "";
+  position: fixed;
+  inset: 0;                 /* ビューポート全面に敷く */
+  z-index: 0;
+  pointer-events: none;
 
-    background-image: url("/images/calicocat.png");
-    background-size: 64px 64px;
-    background-repeat: space;
-    background-position: top left;
-    opacity: 0.14;
-    transform: rotate(-12deg) scale(1.06);
-    transform-origin: center;
-  }
+      background-image: url("/images/calicocat.png"); /* ← 新しい1枚に差し替え */
+    background-repeat: repeat;                      /* 1枚をタイル状に敷く */
+    background-position: 0 0;                       /* 左上起点で継ぎ目ゼロ */
+    background-size: 1024px 576px;                  /* 画像の実寸に固定（今回の画像サイズ） */
+
+    opacity: 0.14;                                  /* 濃さはここで微調整 */
+    transform: none;                                /* 回転/拡大は継ぎ目の原因 → 無効 */
+}
 }
 /* ページ背景使用時はカード側の猫を消す（重複防止） */
 .calico-page .calico-bg::before { content: none; }
