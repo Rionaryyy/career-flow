@@ -130,7 +130,6 @@ export default function Result({ answers, onRestart }: Props) {
           carrierShoppingReward: cost.carrierShoppingReward ?? 0,
           totalCarrierReward: cost.totalCarrierReward ?? 0,
           effectiveReward: cost.effectiveReward ?? 0,
-          campaignMatched: cost.campaignMatched ?? [],
         },
         totalMonthly: cost.total ?? 0,
       };
@@ -180,35 +179,18 @@ export default function Result({ answers, onRestart }: Props) {
                   <span className="text-sm text-gray-500 ml-1">/月（税込・概算）</span>
                 </p>
 
-             {/* 💰 実質料金＋キャッシュバック込み参考料金ブロック */}
-<div className="mt-1 ml-1 text-sm text-gray-600 space-y-1">
-  {/* 💰 実質料金 */}
+                {/* 💰 実質料金＋参考料金表示ブロック */}
+<div className="mt-1 ml-1 text-sm text-gray-600">
   <p className="text-gray-700">
     💰 実質料金（初期費用込み）:
     <span className="font-semibold text-gray-800 ml-1">
       ¥{Math.round(totalWithInitial).toLocaleString()} /月
     </span>
   </p>
-
-  {/* 💬 初期費用の説明 */}
   <p className="text-xs text-gray-500 ml-5">
     ※ 初期費用（月換算 ¥{initialFee.toLocaleString()}）を加算して算出
   </p>
 
-  {/* 💸 キャッシュバック込み参考料金 */}
-  <div className="ml-1">
-    <p className="text-gray-700">
-      💸 キャッシュバック込み参考料金:
-      <span className="font-semibold text-gray-800 ml-1">
-        ¥{Math.round(totalWithCashback).toLocaleString()} /月
-      </span>
-    </p>
-    <p className="text-xs text-gray-500 ml-5">
-      ※ キャッシュバック（月換算 -¥{cashback.toLocaleString()}）を反映した参考値
-    </p>
-  </div>
-
-  {/* 📅 比較期間 */}
   {(() => {
     const comparePeriod = answers.phase1?.comparePeriod ?? "";
     let months = 12;
@@ -217,20 +199,26 @@ export default function Result({ answers, onRestart }: Props) {
 
     return (
       <p className="text-xs text-gray-400 ml-5">
-        （{months}ヶ月（
-        {months === 12
-          ? "1年"
-          : months === 24
-          ? "2年"
-          : months === 36
-          ? "3年"
-          : "未指定"}
-        ）で換算しています）
+        （{months}ヶ月（{months === 12 ? "1年" : months === 24 ? "2年" : months === 36 ? "3年" : "未指定"}）で換算しています）
       </p>
     );
   })()}
-</div>
 
+
+                  {cashback > 0 && (
+                    <div className="mt-1">
+                      <p className="text-gray-600">
+                        💸 キャッシュバック込み参考料金:
+                        <span className="font-semibold text-gray-700 ml-1">
+                          ¥{Math.round(totalWithCashback).toLocaleString()} /月
+                        </span>
+                      </p>
+                      <p className="text-xs text-gray-500 ml-5">
+                        ※ キャッシュバック（月換算 -¥{cashback.toLocaleString()}）を反映した参考値
+                      </p>
+                    </div>
+                  )}
+                </div>
 
               <div className="mt-4 text-sm text-gray-700">
                 <p>・基本料金: ¥{plan.breakdown.baseFee}</p>
@@ -401,49 +389,65 @@ export default function Result({ answers, onRestart }: Props) {
                 {plan.breakdown.paymentDiscount !== 0 && (
                   <p>・支払い方法割引: -¥{plan.breakdown.paymentDiscount}</p>
                 )}
-                {/* 💰 初期費用・特典内訳ブロック */}
-{((plan.breakdown.cashbackTotal ?? 0) !== 0 ||
-  (plan.breakdown.initialCostTotal ?? 0) !== 0 ||
-  (plan.breakdown.campaignMatched?.length ?? 0) > 0) && (
-  <div className="mt-3 border-t border-dashed border-gray-300 pt-2">
-    <p className="font-semibold text-gray-800 mb-1">💰 初期費用・特典内訳</p>
+                 {answers.phase1?.compareAxis?.includes("実際に支払う金額") && (
+                  <div className="mt-3 border-t border-dashed border-gray-300 pt-2">
+                    <p className="font-semibold text-gray-800 mb-1">💰 初期費用・特典内訳</p>
 
-    <p className="ml-2 text-gray-700">
-      ・キャッシュバック総額:{" "}
-      <span className="font-medium text-green-700">
-        -¥{(plan.breakdown.cashbackTotal ?? 0).toLocaleString()}
-      </span>
-    </p>
+                    <p className="ml-2 text-gray-700">
+                      ・キャッシュバック総額: -¥
+                      {(plan.breakdown.cashbackTotal ?? 0).toLocaleString()}
+                    </p>
+                    <p className="ml-2 text-gray-700">
+                      ・契約・初期費用総額: +¥
+                      {(plan.breakdown.initialCostTotal ?? 0).toLocaleString()}
+                    </p>
 
-    <p className="ml-2 text-gray-700">
-      ・契約・初期費用総額:{" "}
-      <span className="font-medium text-red-700">
-        +¥{(plan.breakdown.initialCostTotal ?? 0).toLocaleString()}
-      </span>
-    </p>
+                   
+                  </div>
+                )}
+             {/* 🎯 適用キャンペーン詳細表示ブロック */}
+{Array.isArray(plan.breakdown?.campaignMatched) && plan.breakdown.campaignMatched.length > 0 && (
+  <div className="mt-5 border-t border-dashed border-gray-300 pt-3">
+    <p className="font-semibold text-gray-800 mb-2 text-base">🎯 適用キャンペーン</p>
 
-    {/* 🎯 適用キャンペーン */}
-    {Array.isArray(plan.breakdown?.campaignMatched) &&
-      plan.breakdown.campaignMatched.length > 0 && (
-        <div className="mt-2 ml-2">
-          <p className="font-semibold text-gray-800 text-sm">🎯 適用キャンペーン:</p>
-          <ul className="ml-3 list-disc text-gray-700 text-sm">
-            {plan.breakdown.campaignMatched.map((id: string) => {
-              const matched = campaigns.find((c) => c.campaignId === id);
-              if (!matched) return null;
-              return (
-                <li key={matched.campaignId}>
-                  {matched.campaignName}（{matched.cashbackType}：¥
-                  {matched.cashbackAmount.toLocaleString()}）
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      )}
+    <ul className="space-y-3">
+      {plan.breakdown.campaignMatched.map((id: string) => {
+        const matched = campaigns.find((c) => c.campaignId === id);
+        if (!matched) return null;
+
+        return (
+          <li
+            key={matched.campaignId}
+            className="bg-sky-50 border border-sky-100 rounded-xl p-3 text-sm text-gray-700 shadow-sm"
+          >
+            <p className="font-semibold text-sky-700 text-[15px]">{matched.campaignName}</p>
+            <p className="text-gray-600 text-xs mt-0.5">📱 {matched.carrier}</p>
+
+            <div className="mt-1 space-y-0.5">
+              <p className="text-gray-700">
+                💰 還元額：
+                <span className="font-semibold text-gray-800 ml-1">
+                  ¥{matched.cashbackAmount.toLocaleString()}
+                </span>
+                <span className="text-sm text-gray-600">（{matched.cashbackType}）</span>
+              </p>
+
+              <p className="text-gray-600 text-xs">
+                📋 条件：{matched.conditions.join("・")}
+              </p>
+
+              {matched.description && (
+                <p className="text-gray-500 text-xs leading-relaxed mt-1">
+                  {matched.description}
+                </p>
+              )}
+            </div>
+          </li>
+        );
+      })}
+    </ul>
   </div>
 )}
-
 
 `
 

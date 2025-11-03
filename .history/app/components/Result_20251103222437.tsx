@@ -7,8 +7,6 @@ import { filterPlansByPhase1 } from "@/utils/filters/phase1FilterLogic";
 import { filterPlansByPhase2 } from "@/utils/filters/phase2FilterLogic";
 import { allPlansWithDevices as allPlans } from "@/data/plans";
 import { calculatePlanCost } from "@/utils/logic/calcEffectivePrice";
-import { campaigns } from "@/data/campaigns";
-
 
 console.log("📦 Using calculatePlanCost from:", calculatePlanCost.toString().slice(0, 200));
 console.log("🧩 Using calculatePlanCost from:", calculatePlanCost);
@@ -49,7 +47,6 @@ interface PlanWithCost extends Plan {
     carrierBarcodeReward?: number;
     carrierShoppingReward?: number;
     totalCarrierReward?: number;
-    campaignMatched?: string[]; // 🆕 ← 追加
     effectiveReward?: number;
     subscriptionReward?: number; // 🆕 サブスク還元
     subscriptionBaseFee?: number; 
@@ -130,7 +127,6 @@ export default function Result({ answers, onRestart }: Props) {
           carrierShoppingReward: cost.carrierShoppingReward ?? 0,
           totalCarrierReward: cost.totalCarrierReward ?? 0,
           effectiveReward: cost.effectiveReward ?? 0,
-          campaignMatched: cost.campaignMatched ?? [],
         },
         totalMonthly: cost.total ?? 0,
       };
@@ -180,57 +176,32 @@ export default function Result({ answers, onRestart }: Props) {
                   <span className="text-sm text-gray-500 ml-1">/月（税込・概算）</span>
                 </p>
 
-             {/* 💰 実質料金＋キャッシュバック込み参考料金ブロック */}
-<div className="mt-1 ml-1 text-sm text-gray-600 space-y-1">
-  {/* 💰 実質料金 */}
-  <p className="text-gray-700">
-    💰 実質料金（初期費用込み）:
-    <span className="font-semibold text-gray-800 ml-1">
-      ¥{Math.round(totalWithInitial).toLocaleString()} /月
-    </span>
-  </p>
+                {/* 💰 実質料金＋参考料金表示ブロック */}
+                <div className="mt-1 ml-1 text-sm text-gray-600">
+                  <p className="text-gray-700">
+                    💰 実質料金（初期費用込み）:
+                    <span className="font-semibold text-gray-800 ml-1">
+                      ¥{Math.round(totalWithInitial).toLocaleString()} /月
+                    </span>
+                  </p>
+                  <p className="text-xs text-gray-500 ml-5">
+                    ※ 初期費用（月換算 ¥{initialFee.toLocaleString()}）を加算して算出
+                  </p>
 
-  {/* 💬 初期費用の説明 */}
-  <p className="text-xs text-gray-500 ml-5">
-    ※ 初期費用（月換算 ¥{initialFee.toLocaleString()}）を加算して算出
-  </p>
-
-  {/* 💸 キャッシュバック込み参考料金 */}
-  <div className="ml-1">
-    <p className="text-gray-700">
-      💸 キャッシュバック込み参考料金:
-      <span className="font-semibold text-gray-800 ml-1">
-        ¥{Math.round(totalWithCashback).toLocaleString()} /月
-      </span>
-    </p>
-    <p className="text-xs text-gray-500 ml-5">
-      ※ キャッシュバック（月換算 -¥{cashback.toLocaleString()}）を反映した参考値
-    </p>
-  </div>
-
-  {/* 📅 比較期間 */}
-  {(() => {
-    const comparePeriod = answers.phase1?.comparePeriod ?? "";
-    let months = 12;
-    if (comparePeriod.includes("2年")) months = 24;
-    else if (comparePeriod.includes("3年")) months = 36;
-
-    return (
-      <p className="text-xs text-gray-400 ml-5">
-        （{months}ヶ月（
-        {months === 12
-          ? "1年"
-          : months === 24
-          ? "2年"
-          : months === 36
-          ? "3年"
-          : "未指定"}
-        ）で換算しています）
-      </p>
-    );
-  })()}
-</div>
-
+                  {cashback > 0 && (
+                    <div className="mt-1">
+                      <p className="text-gray-600">
+                        💸 キャッシュバック込み参考料金:
+                        <span className="font-semibold text-gray-700 ml-1">
+                          ¥{Math.round(totalWithCashback).toLocaleString()} /月
+                        </span>
+                      </p>
+                      <p className="text-xs text-gray-500 ml-5">
+                        ※ キャッシュバック（月換算 -¥{cashback.toLocaleString()}）を反映した参考値
+                      </p>
+                    </div>
+                  )}
+                </div>
 
               <div className="mt-4 text-sm text-gray-700">
                 <p>・基本料金: ¥{plan.breakdown.baseFee}</p>
@@ -401,52 +372,42 @@ export default function Result({ answers, onRestart }: Props) {
                 {plan.breakdown.paymentDiscount !== 0 && (
                   <p>・支払い方法割引: -¥{plan.breakdown.paymentDiscount}</p>
                 )}
-                {/* 💰 初期費用・特典内訳ブロック */}
-{((plan.breakdown.cashbackTotal ?? 0) !== 0 ||
-  (plan.breakdown.initialCostTotal ?? 0) !== 0 ||
-  (plan.breakdown.campaignMatched?.length ?? 0) > 0) && (
-  <div className="mt-3 border-t border-dashed border-gray-300 pt-2">
-    <p className="font-semibold text-gray-800 mb-1">💰 初期費用・特典内訳</p>
+                 {answers.phase1?.compareAxis?.includes("実際に支払う金額") && (
+                  <div className="mt-3 border-t border-dashed border-gray-300 pt-2">
+                    <p className="font-semibold text-gray-800 mb-1">💰 初期費用・特典内訳</p>
 
-    <p className="ml-2 text-gray-700">
-      ・キャッシュバック総額:{" "}
-      <span className="font-medium text-green-700">
-        -¥{(plan.breakdown.cashbackTotal ?? 0).toLocaleString()}
-      </span>
-    </p>
+                    <p className="ml-2 text-gray-700">
+                      ・キャッシュバック総額: -¥
+                      {(plan.breakdown.cashbackTotal ?? 0).toLocaleString()}
+                    </p>
+                   
 
-    <p className="ml-2 text-gray-700">
-      ・契約・初期費用総額:{" "}
-      <span className="font-medium text-red-700">
-        +¥{(plan.breakdown.initialCostTotal ?? 0).toLocaleString()}
-      </span>
-    </p>
+                    {(() => {
+                      const cashbackTotal = plan.breakdown.cashbackTotal ?? 0;
+                      const initialCostTotal = plan.breakdown.initialCostTotal ?? 0;
+                      const netInitialCost = initialCostTotal - cashbackTotal;
+                      const comparePeriod = answers.phase1?.comparePeriod ?? "";
+                      let months = 12;
+                      if (comparePeriod.includes("2年")) months = 24;
+                      else if (comparePeriod.includes("3年")) months = 36;
 
-    {/* 🎯 適用キャンペーン */}
-    {Array.isArray(plan.breakdown?.campaignMatched) &&
-      plan.breakdown.campaignMatched.length > 0 && (
-        <div className="mt-2 ml-2">
-          <p className="font-semibold text-gray-800 text-sm">🎯 適用キャンペーン:</p>
-          <ul className="ml-3 list-disc text-gray-700 text-sm">
-            {plan.breakdown.campaignMatched.map((id: string) => {
-              const matched = campaigns.find((c) => c.campaignId === id);
-              if (!matched) return null;
-              return (
-                <li key={matched.campaignId}>
-                  {matched.campaignName}（{matched.cashbackType}：¥
-                  {matched.cashbackAmount.toLocaleString()}）
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      )}
-  </div>
-)}
+                      const netMonthly = Math.round(netInitialCost / months);
 
-
-`
-
+                      return (
+                        <div className="ml-2 mt-2">
+                          <p className="text-gray-800 font-medium">
+                            📦 実質初期費用(月換算):{" "}
+                            {netMonthly >= 0 ? "+" : "-"}¥{Math.abs(netMonthly).toLocaleString()}
+                          </p>
+                          <p className="text-xs text-gray-500 ml-4">
+                            ↳ 総額: {netInitialCost >= 0 ? "+" : "-"}¥
+                            {Math.abs(netInitialCost).toLocaleString()} / {months}ヶ月平均
+                          </p>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                )}
 
 
                 {/* 💴 還元額詳細ブロック */}

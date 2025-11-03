@@ -58,7 +58,8 @@ export function calculatePlanCost(plan: Plan, answers: DiagnosisAnswers) {
     initialFeeMonthly,
     initialCostTotal: campaign.initialCostTotal ?? 0,
     campaignMatched: campaign.campaignMatched ?? [],
-    
+    periodMonths: campaign.periodMonths ?? 12,
+
     ...call,
     ...discount,
     ...device,

@@ -130,7 +130,6 @@ export default function Result({ answers, onRestart }: Props) {
           carrierShoppingReward: cost.carrierShoppingReward ?? 0,
           totalCarrierReward: cost.totalCarrierReward ?? 0,
           effectiveReward: cost.effectiveReward ?? 0,
-          campaignMatched: cost.campaignMatched ?? [],
         },
         totalMonthly: cost.total ?? 0,
       };
@@ -180,35 +179,18 @@ export default function Result({ answers, onRestart }: Props) {
                   <span className="text-sm text-gray-500 ml-1">/月（税込・概算）</span>
                 </p>
 
-             {/* 💰 実質料金＋キャッシュバック込み参考料金ブロック */}
-<div className="mt-1 ml-1 text-sm text-gray-600 space-y-1">
-  {/* 💰 実質料金 */}
+                {/* 💰 実質料金＋参考料金表示ブロック */}
+<div className="mt-1 ml-1 text-sm text-gray-600">
   <p className="text-gray-700">
     💰 実質料金（初期費用込み）:
     <span className="font-semibold text-gray-800 ml-1">
       ¥{Math.round(totalWithInitial).toLocaleString()} /月
     </span>
   </p>
-
-  {/* 💬 初期費用の説明 */}
   <p className="text-xs text-gray-500 ml-5">
     ※ 初期費用（月換算 ¥{initialFee.toLocaleString()}）を加算して算出
   </p>
 
-  {/* 💸 キャッシュバック込み参考料金 */}
-  <div className="ml-1">
-    <p className="text-gray-700">
-      💸 キャッシュバック込み参考料金:
-      <span className="font-semibold text-gray-800 ml-1">
-        ¥{Math.round(totalWithCashback).toLocaleString()} /月
-      </span>
-    </p>
-    <p className="text-xs text-gray-500 ml-5">
-      ※ キャッシュバック（月換算 -¥{cashback.toLocaleString()}）を反映した参考値
-    </p>
-  </div>
-
-  {/* 📅 比較期間 */}
   {(() => {
     const comparePeriod = answers.phase1?.comparePeriod ?? "";
     let months = 12;
@@ -217,20 +199,26 @@ export default function Result({ answers, onRestart }: Props) {
 
     return (
       <p className="text-xs text-gray-400 ml-5">
-        （{months}ヶ月（
-        {months === 12
-          ? "1年"
-          : months === 24
-          ? "2年"
-          : months === 36
-          ? "3年"
-          : "未指定"}
-        ）で換算しています）
+        （{months}ヶ月（{months === 12 ? "1年" : months === 24 ? "2年" : months === 36 ? "3年" : "未指定"}）で換算しています）
       </p>
     );
   })()}
-</div>
 
+
+                  {cashback > 0 && (
+                    <div className="mt-1">
+                      <p className="text-gray-600">
+                        💸 キャッシュバック込み参考料金:
+                        <span className="font-semibold text-gray-700 ml-1">
+                          ¥{Math.round(totalWithCashback).toLocaleString()} /月
+                        </span>
+                      </p>
+                      <p className="text-xs text-gray-500 ml-5">
+                        ※ キャッシュバック（月換算 -¥{cashback.toLocaleString()}）を反映した参考値
+                      </p>
+                    </div>
+                  )}
+                </div>
 
               <div className="mt-4 text-sm text-gray-700">
                 <p>・基本料金: ¥{plan.breakdown.baseFee}</p>

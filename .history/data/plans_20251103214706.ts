@@ -395,7 +395,8 @@ voicemailFee: 0,
     deviceDiscountAmount: 500,
     // 💰 初期費用・キャッシュバック
     initialCost: 0, // 楽天は初期費用無料キャンペーンが多い
-        simOnlyAvailable: true,
+    cashbackAmount: 2400,
+    simOnlyAvailable: true,
     deviceSalesAvailable: true,
     supportsReturnProgram: false,
     overseasSupport: true,
