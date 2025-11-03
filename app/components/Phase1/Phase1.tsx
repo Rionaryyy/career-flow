@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { Phase1Answers } from "@/types/types";
 import QuestionLayout from "../layouts/QuestionLayout";
 import QuestionCard from "../layouts/QuestionCard";
@@ -165,9 +166,17 @@ export default function Phase1({ defaultValues, onSubmit, onBack }: Phase1Props)
         <div className="flex justify-end pt-6 w-full max-w-4xl">
           <button
             onClick={() => onSubmit(answers)}
-            className="px-4 py-2 rounded-full bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-300 hover:to-sky-400 text-lg font-semibold text-white shadow-md transition-all duration-200"
+            aria-label="次へ"
+            className="relative inline-flex items-center justify-center"
           >
-            次へ →
+            {/* 「次へ」文字込みの肉球画像だけでボタンにする 🐾 */}
+            <Image
+              src="/images/calico-paw-next.png"
+              alt="次へ"
+              width={60}
+              height={60}
+              className="drop-shadow-md"
+            />
           </button>
         </div>
       </section>

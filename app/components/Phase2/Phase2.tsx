@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { Phase2Answers, Phase1Answers } from "@/types/types";
 import QuestionLayout from "../layouts/QuestionLayout";
 
@@ -115,12 +116,19 @@ const handleNext = () => {
           ← 戻る
         </button>
 
-        {/* 次へボタン */}
+        {/* 次へボタン：Phase1と同じ肉球ボタン */}
         <button
           onClick={handleNext}
-          className="px-4 py-2 rounded-full bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-300 hover:to-sky-400 text-lg font-semibold text-white shadow-md transition-all duration-200"
+          aria-label={step === steps.length - 1 ? "結果を見る" : "次へ"}
+          className="relative inline-flex items-center justify-center"
         >
-          {step === steps.length - 1 ? "結果を見る →" : "次へ →"}
+          <Image
+            src="/images/calico-paw-next.png"
+            alt={step === steps.length - 1 ? "結果を見る" : "次へ"}
+            width={60}
+            height={60}
+            className="drop-shadow-md"
+          />
         </button>
       </div>
     </QuestionLayout>
