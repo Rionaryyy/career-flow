@@ -35,8 +35,6 @@ interface PlanWithCost extends Plan {
     gasDiscount?: number;
     subscriptionDiscount?: number;
     paymentDiscount?: number;
-    effectiveMonthlyAdjustment?: number; // 🆕 初期費用 - 還元 の月換算差額
-
     paymentReward?: number;
     shoppingReward?: number;
     pointReward?: number;
@@ -133,7 +131,6 @@ export default function Result({ answers, onRestart }: Props) {
           totalCarrierReward: cost.totalCarrierReward ?? 0,
           effectiveReward: cost.effectiveReward ?? 0,
           campaignMatched: cost.campaignMatched ?? [],
-          effectiveMonthlyAdjustment: cost.effectiveMonthlyAdjustment ?? 0, // ← ★ここ！
         },
         totalMonthly: cost.total ?? 0,
       };
@@ -195,20 +192,18 @@ export default function Result({ answers, onRestart }: Props) {
     ※ 初期費用（月換算 ¥{initialFee.toLocaleString()}）を加算して算出
   </p>
 
-{/* 💸 キャッシュバック込み参考料金 */}
-<div className="ml-1">
-  <p className="text-gray-700">
-    💸 キャッシュバック込み参考料金:
-    <span className="font-semibold text-gray-800 ml-1">
-      ¥{Math.round(plan.totalMonthly + (plan.breakdown.initialFeeMonthly ?? 0) - (plan.breakdown.cashback ?? 0)).toLocaleString()} /月
-    </span>
-  </p>
-  <p className="text-xs text-gray-500 ml-5">
-    ※ 初期費用とキャッシュバックを反映（初期費用 - 還元）後の参考値
-  </p>
-</div>
-
-
+  {/* 💸 キャッシュバック込み参考料金 */}
+  <div className="ml-1">
+    <p className="text-gray-700">
+      💸 キャッシュバック込み参考料金:
+      <span className="font-semibold text-gray-800 ml-1">
+        ¥{Math.round(totalWithCashback).toLocaleString()} /月
+      </span>
+    </p>
+    <p className="text-xs text-gray-500 ml-5">
+      ※ キャッシュバック（月換算 -¥{cashback.toLocaleString()}）を反映した参考値
+    </p>
+  </div>
 
   {/* 📅 比較期間 */}
   {(() => {

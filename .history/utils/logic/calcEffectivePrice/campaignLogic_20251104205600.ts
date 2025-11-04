@@ -8,7 +8,6 @@ import { campaigns } from "@/data/campaigns";
  * - Phase①の契約方法に応じて初期費用を動的決定
  * - 新規契約／MNPは常に条件クリア（キャリコ仕様）
  * - 比較軸に応じてキャッシュバック・初期費用を月割
- * - 💸 キャッシュバック込み金額 = (初期費用 - キャッシュバック)
  */
 export function calcCampaigns(plan: Plan, answers: DiagnosisAnswers) {
   let campaignCashback = 0;
@@ -54,13 +53,17 @@ export function calcCampaigns(plan: Plan, answers: DiagnosisAnswers) {
   let initialCostTotal = 0;
 
   if (method.includes("店頭")) {
+    // 店頭申し込み
     initialCostTotal = feeStore;
   } else if (method.includes("オンライン")) {
+    // オンライン申し込み（eSIM発行料を加算）
     initialCostTotal = feeOnline + feeEsim;
   } else if (method.includes("どちらでも")) {
+    // どちらでも構わない → 安い方を採用
     initialCostTotal = Math.min(feeStore, feeOnline + feeEsim);
   } else {
-    initialCostTotal = feeOnline + feeEsim; // デフォルト
+    // 未選択など → 0円扱い
+    initialCostTotal = 0;
   }
 
   // === 📅 比較期間（月数換算） ===
@@ -75,29 +78,23 @@ export function calcCampaigns(plan: Plan, answers: DiagnosisAnswers) {
 
   let cashbackMonthly = 0;
   let initialFeeMonthly = 0;
-  let effectiveMonthlyAdjustment = 0; // 💡 初期費用 - キャッシュバック の月額換算値
 
   if (compareAxis.includes("実際に支払う金額")) {
     cashbackMonthly = campaignCashback / months;
     initialFeeMonthly = initialCostTotal / months;
-    effectiveMonthlyAdjustment = (initialCostTotal - campaignCashback) / months;
   } else {
-    // 比較軸が「毎月の支払い額だけ」や未選択でも初期費用は保持
     cashbackMonthly = 0;
-    initialFeeMonthly = initialCostTotal / months;
-    effectiveMonthlyAdjustment = (initialCostTotal - campaignCashback) / months;
+    initialFeeMonthly = 0;
   }
 
   // === 📦 最終返却 ===
   return {
-    cashbackMonthly,       // 月あたり還元額（比較軸で分岐）
-    initialFeeMonthly,     // 月あたり初期費用
-    campaignCashback,      // 総キャッシュバック
+    cashbackMonthly,
+    initialFeeMonthly,
+    campaignCashback,
     cashbackTotal: campaignCashback,
-    initialCostTotal,      // 初期費用総額
-    campaignMatched,       // 適用されたキャンペーンID配列
-    periodMonths: months,  // 比較対象月数
-    // 💸 実質反映用：初期費用 − キャッシュバック（月換算）
-    effectiveMonthlyAdjustment,
+    initialCostTotal,
+    campaignMatched,
+    periodMonths: months,
   };
 }

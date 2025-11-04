@@ -200,14 +200,13 @@ export default function Result({ answers, onRestart }: Props) {
   <p className="text-gray-700">
     💸 キャッシュバック込み参考料金:
     <span className="font-semibold text-gray-800 ml-1">
-      ¥{Math.round(plan.totalMonthly + (plan.breakdown.initialFeeMonthly ?? 0) - (plan.breakdown.cashback ?? 0)).toLocaleString()} /月
+      ¥{Math.round(totalWithInitial + (plan.breakdown.effectiveMonthlyAdjustment ?? 0)).toLocaleString()} /月
     </span>
   </p>
   <p className="text-xs text-gray-500 ml-5">
     ※ 初期費用とキャッシュバックを反映（初期費用 - 還元）後の参考値
   </p>
 </div>
-
 
 
   {/* 📅 比較期間 */}

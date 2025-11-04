@@ -5,12 +5,29 @@ import { campaigns } from "@/data/campaigns";
 /**
  * キャリコ用キャンペーン適用ロジック
  * ---------------------------------------------------
- * - Phase①の契約方法に応じて初期費用を動的決定
- * - 新規契約／MNPは常に条件クリア（キャリコ仕様）
+ * - 未選択時はキャンペーン・初期費用を非表示
+ * - 新規契約／MNPは条件に明記されていなければクリア
  * - 比較軸に応じてキャッシュバック・初期費用を月割
- * - 💸 キャッシュバック込み金額 = (初期費用 - キャッシュバック)
  */
 export function calcCampaigns(plan: Plan, answers: DiagnosisAnswers) {
+  // === 🛑 無回答チェック（phase1・phase2とも空ならスキップ） ===
+  const hasAnySelection =
+    Object.values(answers.phase1 ?? {}).some(Boolean) ||
+    Object.values(answers.phase2 ?? {}).some(Boolean);
+
+  if (!hasAnySelection) {
+    return {
+      cashbackMonthly: 0,
+      initialFeeMonthly: 0,
+      campaignCashback: 0,
+      cashbackTotal: 0,
+      initialCostTotal: 0,
+      campaignMatched: [],
+      periodMonths: 12,
+    };
+  }
+
+  // === 💰 初期化 ===
   let campaignCashback = 0;
   const campaignMatched: string[] = [];
 
@@ -29,10 +46,9 @@ export function calcCampaigns(plan: Plan, answers: DiagnosisAnswers) {
         purchaseMethod.includes("ストア"));
     const hasCoupon = !!answers.phase2?.couponUsed;
 
-    // 新規・MNPは常にクリア（キャリコ仕様）
-    const okNew = !cp.conditions.includes("新規契約") || true;
-    const okMnp = !cp.conditions.includes("MNP") || true;
-
+    // ✅ 条件チェック
+    const okNew = !cp.conditions.includes("新規契約"); // 条件に含まれていなければOK
+    const okMnp = !cp.conditions.includes("MNP"); // 条件に含まれていなければOK
     const okSimOnly = !cp.conditions.includes("SIMのみ") || isSimOnly;
     const okDeviceSet = !cp.conditions.includes("端末セット") || isDeviceSet;
     const okCoupon = !cp.conditions.includes("クーポン入力") || hasCoupon;
@@ -43,61 +59,45 @@ export function calcCampaigns(plan: Plan, answers: DiagnosisAnswers) {
     }
   }
 
-  // === 💰 初期費用の算出（Phase①の契約方法によって分岐） ===
-  const method = answers.phase1?.contractMethod ?? "";
-
-  // データベース由来の値（0はundefined対策）
-  const feeStore = plan.initialFee ?? 0;        // 契約事務手数料（店頭）
-  const feeOnline = plan.initialFeeOnline ?? 0; // 契約事務手数料（オンライン）
-  const feeEsim = plan.esimFee ?? 0;            // eSIM発行料（なければ0）
-
-  let initialCostTotal = 0;
-
-  if (method.includes("店頭")) {
-    initialCostTotal = feeStore;
-  } else if (method.includes("オンライン")) {
-    initialCostTotal = feeOnline + feeEsim;
-  } else if (method.includes("どちらでも")) {
-    initialCostTotal = Math.min(feeStore, feeOnline + feeEsim);
-  } else {
-    initialCostTotal = feeOnline + feeEsim; // デフォルト
-  }
+  // === 💰 初期費用 ===
+  const initialCostTotal = plan.initialCost ?? 0;
 
   // === 📅 比較期間（月数換算） ===
   const comparePeriod = answers.phase1?.comparePeriod ?? "";
   let months = 12;
   if (comparePeriod.includes("2年")) months = 24;
   else if (comparePeriod.includes("3年")) months = 36;
-  else if (!comparePeriod) months = 24;
+  else if (!comparePeriod) months = 24; // ← 未選択時は24ヶ月で換算（参考用）
 
   // === 🧭 比較軸に応じた反映 ===
   const compareAxis = answers.phase1?.compareAxis ?? "";
 
   let cashbackMonthly = 0;
   let initialFeeMonthly = 0;
-  let effectiveMonthlyAdjustment = 0; // 💡 初期費用 - キャッシュバック の月額換算値
 
   if (compareAxis.includes("実際に支払う金額")) {
+    // 💡 実際の支払額で比べたい → 両方月割で反映
     cashbackMonthly = campaignCashback / months;
     initialFeeMonthly = initialCostTotal / months;
-    effectiveMonthlyAdjustment = (initialCostTotal - campaignCashback) / months;
   } else {
-    // 比較軸が「毎月の支払い額だけ」や未選択でも初期費用は保持
+    // 💡 未選択 or 「毎月の支払い額だけ」 → どちらも反映しない
     cashbackMonthly = 0;
-    initialFeeMonthly = initialCostTotal / months;
-    effectiveMonthlyAdjustment = (initialCostTotal - campaignCashback) / months;
+    initialFeeMonthly = 0;
   }
 
   // === 📦 最終返却 ===
   return {
-    cashbackMonthly,       // 月あたり還元額（比較軸で分岐）
-    initialFeeMonthly,     // 月あたり初期費用
-    campaignCashback,      // 総キャッシュバック
+    // 💸 月額反映用
+    cashbackMonthly,
+    initialFeeMonthly,
+
+    // 💰 表示用（総額）
+    campaignCashback,
     cashbackTotal: campaignCashback,
-    initialCostTotal,      // 初期費用総額
-    campaignMatched,       // 適用されたキャンペーンID配列
-    periodMonths: months,  // 比較対象月数
-    // 💸 実質反映用：初期費用 − キャッシュバック（月換算）
-    effectiveMonthlyAdjustment,
+    initialCostTotal,
+
+    // 🧩 参照用
+    campaignMatched,
+    periodMonths: months,
   };
 }
