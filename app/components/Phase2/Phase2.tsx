@@ -22,9 +22,13 @@ interface Phase2Props {
   phase1Answers: Phase1Answers;
 }
 
-export default function Phase2({ onSubmit, defaultValues, onBack, phase1Answers }: Phase2Props) {
+export default function Phase2({
+  onSubmit,
+  defaultValues,
+  onBack,
+  phase1Answers,
+}: Phase2Props) {
   const [answers, setAnswers] = useState<Phase2Answers>(() => ({ ...defaultValues }));
-
   const [step, setStep] = useState<number>(0);
 
   const steps = [
@@ -42,15 +46,15 @@ export default function Phase2({ onSubmit, defaultValues, onBack, phase1Answers 
     setAnswers((prev) => ({ ...prev, ...updated }));
   };
 
-const handleNext = () => {
-  if (step < steps.length - 1) {
-    setStep(step + 1);
-  } else {
-    console.log("🚀 Submitting Phase2:", answers); // ← デバッグ用
-    onSubmit({ ...answers }); // ← シャローコピーで確実に最新を渡す
-    window.scrollTo({ top: 0, behavior: "auto" });
-  }
-};
+  const handleNext = () => {
+    if (step < steps.length - 1) {
+      setStep(step + 1);
+    } else {
+      console.log("🚀 Submitting Phase2:", answers);
+      onSubmit({ ...answers });
+      window.scrollTo({ top: 0, behavior: "auto" });
+    }
+  };
 
   const handleBack = () => {
     if (step > 0) {
@@ -74,7 +78,7 @@ const handleNext = () => {
       case "ecosystem":
         return <Phase2Ecosystem {...stepProps} phase1Answers={phase1Answers} />;
       case "subscription":
-        return <Phase2Subscription {...stepProps} phase1Answers={phase1Answers}/>;
+        return <Phase2Subscription {...stepProps} phase1Answers={phase1Answers} />;
       case "device":
         return <Phase2Device {...stepProps} />;
       case "overseas":
@@ -94,26 +98,27 @@ const handleNext = () => {
 
   return (
     <QuestionLayout answeredCount={step + 2} totalCount={9}>
-      {/* 各ステップタイトル */}
       <h2 className="text-3xl font-bold text-sky-900 text-center mb-6">
         {steps[step].label}
       </h2>
 
-      {/* 各ステップコンテンツ */}
       <div className="w-full px-0">{renderStep()}</div>
 
-      {/* 下部ナビボタン */}
       <div className="flex justify-between items-center pt-6 w-full max-w-4xl">
-        {/* 戻るボタン（「次へ」と同色。無効時は半透明） */}
+        {/* 戻るボタン：肉球画像ボタン */}
         <button
           onClick={handleBack}
           disabled={isBackDisabled}
-          className={`px-4 py-2 rounded-full text-lg font-semibold text-white shadow-md transition-all duration-200
-            bg-gradient-to-r from-sky-400 to-sky-500
-            ${isBackDisabled ? "opacity-50 cursor-not-allowed pointer-events-none" : "hover:from-sky-300 hover:to-sky-400"}
-          `}
+          aria-label="戻る"
+          className="relative inline-flex items-center justify-center"
         >
-          ← 戻る
+          <Image
+            src="/images/calico-paw-back.png"
+            alt="戻る"
+            width={60}
+            height={60}
+            className={isBackDisabled ? "opacity-40 cursor-not-allowed" : "drop-shadow-md"}
+          />
         </button>
 
         {/* 次へボタン：Phase1と同じ肉球ボタン */}
