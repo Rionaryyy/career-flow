@@ -8,7 +8,7 @@ async function main() {
   try {
     // === 環境変数 or 直書き設定 ===
     const SHEET_ID = process.env.GOOGLE_SHEET_ID || "YOUR_SHEET_ID_HERE";
-    const SHEET_NAME = "キャリアに依存"; // シート名
+    const SHEET_NAME = "plan"; // シート名
 
     console.log("📥 Google Sheet からデータ取得中...");
     const rows = await fetchSpreadsheetData(SHEET_ID, SHEET_NAME);
