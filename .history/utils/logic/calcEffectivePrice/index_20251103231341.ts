@@ -7,23 +7,28 @@ import { calcDeviceCost } from "./deviceCostLogic";
 import { calcSubscription } from "./subscriptionLogic";
 import { calcPayments } from "./paymentLogic";
 import { calcSetDiscounts } from "./setDiscountLogic";
-import { calcCampaigns } from "./campaignLogic";
+import { calcCampaigns } from "./campaignLogic"; // ← キャンペーン判定＋還元ロジック
 
 export function calculatePlanCost(plan: Plan, answers: DiagnosisAnswers) {
   const base = plan.baseMonthlyFee ?? 0;
 
+  // === 各モジュール呼び出し ===
   const call = calcCallOptions(plan, answers);
   const discount = calcDiscounts(plan, answers);
   const device = calcDeviceCost(plan, answers);
   const subscription = calcSubscription(plan, answers);
   const payment = calcPayments(plan, answers);
   const set = calcSetDiscounts(plan, answers);
-  const campaign = calcCampaigns(plan, answers);
+  const campaign = calcCampaigns(plan, answers); // ← キャンペーン情報も取得
 
-  // 月額に反映する分だけ取り出す
-  const cashbackMonthly = campaign.cashbackMonthly ?? 0;
+  // === 💰 キャンペーン・初期費用関連 ===
+  const cashback = campaign.cashback ?? 0;
+  const cashbackTotal = campaign.cashbackTotal ?? 0;
+  const campaignCashback = campaign.campaignCashback ?? 0;
   const initialFeeMonthly = campaign.initialFeeMonthly ?? 0;
+  const initialCostTotal = campaign.initialCostTotal ?? 0;
 
+  // === 💵 最終合算（安全キャスト付き） ===
   const total =
     (base ?? 0) +
     (call.callOptionFee ?? 0) -
@@ -45,35 +50,28 @@ export function calculatePlanCost(plan: Plan, answers: DiagnosisAnswers) {
     (call.internationalCallFee ?? 0) +
     (subscription.subscriptionBaseFee ?? 0) +
     (call.tetheringFee ?? 0) +
-    (initialFeeMonthly ?? 0) - // ← 初期費用は足す
-    (cashbackMonthly ?? 0);    // ← 還元は引く
+    (initialFeeMonthly ?? 0) -
+    (cashback ?? 0);
 
+  // === 💾 戻り値 ===
   return {
     baseFee: base ?? 0,
-
-    // === 💰 表示用 ===
-    cashback: cashbackMonthly,
-    cashbackTotal: campaign.cashbackTotal ?? 0,
-    campaignCashback: campaign.campaignCashback ?? 0,
-    initialFeeMonthly,
-    initialCostTotal: campaign.initialCostTotal ?? 0,
+    cashback,
+    cashbackTotal,
+    campaignCashback,
     campaignMatched: campaign.campaignMatched ?? [],
-
-    // 👇 これを追加！「初期費用 − キャッシュバック」の月割値
-    effectiveMonthlyAdjustment: campaign.effectiveMonthlyAdjustment ?? 0,
-
+    initialFeeMonthly,
+    initialCostTotal,
     ...call,
     ...discount,
     ...device,
     ...subscription,
     ...payment,
     ...set,
-
     shoppingReward: payment.carrierShoppingReward ?? 0,
     pointReward: payment.paymentReward ?? 0,
     effectiveReward:
       (payment.paymentReward ?? 0) + (payment.totalCarrierReward ?? 0),
-
     total: Math.round(total ?? 0),
     totalWithDevice: Math.round(total ?? 0),
   };

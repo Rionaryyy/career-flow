@@ -51,17 +51,14 @@ export function calculatePlanCost(plan: Plan, answers: DiagnosisAnswers) {
   return {
     baseFee: base ?? 0,
 
-    // === 💰 表示用 ===
+    // 表示用
     cashback: cashbackMonthly,
     cashbackTotal: campaign.cashbackTotal ?? 0,
     campaignCashback: campaign.campaignCashback ?? 0,
     initialFeeMonthly,
     initialCostTotal: campaign.initialCostTotal ?? 0,
     campaignMatched: campaign.campaignMatched ?? [],
-
-    // 👇 これを追加！「初期費用 − キャッシュバック」の月割値
-    effectiveMonthlyAdjustment: campaign.effectiveMonthlyAdjustment ?? 0,
-
+    
     ...call,
     ...discount,
     ...device,

@@ -74,10 +74,6 @@ export interface Plan {
   networkQuality: NetworkQuality;
   requiresAppCall: boolean;
   availableMethod: AvailableMethod;
-  // 🆕 追加：契約方法別の初期費用フィールド
-  initialFee?: number;         // 店頭契約時（既存）
-  initialFeeOnline?: number;   // 🆕 オンライン契約時
-  esimFee?: number;            // 🆕 eSIM発行手数料
 
   // === Phase2: データ・テザリング ===
   maxDataGB: number;
@@ -162,7 +158,8 @@ export interface Plan {
 
   // === 料金関連 ===
   deviceDiscountAmount?: number;
-   initialCost?: number; // 契約時初期費用
+  initialFee?: number;
+  initialCost?: number; // 契約時初期費用
   cashbackAmount?: number; // キャッシュバック総額
 
   // === 🟩 セット割関連 ===

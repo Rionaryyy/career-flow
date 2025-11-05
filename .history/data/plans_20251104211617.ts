@@ -26,7 +26,7 @@ export const allPlans: Plan[] = [
     baseMonthlyFee: 1980,
     networkQuality: "高",
     requiresAppCall: false,
-    availableMethod: "both",
+    availableMethod: "online",
     maxDataGB: 30,
     speedLimitMbps: 0.5,
     tetheringAvailable: true,
