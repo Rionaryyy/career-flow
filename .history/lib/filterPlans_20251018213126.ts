@@ -6,7 +6,8 @@ import { PlanSchemaType } from "./planSchema";
  */
 export function filterPlansByPhase1(
   plans: PlanSchemaType[],
-  answers: DiagnosisAnswers): PlanSchemaType[] {
+  answers: Phase1Answers
+): PlanSchemaType[] {
   let filtered = [...plans];
 
   // --- ① キャリアタイプ ---

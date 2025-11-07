@@ -36,8 +36,7 @@ const isYesFollowupId = (id: string) =>
 // QuestionCard の value を正規化（boolean を除外）
 function getQCValue(
   id: keyof Phase2Answers,
-  answers: Phase2Answers
-): string | string[] | null | undefined {
+  answers: DiagnosisAnswers): string | string[] | null | undefined {
   const v = answers[id];
   return typeof v === "boolean"
     ? undefined
