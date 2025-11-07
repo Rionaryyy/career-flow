@@ -1,0 +1,213 @@
+"use client";
+
+import { useState, forwardRef, useImperativeHandle, useEffect } from "react";
+import QuestionCard from "../../layouts/QuestionCard";
+import { DiagnosisAnswers } from "@/types/types";
+import { motion } from "framer-motion";
+import { suggestCallPlan } from "@/utils/logic/callPlanAdvisor";
+import ReactMarkdown from "react-markdown";
+import { callQuestions } from "../questions/callSection";
+
+const outerCard =
+  "bg-sky-50 border border-sky-300 rounded-2xl p-5 space-y-4";
+const innerCard =
+  "bg-sky-50 border border-sky-300 rounded-xl p-4";
+const bodyText =
+  "text-gray-800 text-sm md:text-base leading-normal font-normal";
+const optBtnBase =
+  "w-full text-left rounded-xl border px-4 py-3 transition select-none text-sm md:text-base";
+const optBtnOn = "bg-sky-100 border-sky-600 text-gray-900 shadow-sm";
+const optBtnOff =
+  "bg-white border-sky-400 text-gray-900 hover:border-sky-500";
+
+const isUnknownFollowupId = (id: string) =>
+  ["unknownCallUsageDuration", "unknownCallFrequency", "needCallPlanConfirm"].includes(id);
+const isYesFollowupId = (id: string) =>
+  ["callPlanType", "timeLimitPreference", "monthlyLimitPreference", "hybridCallPreference"].includes(id);
+
+const CallSection = forwardRef(function CallSection(
+  {
+    answers,
+    onChange,
+    onNext,
+  }: {
+    answers: DiagnosisAnswers;
+    onChange: (updated: Partial<DiagnosisAnswers>) => void;
+    onNext?: () => void;
+  },
+  ref
+) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useImperativeHandle(ref, () => ({
+    goNext() {
+      if (currentIndex < callQuestions.length - 1) {
+        setCurrentIndex((prev) => prev + 1);
+      } else {
+        onNext && onNext();
+      }
+    },
+    isCompleted() {
+      return currentIndex >= callQuestions.length - 1;
+    },
+    getCurrentIndex() {
+      return currentIndex;
+    },
+    setCurrentIndex(i: number) {
+      setCurrentIndex(i);
+    },
+  }));
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currentIndex]);
+
+  const handleChange = (id: keyof DiagnosisAnswers, value: string | number | string[]) => {
+    const updated: Partial<DiagnosisAnswers> = {};
+
+    if (Array.isArray(value)) {
+      (updated as Record<string, unknown>)[id as string] = value;
+    } else {
+      (updated as Record<string, unknown>)[id as string] = value;
+    }
+
+    if (id === "needCallPlan" && String(value).includes("いいえ")) {
+      updated.callPlanType = [];
+      updated.timeLimitPreference = "";
+      updated.monthlyLimitPreference = "";
+      updated.hybridCallPreference = "";
+    }
+
+    if (id === "needCallPlan" && String(value).includes("よくわからない")) {
+      updated.unknownCallUsageDuration = "";
+      updated.unknownCallFrequency = "";
+      updated.needCallPlanConfirm = "";
+    }
+
+    if (id === "needInternationalCallUnlimited" && String(value).includes("いいえ")) {
+      updated.internationalCallCarrier = [];
+    }
+
+    onChange(updated);
+  };
+
+  const q = callQuestions[currentIndex];
+
+  // 🔹 条件を部分一致で判定（表記ゆれ対応）
+  const needCallValue = String(answers.needCallPlan || "");
+
+  const showUnknownFollowups =
+    q.id === "needCallPlan" && needCallValue.includes("よくわからない");
+
+  const showYesFollowups =
+    q.id === "needCallPlan" && needCallValue.includes("はい");
+
+  const showAdvice =
+    needCallValue.includes("よくわからない") &&
+    answers.unknownCallUsageDuration &&
+    answers.unknownCallFrequency;
+
+  const suggestion =
+    showAdvice &&
+    suggestCallPlan({
+      callDuration: answers.unknownCallUsageDuration,
+      callFrequencyPerWeek: answers.unknownCallFrequency,
+    } as DiagnosisAnswers);
+
+  return (
+    <div className="w-full py-6 space-y-6">
+      {/* === メイン質問 === */}
+      <motion.div
+        key={q.id}
+        initial={{ opacity: 0, y: -5 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <QuestionCard
+          id={q.id}
+          question={q.question}
+          options={q.options}
+          type={q.type}
+          value={answers[q.id as keyof DiagnosisAnswers] as string}
+          onChange={handleChange}
+          answers={answers}
+        />
+      </motion.div>
+
+      {/* === 「よくわからない」選択時の追加質問 === */}
+      {showUnknownFollowups && (
+        <div className={`${outerCard}`}>
+          <p className={`${bodyText} mb-3`}>
+            「よくわからない（おすすめを知りたい）」に関する追加質問
+          </p>
+          {callQuestions
+            .filter((f) => isUnknownFollowupId(f.id))
+            .map((sub) => (
+              <div key={sub.id} className={innerCard}>
+                <p className={`${bodyText} mb-2`}>{sub.question}</p>
+                {sub.options.map((opt) => (
+                  <button
+                    key={opt}
+                    type="button"
+                    onClick={() => handleChange(sub.id as keyof DiagnosisAnswers, opt)}
+                    className={`${optBtnBase} ${
+                      answers[sub.id as keyof DiagnosisAnswers] === opt
+                        ? optBtnOn
+                        : optBtnOff
+                    }`}
+                  >
+                    {opt}
+                  </button>
+                ))}
+              </div>
+            ))}
+          {suggestion && (
+            <motion.div
+              key="call-advice"
+              className="bg-white shadow-sm border border-gray-200 rounded-2xl p-5 text-gray-800 space-y-4 mt-4"
+            >
+              <h3 className="font-semibold text-gray-900">📞 通話プランアドバイス</h3>
+              <ReactMarkdown>{suggestion as string}</ReactMarkdown>
+            </motion.div>
+          )}
+        </div>
+      )}
+
+      {/* === 「はい」選択時の追加質問 === */}
+      {showYesFollowups && (
+        <div className={`${outerCard}`}>
+          <p className={`${bodyText} mb-3`}>
+            「はい（利用したい）」に関する追加質問
+          </p>
+          {callQuestions
+            .filter((f) => isYesFollowupId(f.id))
+            .map((sub) => (
+              <div key={sub.id} className={innerCard}>
+                <p className={`${bodyText} mb-2`}>{sub.question}</p>
+                {sub.options.map((opt) => {
+                  const value = answers[sub.id as keyof DiagnosisAnswers];
+                  const checked = Array.isArray(value)
+                    ? value.includes(opt)
+                    : value === opt;
+                  return (
+                    <button
+                      key={opt}
+                      type="button"
+                      onClick={() => handleChange(sub.id as keyof DiagnosisAnswers, opt)}
+                      className={`${optBtnBase} ${
+                        checked ? optBtnOn : optBtnOff
+                      }`}
+                    >
+                      {opt}
+                    </button>
+                  );
+                })}
+              </div>
+            ))}
+        </div>
+      )}
+    </div>
+  );
+});
+
+export default CallSection;
