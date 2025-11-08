@@ -1,6 +1,6 @@
 "use client";
 
-import Header from "../components/layouts/Header";
+import Header from "../components/DiagnosisFlow/Header";
 import FeatureHighlightsFlow from ".././components/FeatureHighlightsFlow";
 import HeroMini from ".././components/HeroMini";
 
