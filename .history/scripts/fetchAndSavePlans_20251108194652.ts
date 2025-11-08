@@ -27,7 +27,7 @@ async function main() {
     // 2: データ型
     // 3以降: 実データ行
     const headerRow = rows[1];
-    const dataRows = rows.slice(5);
+    const dataRows = rows.slice(4);
 
     console.log("🧩 Header:", headerRow.slice(0, 10));
     console.log("🧩 1st Data Row:", dataRows[0]?.slice(0, 10));

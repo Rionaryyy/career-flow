@@ -16,11 +16,8 @@ export function transformSheetToPlans(rows: any[][]): Plan[] {
     return Number.isFinite(num) ? num : 0;
   };
 
-  const toBool = (val: any): boolean => {
-    if (val === true || val === false) return val;
-    const str = String(val).trim().toLowerCase();
-    return str === "true" || str === "yes" || str === "1";
-  };
+  const toBool = (val: any): boolean =>
+    String(val).trim().toUpperCase() === "TRUE";
 
   const toStringArray = (val: any): string[] =>
     !val
@@ -35,14 +32,7 @@ export function transformSheetToPlans(rows: any[][]): Plan[] {
       ? []
       : String(val)
           .split(",")
-          .map(
-            (v) =>
-              ({
-                id: v.trim(),
-                name: v.trim(),
-                fee: 0,
-              } as CallOption)
-          )
+          .map((v) => v.trim() as unknown as CallOption)
           .filter(Boolean);
 
   const toIntlOptionArray = (val: any): InternationalCallOption[] =>
@@ -50,23 +40,13 @@ export function transformSheetToPlans(rows: any[][]): Plan[] {
       ? []
       : String(val)
           .split(",")
-          .map(
-            (v) =>
-              ({
-                id: v.trim(),
-                name: v.trim(),
-                fee: 0,
-                type: "international",
-              } as InternationalCallOption)
-          )
+          .map((v) => v.trim() as unknown as InternationalCallOption)
           .filter(Boolean);
 
-  // === 🧩 Plan配列生成 ===
   const plans = dataRows.map((row, index): Plan => {
     const plan: Record<string, any> = {};
-
     header.forEach((key: string, i: number) => {
-      (plan as any)[key] = row[i] ?? "";
+      plan[key] = row[i] ?? "";
     });
 
     return {
@@ -109,16 +89,15 @@ export function transformSheetToPlans(rows: any[][]): Plan[] {
 
       // === 経済圏 / 支払い ===
       supportedPaymentMethods: toStringArray(plan["対応支払い方法"]),
-
-      // ✅ string → string[] 変換修正済
-      includedSubscriptions: toStringArray(plan["付帯サブスク"]),
-
+      // ✅ string[] → string に変換（型: string）
+      includedSubscriptions: String(plan["付帯サブスク"] || ""),
       deviceDiscountAmount: toNumber(plan["端末割引額"]),
       cashbackAmount: toNumber(plan["キャッシュバック額"]),
 
       // === 割引系 ===
       setDiscountApplied: toBool(plan["セット割対象"]),
       setDiscountAmount: toNumber(plan["セット割金額"]),
+      // ✅ string[] → "fiber" | "router" | "pocketWifi" の union にキャスト
       applicableCategories: toStringArray(plan["カテゴリ"]).map(
         (v) => v as "fiber" | "router" | "pocketWifi"
       ),
