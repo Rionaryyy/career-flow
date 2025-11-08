@@ -1,0 +1,81 @@
+import { Plan } from "@/types/planTypes";
+import { DiagnosisAnswers } from "@/types/types";
+import { campaigns } from "@/data/campaigns";
+
+/**
+ * 💸 統合型キャリコキャンペーンロジック
+ * ----------------------------------------------------
+ * 契約方法・比較期間・デバイス購入形態・クーポン利用等に対応。
+ * 対象キャンペーンを抽出し、キャッシュバック／初期費用を
+ * 月額換算して実質料金に反映する。
+ */
+export function calcCampaigns(plan: Plan, answers: DiagnosisAnswers) {
+  let campaignCashback = 0;
+  const campaignMatched: string[] = [];
+
+  // === 🎯 対象キャンペーン探索 ===
+  for (const cp of campaigns) {
+    if (!Array.isArray(cp.targetPlanIds) || !cp.targetPlanIds.includes(plan.planId)) continue;
+
+    const purchaseMethod = Array.isArray(answers.devicePurchaseMethods)
+      ? answers.devicePurchaseMethods[0] ?? ""
+      : answers.devicePurchaseMethods ?? "";
+
+    const isSimOnly = answers.devicePreference?.includes("いいえ") ?? false;
+    const isDeviceSet =
+      answers.devicePreference?.includes("はい") &&
+      /(キャリア|返却|家電|ストア)/.test(purchaseMethod ?? "");
+    const hasCoupon = !!answers.couponUsed;
+
+    // 条件ごとの照合（"〜を含まない"ものは常に通過）
+    const okNew = !cp.conditions.includes("新規契約") || true;
+    const okMnp = !cp.conditions.includes("MNP") || true;
+    const okSimOnly = !cp.conditions.includes("SIMのみ") || isSimOnly;
+    const okDeviceSet = !cp.conditions.includes("端末セット") || isDeviceSet;
+    const okCoupon = !cp.conditions.includes("クーポン入力") || hasCoupon;
+
+    if (okNew && okMnp && okSimOnly && okDeviceSet && okCoupon) {
+      campaignCashback += cp.cashbackAmount ?? 0;
+      campaignMatched.push(cp.campaignId);
+    }
+  }
+
+  // === 💰 初期費用の算出 ===
+  const method = answers.contractMethod ?? "";
+  const feeStore = plan.initialFee ?? 0;
+  const feeOnline = plan.initialFeeOnline ?? 0;
+  const feeEsim = plan.esimFee ?? 0;
+
+  let initialCostTotal = 0;
+  if (method.includes("店頭")) initialCostTotal = feeStore;
+  else if (method.includes("オンライン")) initialCostTotal = feeOnline + feeEsim;
+  else if (method.includes("どちらでも")) initialCostTotal = Math.min(feeStore, feeOnline + feeEsim);
+  else initialCostTotal = feeOnline + feeEsim;
+
+  // === 📆 比較期間 ===
+  const comparePeriod = answers.comparePeriod ?? answers.phase1?.comparePeriod ?? "";
+  let months = 24;
+  if (comparePeriod.includes("1年")) months = 12;
+  else if (comparePeriod.includes("2年")) months = 24;
+  else if (comparePeriod.includes("3年")) months = 36;
+
+  // === 📊 比較軸 ===
+  const compareAxis = answers.compareAxis ?? "";
+  const considerRealPayment = compareAxis.includes("実際に支払う金額");
+
+  const cashbackMonthly = considerRealPayment ? campaignCashback / months : 0;
+  const initialFeeMonthly = initialCostTotal / months;
+  const effectiveMonthlyAdjustment = (initialCostTotal - campaignCashback) / months;
+
+  // === 🧾 結果返却 ===
+  return {
+    cashbackMonthly,             // 月あたりキャッシュバック額
+    initialFeeMonthly,           // 月あたり初期費用
+    campaignCashback,            // 総キャッシュバック額
+    cashbackTotal: campaignCashback,
+    initialCostTotal,            // 総初期費用
+    campaignMatched,             // 適用キャンペーンID配列
+    periodMonths: months,        // 比較期間（月）
+    effectiveMonthlyAdjustment,  // 実質調整額
+  };
+}

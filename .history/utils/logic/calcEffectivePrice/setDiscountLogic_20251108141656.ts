@@ -1,0 +1,181 @@
+import { fiberDiscountPlans } from "@/data/setDiscounts/fiberDiscountPlans";
+import { routerDiscountPlans } from "@/data/setDiscounts/routerDiscountPlans";
+import { pocketWifiDiscountPlans } from "@/data/setDiscounts/pocketWifiDiscountPlans";
+import { Plan } from "@/types/planTypes";
+import { DiagnosisAnswers } from "@/types/types";
+
+export interface SetDiscountResult {
+  fiberDiscount: number;
+  routerDiscount: number;
+  pocketWifiDiscount: number;
+  electricDiscount: number;
+  gasDiscount: number;
+  fiberBaseFee: number;
+  routerBaseFee: number;
+  pocketWifiBaseFee: number;
+  debug?: string;
+}
+
+/**
+ * 🏠 セット割ロジック（Phase2対応版・強化済み）
+ * -----------------------------------------------------
+ * 「answers.setDiscount」の英語IDを優先。
+ * fiber / router / pocketwifi / electric / gas に対応。
+ * normalizeSpeed により "1g" ⇔ "1Gbps" 揺れも吸収。
+ */
+export function calcSetDiscounts(plan: Plan, answers: DiagnosisAnswers): SetDiscountResult {
+  let fiberDiscount = 0;
+  let routerDiscount = 0;
+  let pocketWifiDiscount = 0;
+  let electricDiscount = 0;
+  let gasDiscount = 0;
+  let fiberBaseFee = 0;
+  let routerBaseFee = 0;
+  let pocketWifiBaseFee = 0;
+
+  const normalize = (t?: string) =>
+    t?.replace(/[Ａ-Ｚａ-ｚ０-９]/g, (s) =>
+      String.fromCharCode(s.charCodeAt(0) - 0xfee0)
+    )
+      .replace(/\s+/g, "")
+      .trim()
+      .toLowerCase() || "";
+
+  const selected = Array.isArray(answers.setDiscount)
+    ? answers.setDiscount.map((s) => normalize(s))
+    : [];
+
+  console.log("🧩 セット割計算開始:", {
+    carrier: plan.carrier,
+    selected,
+    fiberSpeed: answers.fiberSpeed,
+    routerSpeed: answers.routerSpeed,
+    pocketWifiSpeed: answers.pocketWifiSpeed,
+  });
+
+  // === 🌐 光回線セット ===
+  if (selected.includes("fiber") || (answers.fiberType && answers.fiberSpeed)) {
+    const type = normalize(answers.fiberType);
+    const speed = normalizeSpeed(answers.fiberSpeed);
+
+    const match = fiberDiscountPlans.find(
+      (p) =>
+        normalize(p.carrier) === normalize(plan.carrier) &&
+        (!p.fiberType || normalize(p.fiberType) === type) &&
+        (!p.fiberSpeed || normalizeSpeed(p.fiberSpeed) === speed)
+    );
+
+    if (match) {
+      fiberDiscount = match.setDiscountAmount ?? 0;
+      fiberBaseFee = match.setBaseFee ?? 0;
+      console.log(`🌐 光セット割: ${plan.carrier} -¥${fiberDiscount}/月`);
+    } else {
+      console.log(`⚠️ 光回線一致なし: ${plan.carrier} (${speed})`);
+    }
+  }
+
+  // === 📶 ホームルーターセット ===
+  if (selected.includes("router") || (answers.routerCapacity && answers.routerSpeed)) {
+    const speed = normalizeSpeed(answers.routerSpeed);
+
+    const match = routerDiscountPlans.find(
+      (p) =>
+        normalize(p.carrier) === normalize(plan.carrier) &&
+        (!p.routerSpeed || normalizeSpeed(p.routerSpeed) === speed)
+    );
+
+    if (match) {
+      routerDiscount = match.setDiscountAmount ?? 0;
+      routerBaseFee = match.setBaseFee ?? 0;
+      console.log(`📶 ルーター割: ${plan.carrier} -¥${routerDiscount}/月`);
+    } else {
+      console.log(`⚠️ ルーター一致なし: ${plan.carrier} (${speed})`);
+    }
+  }
+
+  // === 📡 ポケットWi-Fiセット ===
+  if (selected.includes("pocketwifi") || answers.pocketWifiCapacity || answers.pocketWifiSpeed) {
+    const cap = normalizeCapacity(answers.pocketWifiCapacity);
+    const speed = normalizeSpeed(answers.pocketWifiSpeed);
+
+    const match = pocketWifiDiscountPlans.find(
+      (p) =>
+        normalize(p.carrier) === normalize(plan.carrier) &&
+        ((p.routerCapacity && normalizeCapacity(p.routerCapacity) === cap) ||
+          (p.routerSpeed && normalizeSpeed(p.routerSpeed) === speed))
+    );
+
+    if (match) {
+      pocketWifiDiscount = match.setDiscountAmount ?? 0;
+      pocketWifiBaseFee = match.setBaseFee ?? 0;
+      console.log(`📡 ポケットWi-Fi割: ${plan.carrier} -¥${pocketWifiDiscount}/月`);
+    } else {
+      console.log(`⚠️ ポケットWi-Fi一致なし: ${plan.carrier} (${speed}, ${cap})`);
+    }
+  }
+
+  // === 🔌 電気・ガスセット ===
+  const raw = selected.join(",");
+  if (
+    (raw.includes("electric") || raw.includes("電気")) &&
+    plan.supportsElectricSet &&
+    plan.energyDiscountRules
+  ) {
+    const match = plan.energyDiscountRules.find(
+      (r) => normalize(r.type).includes("electric") || r.type === "電気"
+    );
+    if (match) electricDiscount = match.discount;
+  }
+
+  if (
+    (raw.includes("gas") || raw.includes("ガス")) &&
+    plan.supportsGasSet &&
+    plan.energyDiscountRules
+  ) {
+    const match = plan.energyDiscountRules.find(
+      (r) => normalize(r.type).includes("gas") || r.type === "ガス"
+    );
+    if (match) gasDiscount = match.discount;
+  }
+
+  const debug = `📦 fiber=${fiberDiscount}, router=${routerDiscount}, pocket=${pocketWifiDiscount}, electric=${electricDiscount}, gas=${gasDiscount}`;
+
+  return {
+    fiberDiscount,
+    routerDiscount,
+    pocketWifiDiscount,
+    electricDiscount,
+    gasDiscount,
+    fiberBaseFee,
+    routerBaseFee,
+    pocketWifiBaseFee,
+    debug,
+  };
+}
+
+/* ===========================================================
+   🧰 Utility: 正規化関数群（揺れ・全角対応）
+=========================================================== */
+
+function normalizeSpeed(raw?: string): string {
+  if (!raw) return "";
+  const v = raw.trim().toLowerCase();
+  if (v.includes("10g")) return "10g";
+  if (v.includes("4g")) return "4g";
+  if (v.includes("2g")) return "2g";
+  if (v.includes("1g")) return "1g";
+  if (v.includes("500m")) return "500m";
+  if (v.includes("300m")) return "300m";
+  if (v.includes("100m")) return "100m";
+  return v.replace(/bps|以上|最大/g, "");
+}
+
+function normalizeCapacity(raw?: string): string {
+  if (!raw) return "";
+  const v = raw.trim().toLowerCase();
+  if (v.includes("20")) return "20gb";
+  if (v.includes("50")) return "50gb";
+  if (v.includes("100")) return "100gb";
+  if (v.includes("無制限") || v.includes("unlimited")) return "unlimited";
+  return v.replace(/gb|以上|程度|〜/g, "");
+}

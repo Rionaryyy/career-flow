@@ -1,0 +1,167 @@
+import { DiagnosisAnswers } from "@/types/types";
+import { Plan } from "@/types/planTypes";
+import { devicePricesLease } from "../../data/devicePricesLease";
+import { devicePricesBuy } from "../../data/devicePricesBuy";
+
+export function filterPlansByPhase2(plans: Plan[], answers: DiagnosisAnswers): Plan[] {
+  let filtered = [...plans];
+  const phase2 = answers.phase2 ?? answers;
+
+  // === 🟦 データ通信容量フィルター ===
+  if (phase2.dataUsage) {
+    const usage = phase2.dataUsage.toLowerCase().trim();
+    const map: Record<string, number> = {
+      minimal: 0,
+      "3gb": 3,
+      "5gb": 5,
+      "10gb": 10,
+      "20gb": 20,
+      "30gb": 30,
+      "50gb": 50,
+    };
+    const minRequired = map[usage] ?? 0;
+    const isUnlimited = usage === "unlimited";
+
+    filtered = isUnlimited
+      ? filtered.filter((p) => p.maxDataGB >= 999 || p.maxDataGB === Infinity)
+      : filtered.filter((p) => p.maxDataGB >= minRequired);
+  }
+
+  // 🚦 速度制限フィルター
+  if (phase2.speedLimitImportance) {
+    const map = { high: 1, medium: 0.5, low: 0 };
+    const minSpeed = map[phase2.speedLimitImportance as keyof typeof map] ?? 0;
+    if (minSpeed > 0) {
+      filtered = filtered.filter((p) => (p.speedLimitMbps ?? 0) >= minSpeed);
+    }
+  }
+
+  // 🟨 テザリングフィルター
+  const tetheringNeeded = phase2.tetheringNeeded === "yes";
+  const tetheringUsage = phase2.tetheringUsage ?? "";
+  if (tetheringNeeded || tetheringUsage) {
+    const map = { "30gb": 30, "60gb": 60, unlimited: 999 };
+    const minRequired = map[tetheringUsage as keyof typeof map] ?? 0;
+    filtered = filtered.filter(
+      (p) =>
+        p.tetheringAvailable === true &&
+        (p.tetheringUsage ?? 0) >= minRequired
+    );
+  }
+
+  // ===================================================
+  // 📞 国内通話プランフィルター（質問ロジック準拠）
+  // ===================================================
+  if (phase2.callPlanType && phase2.callPlanType.length > 0) {
+    const selectedTypes = phase2.callPlanType;
+    let matches: Plan[] = [];
+
+    // === 1. 時間制限型 ===
+    if (selectedTypes.includes("timeLimit")) {
+      const pref = phase2.timeLimitPreference ?? "";
+      const map = { "5min": 5, "10min": 10, "15min": 15, "30min": 30, unlimited: Infinity };
+      const limit = map[pref as keyof typeof map] ?? 0;
+      matches.push(
+        ...filtered.filter(
+          (p) =>
+            (p.callType === "time" && (p.callTimeLimit ?? 0) >= limit) ||
+            p.callType === "unlimited"
+        )
+      );
+    }
+
+    // === 2. 月間制限型 ===
+    if (selectedTypes.includes("monthlyLimit")) {
+      const pref = phase2.monthlyLimitPreference ?? "";
+      const map = { "60min": 60, "70min": 70, "100min": 100, unlimited: Infinity };
+      const limit = map[pref as keyof typeof map] ?? 0;
+      matches.push(
+        ...filtered.filter(
+          (p) =>
+            (p.callType === "monthly" && (p.callMonthlyLimit ?? 0) >= limit) ||
+            p.callType === "unlimited"
+        )
+      );
+    }
+
+    // === 3. ハイブリッド型 ===
+    if (selectedTypes.includes("hybrid")) {
+      const pref = phase2.hybridCallPreference ?? "";
+      const map = {
+        "30x10": { count: 30, perCall: 10 },
+        "50x10": { count: 50, perCall: 10 },
+        unlimited: { count: Infinity, perCall: Infinity },
+      };
+      const { count, perCall } = map[pref as keyof typeof map] ?? { count: 0, perCall: 0 };
+      matches.push(
+        ...filtered.filter(
+          (p) =>
+            (p.callType === "hybrid" &&
+              (p.callCountLimit ?? 0) >= count &&
+              (p.callPerCallLimit ?? 0) >= perCall) ||
+            p.callType === "unlimited"
+        )
+      );
+    }
+
+    // === 4. 無制限型（特例）
+    if (selectedTypes.includes("noPreference")) {
+      matches.push(...filtered.filter((p) => p.callType === "unlimited"));
+    }
+
+    filtered = Array.from(new Map(matches.map((p) => [p.planId, p])).values());
+  }
+
+  // 🌍 国際通話フィルター
+  if (phase2.needInternationalCallUnlimited === "yes") {
+    const selectedCarriers = Array.isArray(phase2.internationalCallCarrier)
+      ? phase2.internationalCallCarrier
+      : [];
+    filtered = filtered.filter((plan) => {
+      if (!plan.supportsInternationalUnlimitedCalls) return false;
+      if (selectedCarriers.length === 0) return true;
+      return selectedCarriers.some((c: string) => {
+  if (c === "rakuten") return plan.carrier?.toLowerCase().includes("rakuten");
+  if (c === "au") return plan.carrier?.toLowerCase().includes("au");
+  return false;
+});
+
+    });
+  }
+
+  // === 📱 端末モデル＋容量 ===
+  if (phase2.deviceModel && phase2.deviceStorage) {
+    const selectedModel = phase2.deviceModel.trim();
+    const selectedStorage = phase2.deviceStorage.trim();
+    const buyingText = phase2.buyingDevice ?? "";
+    if (typeof buyingText !== "string" || !buyingText.includes("正規店")) {
+      filtered = filtered.filter((plan) => {
+        return devicePricesLease.some(
+          (d) =>
+            d.model === selectedModel &&
+            d.storage === selectedStorage &&
+            d.carrier === plan.carrier &&
+            d.ownershipType === "lease"
+        );
+      });
+    }
+  }
+
+  // 🌏 海外利用
+  if (phase2.overseasSupport === "yes") {
+    filtered = filtered.filter((plan) => plan.overseasSupport === true);
+  }
+
+  // 💳 支払い方法
+  if (phase2.mainCard && Array.isArray(phase2.mainCard) && phase2.mainCard.length > 0) {
+    const selectedMethods = phase2.mainCard;
+    filtered = filtered.filter((plan) =>
+  selectedMethods.some((method: string) =>
+    plan.supportedPaymentMethods?.includes(method)
+  )
+);
+
+  }
+
+  return filtered;
+}

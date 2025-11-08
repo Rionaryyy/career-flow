@@ -1,0 +1,135 @@
+import { Plan } from "@/types/planTypes";
+import { DiagnosisAnswers } from "@/types/types";
+
+export interface PaymentResult {
+  paymentDiscount: number;
+  paymentReward: number;
+  carrierBarcodeReward: number;
+  carrierShoppingReward: number;
+  totalCarrierReward: number;
+}
+
+export function calcPayments(plan: Plan, answers: DiagnosisAnswers): PaymentResult {
+  let paymentDiscount = 0;
+  let paymentReward = 0;
+  let carrierBarcodeReward = 0;
+  let carrierShoppingReward = 0;
+
+  // === 💳 メインカード／ブランド統合処理 ===
+  const selectedMain = (answers.mainCard ?? []) as string[];
+
+  // ✅ Phase2構造の対応（cardDetail-credit / cardDetail-bank 統合）
+  const mergedCardDetails = [
+    ...(answers["cardDetail-credit"] ?? []),
+    ...(answers["cardDetail-bank"] ?? []),
+    ...(answers.cardDetail ?? []),
+  ].filter(Boolean);
+
+  const selectedBrands = Array.isArray(mergedCardDetails)
+    ? (mergedCardDetails as string[])
+    : [];
+
+  // === キャリアの支払い割引・ポイント還元 ===
+  if (plan.paymentBenefitRules?.length) {
+    for (const rule of plan.paymentBenefitRules) {
+      const matchesMethod = selectedMain.includes(rule.method);
+
+      // ✅ ブランド名の柔軟一致（日本語・英語・半角全角・card/pay/bank除去）
+      const matchesBrand = (rule.brands ?? []).some((b: string) => {
+        return selectedBrands.some((sel) => {
+          const normalize = (s: string) =>
+            s
+              .toLowerCase()
+              .replace(/\s/g, "")
+              .replace(/_/g, "")
+              .replace("カード", "")
+              .replace("card", "")
+              .replace("pay", "")
+              .replace("ポイント", "")
+              .replace("銀行", "")
+              .replace("bank", "");
+          return (
+            normalize(sel).includes(normalize(b)) ||
+            normalize(b).includes(normalize(sel))
+          );
+        });
+      });
+
+      if (matchesMethod && matchesBrand) {
+        if (rule.discount) paymentDiscount += rule.discount;
+        if (rule.rate && rule.rate > 0) {
+          const base = plan.baseMonthlyFee ?? 0;
+          const estimated = Math.round(base * rule.rate);
+          paymentReward += estimated;
+          console.log(
+            `💳 ${plan.carrier}: ${rule.method} + ${rule.brands?.join(",")} → ${rule.rate * 100}% = ¥${estimated}`
+          );
+        }
+      }
+    }
+  }
+
+  // === バーコード決済（キャリアPay） ===
+  const barcodeMonthly =
+    Number((answers.monthlyBarcodeSpend || "0").toString().replace(/\D/g, "")) || 0;
+
+  if (plan.carrierPaymentRewardRate && plan.carrierPaymentRewardRate > 0) {
+    const calcReward = Math.round(barcodeMonthly * plan.carrierPaymentRewardRate);
+    carrierBarcodeReward = plan.carrierPaymentRewardLimit
+      ? Math.min(calcReward, plan.carrierPaymentRewardLimit)
+      : calcReward;
+  }
+
+  // === ショッピング利用還元 ===
+  const shoppingMonthly =
+    Number((answers.monthlyShoppingSpend || "0").toString().replace(/\D/g, "")) || 0;
+  const shoppingList = (answers.shoppingEcosystem ?? []) as string[];
+
+  let shopRate = 0;
+  let shopMatched = "";
+
+  if ((shoppingList ?? []).some((s: string) => /(yahoo|ヤフー|ショッピング)/i.test(s))) {
+    shopRate = plan.carrierShoppingRewardRate_Yahoo ?? 0;
+    shopMatched = "Yahoo!ショッピング";
+  } else if ((shoppingList ?? []).some((s: string) => /lohaco/i.test(s))) {
+    shopRate = plan.carrierShoppingRewardRate_LOHACO ?? 0;
+    shopMatched = "LOHACO";
+  } else if ((shoppingList ?? []).some((s: string) => /(楽天|rakuten)/i.test(s))) {
+    shopRate = plan.carrierShoppingRewardRate_Rakuten ?? 0;
+    shopMatched = "楽天市場";
+  } else if ((shoppingList ?? []).some((s: string) => /(au\s?pay|aupay)/i.test(s))) {
+    shopRate = plan.carrierShoppingRewardRate_AUPayMarket ?? 0;
+    shopMatched = "au PAYマーケット";
+  } else if ((shoppingList ?? []).some((s: string) => /(paypay|ペイペイ)/i.test(s))) {
+    shopRate = plan.carrierShoppingRewardRate_PayPayMall ?? 0;
+    shopMatched = "PayPayモール";
+  }
+
+  carrierShoppingReward = Math.round(shoppingMonthly * shopRate);
+  const totalCarrierReward = carrierBarcodeReward + carrierShoppingReward;
+
+  // === 🧾 デバッグ出力 ===
+  console.log("💳 Payment Debug:", {
+    carrier: plan.carrier,
+    paymentDiscount,
+    paymentReward,
+    carrierBarcodeReward,
+    carrierShoppingReward,
+    totalCarrierReward,
+    selectedMain,
+    selectedBrands,
+    barcodeMonthly,
+    shoppingMonthly,
+    shopMatched,
+    shopRate,
+    planPaymentRules: plan.paymentBenefitRules,
+  });
+
+  return {
+    paymentDiscount,
+    paymentReward,
+    carrierBarcodeReward,
+    carrierShoppingReward,
+    totalCarrierReward,
+  };
+}

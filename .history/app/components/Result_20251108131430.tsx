@@ -212,7 +212,7 @@ export default function Result({ answers, onRestart }: Props) {
   <p className="text-gray-700">
     💸 キャッシュバック込み参考料金:
     <span className="font-semibold text-gray-800 ml-1">
-      ¥{Math.round(plan.totalMonthly + (plan.breakdown.initialFeeMonthly ?? 0) - (plan.breakdown.cashback ?? 0)).toLocaleString()} /月
+      ¥{Math.round(plan.totalMonthly + (plan.breakdown.effectiveMonthlyAdjustment ?? 0)).toLocaleString()} /月
     </span>
   </p>
   <p className="text-xs text-gray-500 ml-5">
@@ -222,27 +222,35 @@ export default function Result({ answers, onRestart }: Props) {
 
 
 
-  {/* 📅 比較期間 */}
-  {(() => {
-    const comparePeriod = answers.phase1?.comparePeriod ?? "";
-    let months = 12;
-    if (comparePeriod.includes("2年")) months = 24;
-    else if (comparePeriod.includes("3年")) months = 36;
 
-    return (
-      <p className="text-xs text-gray-400 ml-5">
-        （{months}ヶ月（
-        {months === 12
-          ? "1年"
-          : months === 24
-          ? "2年"
-          : months === 36
-          ? "3年"
-          : "未指定"}
-        ）で換算しています）
-      </p>
-    );
-  })()}
+{/* 📅 比較期間 */}
+{(() => {
+  // Phase1 または直下（または Phase2）どちらからでも拾えるようにする
+  const comparePeriod =
+    answers.comparePeriod ??
+    answers.phase1?.comparePeriod ??
+    answers.phase2?.comparePeriod ??
+    "";
+
+  let months = 12;
+  if (comparePeriod.includes("24m") || comparePeriod.includes("2年")) months = 24;
+  else if (comparePeriod.includes("36m") || comparePeriod.includes("3年")) months = 36;
+
+  return (
+    <p className="text-xs text-gray-400 ml-5">
+      （{months}ヶ月（
+      {months === 12
+        ? "1年"
+        : months === 24
+        ? "2年"
+        : months === 36
+        ? "3年"
+        : "未指定"}
+      ）で換算しています）
+    </p>
+  );
+})()}
+
 </div>
 
 
@@ -430,11 +438,12 @@ export default function Result({ answers, onRestart }: Props) {
     <p className="font-semibold text-gray-800 mb-1">💰 初期費用・特典内訳</p>
 
     {/* 🏷 契約方法の表示（Phase①回答に応じて） */}
-    {answers.phase1?.contractMethod && (
-      <p className="ml-2 text-sm text-sky-700">
-        契約方法: {answers.phase1.contractMethod}
-      </p>
-    )}
+{(answers.contractMethod ?? answers.phase1?.contractMethod ?? answers.phase2?.contractMethod) && (
+  <p className="ml-2 text-sm text-sky-700">
+    契約方法: {answers.contractMethod ?? answers.phase1?.contractMethod ?? answers.phase2?.contractMethod}
+  </p>
+)}
+
 
     {/* 💴 初期費用 */}
     <p className="ml-2 text-gray-700">
@@ -446,7 +455,12 @@ export default function Result({ answers, onRestart }: Props) {
 
     {/* 🧾 初期費用の内訳説明 */}
     {(() => {
-      const method = answers.phase1?.contractMethod ?? "";
+      const method =
+  answers.contractMethod ??
+  answers.phase1?.contractMethod ??
+  answers.phase2?.contractMethod ??
+  "";
+
       if (method.includes("店頭")) {
         return (
           <p className="ml-6 text-xs text-gray-500">
@@ -539,57 +553,55 @@ export default function Result({ answers, onRestart }: Props) {
               </div>
 
               {/* 💻 端末関連（返却プログラム／購入は排他表示） */}
-              {plan.breakdown.deviceLeaseMonthly &&
-              plan.breakdown.deviceLeaseMonthly > 0 ? (
-                <div className="mt-1">
-                  <p className="font-medium text-indigo-700">
-                    ・返却プログラム（月額端末費）: +
-                    ¥{plan.breakdown.deviceLeaseMonthly}
-                  </p>
-                  <p className="text-xs text-gray-500 ml-3">
-                    ↳ 総額（目安）:
-                    ¥{(plan.breakdown.deviceTotal ?? 0).toLocaleString()}
-                  </p>
-                </div>
-              ) : plan.breakdown.deviceBuyMonthly &&
-                plan.breakdown.deviceBuyMonthly > 0 ? (
-                <div className="mt-1">
-                  <p className="font-medium text-sky-700">
-                    ・端末購入（月額端末費）: +
-                    ¥{plan.breakdown.deviceBuyMonthly}
-                  </p>
-                  <p className="text-xs text-gray-500 ml-3">
-                    ↳ 総額（目安）:
-                    ¥{(plan.breakdown.deviceTotal ?? 0).toLocaleString()}
-                  </p>
-                </div>
-              ) : null}
+                {plan.breakdown.deviceLeaseMonthly &&
+                plan.breakdown.deviceLeaseMonthly > 0 ? (
+                  <div className="mt-1">
+                    <p className="font-medium text-indigo-700">
+                      ・返却プログラム（月額端末費）: +
+                      ¥{plan.breakdown.deviceLeaseMonthly}
+                    </p>
+                    <p className="text-xs text-gray-500 ml-3">
+                      ↳ 総額（目安）:
+                      ¥{(plan.breakdown.deviceTotal ?? 0).toLocaleString()}
+                    </p>
+                  </div>
+                ) : plan.breakdown.deviceBuyMonthly &&
+                  plan.breakdown.deviceBuyMonthly > 0 ? (
+                  <div className="mt-1">
+                    <p className="font-medium text-sky-700">
+                      ・端末購入（月額端末費）: +
+                      ¥{plan.breakdown.deviceBuyMonthly}
+                    </p>
+                    <p className="text-xs text-gray-500 ml-3">
+                      ↳ 総額（目安）:
+                      ¥{(plan.breakdown.deviceTotal ?? 0).toLocaleString()}
+                    </p>
+                  </div>
+                ) : null}
 
-              {(answers.phase2?.deviceModel || answers.phase2?.deviceStorage) && (
-                <div className="mt-2 text-xs text-gray-600 border-t border-dashed border-gray-300 pt-1">
-                  📱 {answers.phase2?.deviceModel ?? plan.deviceProgram?.model}
-                  {answers.phase2?.deviceStorage &&
-                    `（${answers.phase2.deviceStorage}）`}{" "}
-                  /{" "}
-                  {answers.phase2?.buyingDevice?.includes("返却")
-                    ? "返却プログラム"
-                    : answers.phase2?.buyingDevice?.includes("キャリア")
-                    ? "キャリア端末購入（所有）"
-                    : answers.phase2?.buyingDevice?.includes("正規店")
-                    ? "正規店購入（返却なし）"
-                    : "端末購入"}
-                  {plan.deviceProgram?.paymentMonths &&
-                    `（${plan.deviceProgram.paymentMonths}ヶ月${
-                      answers.phase2?.buyingDevice?.includes("返却")
-                        ? "返却前提"
-                        : "分割払い"
-                    }）`}
-                </div>
-              )}
-            </div>
-            );  
-})}
-
+                {(answers.deviceModel || answers.deviceStorage) && (
+                  <div className="mt-2 text-xs text-gray-600 border-t border-dashed border-gray-300 pt-1">
+                    📱 {answers.deviceModel ?? plan.deviceProgram?.model}
+                    {answers.deviceStorage && `（${answers.deviceStorage}）`}{" "}
+                    /{" "}
+                    {answers.buyingDevice?.includes("返却")
+                      ? "返却プログラム"
+                      : answers.buyingDevice?.includes("キャリア")
+                      ? "キャリア端末購入（所有）"
+                      : answers.buyingDevice?.includes("正規店")
+                      ? "正規店購入（返却なし）"
+                      : "端末購入"}
+                    {plan.deviceProgram?.paymentMonths &&
+                      `（${plan.deviceProgram.paymentMonths}ヶ月${
+                        answers.buyingDevice?.includes("返却")
+                          ? "返却前提"
+                          : "分割払い"
+                      }）`}
+                  </div>
+                )}
+              </div>
+            );
+          })}
 
           <div className="flex justify-center mt-10">
             <button
