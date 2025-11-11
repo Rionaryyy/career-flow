@@ -87,53 +87,48 @@ export default function DiagnosisFlow({ onSubmit, defaultValues, onBack }: Props
     const changedValue = updated[changedKey as keyof DiagnosisAnswers];
     setLastChangedKey(changedKey);
 
-    const newAnswers = { ...answers, ...updated };
-    setAnswers(newAnswers);
+    const tempAnswers = { ...answers, ...updated };
 
-    // ✅ state更新後にフィルター処理を実行
-    setTimeout(() => {
-      console.log("🧩 [filterPlans] 受け取った answers:", newAnswers);
-      const filtered = filterPlans(allPlans, newAnswers);
+    // === 📊 統合フィルター適用 ===
+    const filtered = filterPlans(allPlans, tempAnswers);
 
-      const total = allPlans.length;
-      const currentCount = filtered.length;
-      const prevCount = prevCountRef.current;
-      const countDiff = currentCount - prevCount;
-      prevCountRef.current = currentCount;
+    const total = allPlans.length;
+    const currentCount = filtered.length;
+    const prevCount = prevCountRef.current;
+    const countDiff = currentCount - prevCount;
+    prevCountRef.current = currentCount;
 
-      // === 💰 各プランの実質料金計算（平均） ===
-      const costs = filtered.map((p) => calculatePlanCost(p, newAnswers));
-      const avg = costs.length
-        ? costs.reduce(
-            (sum: number, c: any) => sum + (c.totalWithDevice ?? c.total ?? 0),
-            0
-          ) / costs.length
-        : 0;
+    // === 💰 各プランの実質料金計算（平均） ===
+    const costs = filtered.map((p) => calculatePlanCost(p, tempAnswers));
+    const avg = costs.length
+      ? costs.reduce((sum, c) => sum + (c.totalWithDevice ?? c.total ?? 0), 0) /
+        costs.length
+      : 0;
 
-      const prevAvg = prevAvgRef.current ?? avg;
-      const diff = avg - prevAvg;
-      prevAvgRef.current = avg;
+    const prevAvg = prevAvgRef.current ?? avg;
+    const diff = avg - prevAvg;
+    prevAvgRef.current = avg;
 
-      // === 🧾 ログ出力 ===
-      console.log(`🧩 [${changedKey}] 回答変更: ${changedValue}`);
-      console.log(`📊 対象 ${currentCount} 件 / 全 ${total} 件`);
+    // === 🧾 ログ出力 ===
+    console.log(`🧩 [${changedKey}] 回答変更: ${changedValue}`);
+    console.log(`📊 対象 ${currentCount} 件 / 全 ${total} 件`);
 
-      // 件数変化
-      if (countDiff < 0)
-        console.log(`📉 ${Math.abs(countDiff)} 件減少 (${prevCount} → ${currentCount})`);
-      else if (countDiff > 0)
-        console.log(`📈 ${countDiff} 件増加 (${prevCount} → ${currentCount})`);
-      else console.log(`➖ 件数変化なし (${currentCount} 件)`);
+    // 件数変化
+    if (countDiff < 0)
+      console.log(`📉 ${Math.abs(countDiff)} 件減少 (${prevCount} → ${currentCount})`);
+    else if (countDiff > 0)
+      console.log(`📈 ${countDiff} 件増加 (${prevCount} → ${currentCount})`);
+    else console.log(`➖ 件数変化なし (${currentCount} 件)`);
 
-      // 料金変化
-      if (diff < 0)
-        console.log(`💸 実質料金 ↓ ${Math.abs(diff).toFixed(0)}円 (${avg.toFixed(0)}円/月)`);
-      else if (diff > 0)
-        console.log(`💰 実質料金 ↑ +${diff.toFixed(0)}円 (${avg.toFixed(0)}円/月)`);
-      else console.log(`💤 実質料金 変化なし (${avg.toFixed(0)}円/月)`);
+    // 料金変化
+    if (diff < 0)
+      console.log(`💸 実質料金 ↓ ${Math.abs(diff).toFixed(0)}円 (${avg.toFixed(0)}円/月)`);
+    else if (diff > 0)
+      console.log(`💰 実質料金 ↑ +${diff.toFixed(0)}円 (${avg.toFixed(0)}円/月)`);
+    else console.log(`💤 実質料金 変化なし (${avg.toFixed(0)}円/月)`);
 
-      console.log(""); // 改行
-    }, 0);
+    console.log(""); // 改行
+    setAnswers(tempAnswers);
   };
 
   // === 🐾 次へボタン処理 ===

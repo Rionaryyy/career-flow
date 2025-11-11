@@ -7,17 +7,6 @@ import { allPlans } from "@/data/plans";
 
 
 
-console.log("🧩 Using plans sample:", allPlans[0]?.planId, allPlans[0]?.callOptions);
-
-console.log(
-  "🧩 Using plans sample (deep):",
-  allPlans[0]?.callOptions?.map((o) => ({
-    id: o.id,
-    name: o.name,
-    fee: o.fee,
-    type: o.type,
-  }))
-);
 
 
 
@@ -25,10 +14,7 @@ export function filterPlansByPhase2(plans: Plan[], answers: DiagnosisAnswers): P
   let filtered = [...plans];
   const phase2 = answers.phase2 ?? answers;
 
-  console.log("🧩 [Phase2 Snapshot Check]", {
-  callOptionsNeeded: phase2.callOptionsNeeded,
-  phase2Keys: Object.keys(phase2 || {}),
-});
+
 
   
 
@@ -100,7 +86,8 @@ if (
   phase2.callPlanType.length === 0 ||
   (phase2.callPlanType.length === 1 && phase2.callPlanType[0] === "noPreference")
 ) {
-  console.log("💤 [CallFilter] 通話タイプ未選択または noPreference のためスキップ");
+
+  
 } else {
   // 🧩 通話フィルターロジック本体（timeLimit / monthlyLimit / hybrid / unlimited）
   const selectedTypes = phase2.callPlanType;
@@ -315,6 +302,11 @@ if (phase2.needInternationalCallUnlimited === "yes") {
   console.log(`📉 [InternationalFilter] フィルター後: ${filtered.length} 件`);
 }
 
+  // === 👶 子ども専用プラン（12歳以下） ===
+  if (phase2.childUnder12Plan === "yes") {
+    filtered = filtered.filter((p) => p.planType === "大手");
+  }
+
 // ===================================================
 // 📞 留守番電話オプションフィルター（「いいえ」は全残し）
 // ===================================================
@@ -421,12 +413,7 @@ if (["yes", "はい", "あり", "有", "true"].includes(overseasValue)) {
   });
 
   console.log(`🌍 [OverseasFilter] ${before} → ${filtered.length} 件`);
-} else {
-  console.log(
-    "💤 [OverseasFilter] スキップ条件: overseasSupport=",
-    phase2.overseasSupport
-  );
-}
+} 
 
 
 
