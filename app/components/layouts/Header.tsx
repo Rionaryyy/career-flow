@@ -21,18 +21,18 @@ export default function Header() {
           priority
           className="block"
         />
-        <span className="text-xl font-bold text-sky-900">通信キャリア診断</span>
+        <span className="text-xl font-bold text-orange-600">通信キャリア診断</span>
       </div>
 
       {/* ハンバーガーメニュー */}
       <button
         onClick={() => setMenuOpen(!menuOpen)}
-        className="sm:hidden p-2 rounded-md hover:bg-sky-100 transition"
+        className="sm:hidden p-2 rounded-md hover:bg-orange-50 transition"
       >
         {menuOpen ? (
-          <XMarkIcon className="h-6 w-6 text-sky-900" />
+          <XMarkIcon className="h-6 w-6 text-orange-600" />
         ) : (
-          <Bars3Icon className="h-6 w-6 text-sky-900" />
+          <Bars3Icon className="h-6 w-6 text-orange-600" />
         )}
       </button>
 
@@ -46,7 +46,7 @@ export default function Header() {
           <li>
             <Link
               href="/"
-              className="block px-4 py-2 hover:bg-sky-100 transition"
+              className="block px-4 py-2 hover:bg-orange-50 transition"
               onClick={() => setMenuOpen(false)}
             >
               ホーム
@@ -55,7 +55,7 @@ export default function Header() {
           <li>
             <Link
               href="/about"
-              className="block px-4 py-2 hover:bg-sky-100 transition"
+              className="block px-4 py-2 hover:bg-orange-50 transition"
               onClick={() => setMenuOpen(false)}
             >
               概要
@@ -64,7 +64,7 @@ export default function Header() {
           <li>
             <Link
               href="/achievements"
-              className="block px-4 py-2 hover:bg-sky-100 transition"
+              className="block px-4 py-2 hover:bg-orange-50 transition"
               onClick={() => setMenuOpen(false)}
             >
               実績
@@ -73,7 +73,7 @@ export default function Header() {
           <li>
             <Link
               href="/contact"
-              className="block px-4 py-2 hover:bg-sky-100 transition"
+              className="block px-4 py-2 hover:bg-orange-50 transition"
               onClick={() => setMenuOpen(false)}
             >
               お問い合わせ

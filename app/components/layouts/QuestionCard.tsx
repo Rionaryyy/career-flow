@@ -62,7 +62,7 @@ export default function QuestionCard({
   const selectedValues =
     type === "checkbox" ? (Array.isArray(value) ? value : []) : [];
 
-  // 🟦 スライダータイプ処理
+  // スライダータイプ
   if (type === "slider") {
     const sliderValue =
       typeof value === "number"
@@ -74,8 +74,8 @@ export default function QuestionCard({
     const cappedValue = Math.min(sliderValue, max ?? 200000);
 
     return (
-      <div className="w-full bg-sky-50 p-5 rounded-2xl border border-sky-500 shadow-sm space-y-6">
-        <p className="text-xl font-semibold text-sky-800 text-center">
+      <div className="w-full bg-white p-5 rounded-2xl border border-orange-500 shadow-sm space-y-6">
+        <p className="text-xl font-semibold text-gray-900 text-center">
           {question}
         </p>
 
@@ -87,7 +87,7 @@ export default function QuestionCard({
             step={step ?? 1000}
             value={cappedValue}
             onChange={(e) => onChange(id, Number(e.target.value))}
-            className="w-full accent-sky-600 cursor-pointer"
+            className="w-full cursor-pointer"
           />
           <p className="text-gray-800 text-lg font-semibold">
             ¥{cappedValue.toLocaleString()}
@@ -96,7 +96,7 @@ export default function QuestionCard({
             )}
           </p>
           {max && (
-            <p className="text-xs text-sky-700">
+            <p className="text-xs text-gray-600">
               （上限：{max.toLocaleString()}円）
             </p>
           )}
@@ -105,10 +105,10 @@ export default function QuestionCard({
     );
   }
 
-  // 🟦 通常タイプ処理
+  // 通常タイプ
   return (
-    <div className="w-full bg-sky-50 p-5 rounded-2xl border border-sky-500 shadow-sm space-y-4">
-      <p className="text-xl font-semibold text-sky-800 text-center">{question}</p>
+    <div className="w-full bg-white p-5 rounded-2xl border border-orange-500 shadow-sm space-y-4">
+      <p className="text-xl font-semibold text-gray-900 text-center">{question}</p>
 
       {type !== "custom" && (
         <div className="grid grid-cols-1 gap-3 w-full">
@@ -123,8 +123,8 @@ export default function QuestionCard({
                 onClick={() => handleSelect(opt)}
                 className={`flex items-center w-full cursor-pointer h-14 px-4 rounded-xl border text-sm font-medium select-none transition-all duration-200 ${
                   checked
-                    ? "bg-gradient-to-r from-sky-400 to-sky-500 text-white shadow ring-1 ring-sky-600 border-sky-600"
-                    : "bg-white border-sky-500 text-sky-900 hover:border-sky-600 hover:shadow-sm"
+                    ? "bg-orange-300 text-orange-900 border-orange-400 ring-2 ring-orange-300"
+                    : "bg-white border-orange-500 text-gray-900 hover:bg-orange-100 hover:border-orange-600 hover:text-orange-900 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
                 }`}
               >
                 {opt.label}

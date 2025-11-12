@@ -1,3 +1,4 @@
+// app/components/DiagnosisFlow/layouts/QuestionLayout.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -32,8 +33,8 @@ export default function QuestionLayout({
 
   return (
     <div className="max-w-4xl mx-auto p-4">
-      {/* ステップと％表示 */}
-      <div className="mb-2 text-sm text-sky-900 font-semibold flex justify-between">
+      {/* ステップ表記（そのままオレンジ） */}
+      <div className="mb-2 text-sm text-orange-600 font-semibold flex justify-between">
         <span>
           ステップ {answeredCount} / {totalCount}
         </span>
@@ -41,9 +42,11 @@ export default function QuestionLayout({
 
       {/* 進捗バー＋猫＋スマホ */}
       <div className="relative w-full mb-6">
-        <div className="w-full bg-sky-100 h-2 rounded-full overflow-hidden">
+        {/* トラック：もっと薄いオレンジ */}
+        <div className="w-full bg-orange-100 h-2 rounded-full overflow-hidden">
+          {/* フィル：薄めオレンジのグラデーション */}
           <div
-            className="bg-sky-500 h-2 rounded-full transition-all duration-300"
+            className="h-2 rounded-full transition-all duration-300 bg-gradient-to-r from-orange-300 via-orange-400 to-orange-500"
             style={{ width: `${widthPercent}%` }}
           />
         </div>
@@ -62,7 +65,7 @@ export default function QuestionLayout({
 
         {/* スマホ：バー右端で待機（猫の“後ろ”に来るよう z-0） */}
         <Image
-          src="/images/step-phone-icon.png" // ← この画像名で public/images に保存してね
+          src="/images/step-phone-icon.png"
           alt=""
           width={phoneSize}
           height={phoneSize}
